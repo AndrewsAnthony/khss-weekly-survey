@@ -1,0 +1,351 @@
+extends layout
+
+include ./mixins/task.jade
+include ./mixins/history.jade
+include ./mixins/createtask.jade
+
+block content
+  #loading_layer
+    .loader
+
+  nav.navbar.navbar-default.navbar-fixed-top
+    .container-fluid
+
+      .navbar-header
+        button.navbar-toggle.collapsed(
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbar-collapse-top")
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="#")
+          i(style='color: #337ab7') КП-ХСС
+
+
+      .collapse.navbar-collapse#navbar-collapse-top
+        if (obj.panel && !houses)
+          form.navbar-form.navbar-left(role="form" method='get' action='/house/')
+           .input-group
+              input#typeahead(type="text" class="form-control" placeholder="Выберите адрес...")
+              span.input-group-btn
+                button(class="btn btn-primary" type="submit")
+                  i.fa.fa-search
+
+        ul.nav.navbar-nav.navbar-right
+          li.dropdown
+            a.dropdown-toggle(href="#" data-toggle="dropdown")
+              |Фамилия И.О.
+              span.caret
+              ul.dropdown-menu
+                li
+                  a(href="#") Профайл
+                li.divider
+                li
+                  a(href="#") Входящие
+                li
+                  a(href="#") Задачи
+                li
+                  a(href="#") Таблицы
+                li.divider
+                li
+                  a(href="../work") Список работ
+                li.divider
+                li
+                  a(href="#") Выйти
+
+          li
+            a(href="#") Сроки
+          if (!houses)
+            li
+              a(href='/house') Список всех домов
+
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+        if (!obj.panel && !houses)
+          h1.text-center.alert.alert-info
+            i=title
+          form(role="form" method='get' action='/')
+            .input-group
+                input#typeahead(type="text" class="form-control" placeholder="Поиск")
+                .input-group-btn
+                  button.btn.btn-primary(type="submit")
+                    i.fa.fa-search
+
+        if (obj.panel)
+          .alert.alert-success
+            h3.text-center
+              b
+                i.text-uppercase #{obj.house.street}, #{obj.house.number}
+
+          div(class="",role="tabpanel",data-example-id="togglable-tabs")
+            #mainTab.btn-pref.btn-group.btn-group-justified.btn-group-lg(role="tablist")
+              div(role="presentation",class="btn-group")
+                button.btn.btn-primary(href="#tabInfo",id="info-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-info
+                    | &nbsp
+                    span.hidden-xs Информ. по дому
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabInbox",id="inbox-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-envelope-o
+                    | &nbsp
+                    span.hidden-xs Входящие
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabTask",id="task-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-tags
+                    | &nbsp
+                    span.hidden-xs Задачи
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabHistory",id="history-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-history
+                    | &nbsp
+                    span.hidden-xs История
+
+            #mainTabContent.tab-content
+              div(role="tabpanel",class="tab-pane fade in active",id="tabInfo")
+                .row
+                  .col-md-12
+                    h3
+                      i Данные из дислокации
+                    ul.list-group
+                      li.list-group-item Участок  - #{obj.house.district}
+                      li.list-group-item Кровля  - #{obj.house.roof}
+                      li.list-group-item Площадь  - #{obj.house.roofarea}
+                  
+                    if (obj.house.Authorities && obj.house.Authorities.length)
+                      h3
+                        i Список программ городской власти по данному адресу
+                      ul.list-group
+                        each authority in obj.house.Authorities
+                          li.list-group-item
+                            a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location} 
+                    
+                    div Карта Google отключена
+                    //- a.btn.btn-default(href=)
+
+                    //- button.btn.btn-default(data-address='' + obj.house.street + ', ' + obj.house.number + ', Харьков')#uploadMap Загрузить Карту Google
+                    //- #map(style="width: 320px; height: 480px;")
+
+              div(role="tabpanel",class="tab-pane fade",id="tabInbox")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
+                    .no-more-tables
+                      table.table.table-striped.text-center
+                        thead
+                          tr.img-thumbnail
+                            th # Письма
+                            th Исполнители
+                            th Привязка
+                            th Проблемы
+                            th Срок
+                            th
+                        tbody
+                          each inbox in obj.inboxs
+                            tr.img-thumbnail(style='border-right-color:' + ((inbox.status == 'add')?'#ec9f13':(inbox.status == 'close')?'green':'red'))
+                              td(data-title='# Письмо')
+                                b(id= 'inboxNumber' + inbox.id) #{inbox.number}
+                                br
+                                | От #{moment(inbox.inboxdate).format("DD-MM-YYYY")}
+                              td(data-title='Исполнители')
+                                each depatment in inbox.Depatments
+                                  i #{"- " + depatment.name}
+                                  br
+                              td(data-title='Привязка')
+                                span #{inbox.binding}
+                              td(data-title='Проблемы')
+                                each problem in inbox.Problems
+                                  i #{"- " + problem.name}
+                                  br
+                              td(data-title='Срок') #{moment(inbox.term).fromNow()}
+                              td
+                                .dropup
+                                  button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+                                    span.caret
+                                  ul.dropdown-menu
+                                    li.dropdown-header Просмотр
+                                    - var inboxdocs = inbox.Files.filter(function(file){return file.type == 'document'})
+                                    if inboxdocs.length
+                                      li
+                                        each doc in inboxdocs
+                                          a(href= '../upload/' + doc.path)
+                                            i.fa.fa-paperclip
+                                            | &nbsp;
+                                            if doc.FileDescription.name
+                                              | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+                                            else
+                                              | #{moment(doc.createAt).format(DD/MM/YYYY)}
+                                    else
+                                      li
+                                        a
+                                          s.small Документ
+
+                                    - var inboxphotos = inbox.Files.filter(function(file){return file.type == 'photo'})
+                                    if inboxphotos.length
+                                      li.inboxgallery
+                                        a(href= '../upload/' + inboxphotos[0].path) Фотографии
+                                        each photo in inboxphotos.slice(1)
+                                          a.mfp-hide(
+                                          href= '../upload/' + photo.path
+                                          title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
+                                    else
+                                      li
+                                        a
+                                          s.small Фотографии
+
+                                    li.dropdown-header Загрузить на сервер
+                                    li
+                                      a(
+                                      href='#'
+                                      data-toggle='modal'
+                                      data-target='#createFile'
+                                      data-object='inbox'
+                                      data-file='document'
+                                      data-objecthouse= obj.house.id
+                                      data-objectid= inbox.id) Документ
+                                    li
+                                      a(
+                                      href='#'
+                                      data-toggle='modal'
+                                      data-target='#createFile'
+                                      data-object='inbox'
+                                      data-file='photo'
+                                      data-objecthouse=  obj.house.id
+                                      data-objectid= inbox.id) Фотографию
+
+
+                    #createInboxModal.modal.fade(role="dialog")
+                      .modal-dialog
+                        .modal-content
+                          .modal-header
+                            button(type="button" class="close" data-dismiss="modal") &times;
+                            h4.modal-title.text-uppercase Создания нового входящего
+
+                          .modal-body
+                            form(role="form" action= obj.house.id + '/inbox' method='post' id="formInbox")
+                              .form-group
+                                label(for="numberInbox") Номер и дата входящего письма
+                                .input-group
+                                  i.input-group-addon №
+                                  input(type="text" class="form-control" id="numberInbox" placeholder="Введите номер письма" name='numberInbox')
+                                br
+                                .input-group
+                                  span.input-group-addon
+                                    i.fa.fa-calendar
+                                  input(type="date" class="form-control" id="dateInbox" placeholder="Введите дату письма" name='dateInbox')
+
+                              .form-group
+                                label(for="depatmentInbox") Закреплен за отделом
+                                select(class="form-control" id="depatmentInbox" multiple="multiple" name='depatment' style="width:100%")
+                                  option(value='') Не выбрано
+                                  each depatment in obj.depatments
+                                    option(value= depatment.id) #{depatment.name}
+
+                              .form-group
+                                label(for="problemInbox") Вопросы в письме
+                                select(class="form-control" id="problemInbox" name='problem' multiple="multiple" style="width:100%")
+                                  option(value='') Не выбрано
+                                  each problem in obj.problems
+                                    option(value= problem.id) #{problem.name}
+
+                              .form-group
+                                label(for="bindingInbox") Привязка к заявителю
+                                .input-group
+                                  span.input-group-addon
+                                    i.fa.fa-building-o
+                                  input(type="text" class="form-control" id="bindingInbox" placeholder="Привязка к месту" name='bindingInbox')
+
+                              .form-group
+                                label(for="termInbox") Дата срока исполнения
+                                .input-group
+                                  span.input-group-addon
+                                    i.fa.fa-calendar
+                                  input(type="date" class="form-control" id="termInbox" placeholder="Введите срок исполнения" name='termInbox')
+
+
+                              button.btn.btn-primary(type="submit" id='sendInbox') Создать входящие
+
+                          .modal-footer
+                            button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+              div(role="tabpanel",class="tab-pane fade",id="tabTask")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createTaskModal") Создать задачу
+                    .no-more-tables
+                      table.table.table-striped.text-center
+                        thead
+                          tr.img-thumbnail
+                            th Исполнитель
+                            th Вид задания
+                            th Привязка к местности
+                            th Проблемы в задании
+                            th Срок исполнения
+                            th Статус
+                        tbody
+                          each itemtask in obj.itemtasks
+                            +tasklist(itemtask, obj.house)
+
+                      +createtask(obj.house, obj.tasktypes, obj.users, obj.problems)
+
+              div(role="tabpanel",class="tab-pane fade",id="tabHistory")
+                .row
+                  .col-sm-12
+                    each itemtask in obj.itemtasks
+                      +history(itemtask, '..')
+
+
+            #createFile.modal.modal-step.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase.js-title-step
+                  .modal-body
+                    form(role="form" method='post' id="formFile")
+                      .hide(data-step="1" data-title="Описание для файла(ов)")
+                        input(type='hidden' id='hiddenFile' name='hiddenfile')
+                        .form-group
+                          label(for="fileDescription") Описание
+                          textarea(class="form-control" id="fileDescription" placeholder="Скопируйте текстовое содержимое файла" name='filedescription')
+
+                        .form-group#fileNameBlock
+                          label(for="fileName") Название
+                          input(type='text' class="form-control" id="fileName" placeholder="Отображение в приложении" name='filename')
+
+                        .form-group
+                          label(for="fileNote") Примечание
+                          input(type='text' class="form-control" id="fileNote" placeholder="Привязки, проблемы, телефоны" name='filenote')
+
+                      .hide(data-step="2" data-title="Загрузка файла(ов)")
+                        .file-loading
+                          input(id="inputFile" type="file" name='inputfile' multiple)
+
+
+                  .modal-footer
+                    button(
+                    type="button"
+                    class="btn btn-default js-btn-step pull-left"
+                    data-orientation="cancel"
+                    data-dismiss="modal")
+                    button(
+                    type="button"
+                    class="btn btn-default js-btn-step"
+                    data-orientation="previous")
+                    button(
+                    type="button"
+                    class="btn btn-primary js-btn-step"
+                    data-orientation="next")
+
+        if (houses)
+          ul.list-group
+          each house, ind in houses || []
+            li.list-group-item
+              a(href='/house/' + house.id) #{ind + 1}) #{house.street}, #{house.number}

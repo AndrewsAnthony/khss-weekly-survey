@@ -1,0 +1,134 @@
+extends ../layout
+
+include ../mixins/history.jade
+block content
+  #loading_layer
+    .loader
+
+  nav.navbar.navbar-default.navbar-fixed-top
+    .container-fluid
+
+      .navbar-header
+        button.navbar-toggle.collapsed(
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbar-collapse-top")
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="#")
+          i(style='color: #337ab7') КП-ХСС
+
+
+      .collapse.navbar-collapse#navbar-collapse-top
+
+        form.navbar-form.navbar-left(role="form" method='get' action='/house/')
+         .input-group
+            input#typeahead(type="text" class="form-control" placeholder="Выберите адрес...")
+            span.input-group-btn
+              button(class="btn btn-primary" type="submit")
+                i.fa.fa-search
+
+        ul.nav.navbar-nav.navbar-right
+          li.dropdown
+            a.dropdown-toggle(href="#" data-toggle="dropdown")
+              |Фамилия И.О.
+              span.caret
+              ul.dropdown-menu
+                li
+                  a(href="#") Профайл
+                li.divider
+                li
+                  a(href="#") Входящие
+                li
+                  a(href="#") Задачи
+                li
+                  a(href="#") Таблицы
+                li.divider
+                li
+                  a(href="#") Выйти
+          li
+            a(href="#") Сроки
+          if (!houses)
+            li
+              a(href='/house') Список всех домов
+
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+          .alert.alert-info
+            h3.text-center
+              b
+                i.text-uppercase
+                  | #{authority.name}
+                  br
+                  | #{moment(authority.date).format('DD-MM-YYYY')}
+                  br
+                  | #{authority.location}
+
+          
+          button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
+          each house in authority.Houses
+            .panel-group
+              div(class= "panel panel-default")
+                .panel-heading
+                  h4.panel-title
+                    a(
+                    data-toggle="collapse"
+                    href="#house" + house.id)
+                      span #{house.street}, #{house.number}
+
+                .panel-collapse.collapse(id="house" + house.id)
+                  .panel-body
+                    each task in house.ItemTasks
+                      +history(task, '../../..')
+                      //- ul.list-group
+                      //-   li.list-group-item #{task.TaskType.description}
+                         
+
+          #changeList.modal.fade(role="dialog")
+            .modal-dialog
+              .modal-content
+                .modal-header
+                  button(type="button" class="close" data-dismiss="modal") &times;
+                  h4.modal-title.text-uppercase Добавить / Изменить список домов
+
+                .modal-body
+                  #alertOptions.alert.alert-info.collapse
+                    a(href="#alertOptions" class="close" data-toggle="collapse" aria-label="close") &times;
+                    span Текст сообщения
+
+                  form(role="form" action= authority.id + '/house' method='post' id="formProtocol")
+                    .form-group
+                      label(for="titleProtocol") Добавить Улицу
+                      .input-group
+                        span.input-group-addon
+                          i.fa.fa-map-marker
+                        input#findStreetOptions(type="text" class="form-control" name='getoptions')
+                        .input-group-btn
+                          button.btn.btn-primary#addStreetOptions(type="button")
+                            i.fa.fa-plus
+
+                    .form-group
+                      .dropdown
+                        button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown") Добавить Участок
+                          span.caret
+                        ul.dropdown-menu
+                          each dist in [42, 43, 44, 45, 65, 66, 58, 59, 60, 61]
+                            li
+                              a.addDistrictOptions(href="#" data-district= dist) Участок #{dist}
+
+                    .form-group
+                      select(id='houseListOptions' multiple='multiple' name='houselist')
+                        each house in authority.Houses
+                          option(value= house.id selected) #{house.street}, #{house.number}
+
+
+                    button.btn.btn-primary(type="submit" id='sendProtocol') Сохранить
+
+                .modal-footer
+                  button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+

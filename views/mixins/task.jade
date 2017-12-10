@@ -1,0 +1,100 @@
+mixin tasklist(itemtasktype, house)
+  tr.img-thumbnail(style='border-right-color:' + ((itemtasktype.status == 'add')?'#ec9f13':(itemtasktype.status == 'close')?'green':'red'))
+    -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", info: "Найти информацию"}
+    td(data-title='Исполнитель')
+      b #{itemtasktype.Implementer.name.split(' ')[0] + ' ' + itemtasktype.Implementer.name.split(' ')[1][0] + '.' + itemtasktype.Implementer.name.split(' ')[2][0] }
+      br
+      mark #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+
+    if (itemtasktype.TaskType.model == 'inbox')
+      td(data-title='Вид задания')
+        b #{itemtasktype.TaskType.description}
+        br
+        a(href='#inboxNumber' + itemtasktype.Inbox.id) #{itemtasktype.Inbox.number}
+
+
+    else if (itemtasktype.TaskType.model == 'authority')
+      td(data-title='Вид задания')
+        b #{itemtasktype.TaskType.description}
+        br
+        i #{itemtasktype.Authority.name}
+        br
+        i #{moment(itemtasktype.Authority.date).format("DD-MM-YYYY")}
+        br
+        i #{itemtasktype.Authority.location}
+
+    else if (itemtasktype.TaskType.model == 'info')
+      td(data-title='Вид задания')
+        b #{itemtasktype.TaskType.description}
+        br
+        i #{itemtasktype.Information.description}
+
+    else if (itemtasktype.TaskType.model == 'schedule')
+      td(data-title='Вид задания')
+        b #{itemtasktype.TaskType.description}
+        br
+        i #{itemtasktype.Schedule.title} - #{itemtasktype.Schedule.type}
+
+    else if (itemtasktype.TaskType.model == 'program')
+      td(data-title='Вид задания')
+        b #{itemtasktype.TaskType.description}
+        br
+        i #{itemtasktype.Program.title}
+
+    else if (itemtasktype.TaskType.model == 'source')
+      td(data-title='Вид задания')
+        b #{itemtasktype.TaskType.description}
+        br
+        i #{itemtasktype.Source.name}
+
+    td(data-title='Привязка к местности')
+      | #{itemtasktype.binding}
+
+    td(data-title='Проблемы в задании')
+      each problem in itemtasktype.Problems
+        i #{"- " + problem.name}
+        br
+
+    td(data-title='Срок исполнения')
+      | #{moment(itemtasktype.term).calendar()}
+      br
+      if (moment.duration(moment(itemtasktype.term).diff(moment())).days() < 3)
+        i.label.label-danger
+          |#{moment(itemtasktype.term).fromNow()}
+      else
+        i.label.label-success
+          |#{moment(itemtasktype.term).fromNow()}
+
+
+    td(data-title='Статус')
+      if (itemtasktype.status == 'active')
+        | В работе
+      else if  (itemtasktype.status == 'add')
+        | Рассмотреть
+      else if (itemtasktype.status == 'close')
+        | Выполнено
+      br
+      .dropup
+        button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+          span.caret
+        ul.dropdown-menu
+          li.dropdown-header Другие действия
+          li.dropdown-header Загрузить на сервер
+          li
+            a(
+            href='#'
+            data-toggle='modal'
+            data-target='#createFile'
+            data-object='task'
+            data-file='document'
+            data-objecthouse= house.id
+            data-objectid= itemtasktype.id) Документ
+          li
+            a(
+            href='#'
+            data-toggle='modal'
+            data-target='#createFile'
+            data-object='task'
+            data-file='photo'
+            data-objecthouse= house.id
+            data-objectid= itemtasktype.id) Фотографию

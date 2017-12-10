@@ -1,0 +1,142 @@
+mixin history(itemtask, pathToImage)
+
+  -var itemTaskState = {active: { letter: "Написать письмо", photoreport: "Сделать Фотоотчет", info: "Найти Информацию"}, add: { letter: "Письмо добавлено", photoreport: "Фотоотчет загружен", info: "Информация по задачи"}, close: { letter: "Письмо закрыто", photoreport: "Фотоотчет", info: "Информация"}}
+
+  if (itemtask.TaskType.model == 'inbox')
+    .panel-group
+      div(class= "panel panel-" + ((itemtask.status == 'active') ? 'default': ((itemtask.status == 'add') ? 'info' : 'success')))
+        .panel-heading
+          h4.panel-title
+            a(
+            data-toggle="collapse"
+            href="#collapsetask" + itemtask.id)
+              span.pull-left
+                b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
+                br
+                | #{" [ "}
+                i #{itemtask.TaskType.description}
+                | #{" "}
+                i #{itemtask.Inbox.number}
+                | #{" ] "}
+              span.pull-right
+                i.fa.fa-calendar
+                | #{' ' + moment(itemtask.TaskType.createAt).calendar()}
+            .clearfix
+
+        .panel-collapse.collapse(id="collapsetask" + itemtask.id)
+          .panel-body
+            dl.dl-horizontal
+              dt Добавил
+              dd #{itemtask.Implementer.name.split(' ')[0] + ' ' + itemtask.Implementer.name.split(' ')[1][0] + '.' + itemtask.Implementer.name.split(' ')[2][0] + '.'}
+
+              dt Привязка
+              dd #{itemtask.binding}
+
+              dt Проблемы
+              dd
+                each problem, ind in itemtask.Problems
+                  i #{problem.name}
+                  if (ind !== (itemtask.Problems.length - 1))
+                    | #{', '}
+
+          .panel-footer
+            if (itemtask.Files.length)
+              button.btn.btn-default.btn-sm.startLoadTask() Подгрузить файлы (#{itemtask.Files.length} шт.)
+              .hidden-files.hide
+                dl.dl-horizontal
+                  each groupImage in R.pipe(R.groupBy(item => moment(item.createdAt).format("YYYY-MM-DD")),R.toPairs, R.sort(R.descend(R.nth(0))))(itemtask.Files)
+                    dt #{groupImage[0]}
+                    dd
+                      .gal.taskgallery
+                        each file in groupImage[1]
+                          a(href= pathToImage + '/upload/' + file.path title= file.FileDescription.note + '<br>Дата добавления: ' + moment(file.createdAt).format("DD-MM-YYYY"))
+                            img.lazy.img-thumbnail.img-responsive(data-src= pathToImage + '/upload/' + file.thumbnail src= pathToImage + '/images/loading-sm.gif')
+
+
+
+
+
+  //- tr
+  //-   td
+  //-     i.lead #{itemtasktype.Implementer.name.split(' ')[0] + ' ' + itemtasktype.Implementer.name.split(' ')[1][0] + '.' + itemtasktype.Implementer.name.split(' ')[2][0] }
+
+
+  //-   if (itemtasktype.TaskType.model == 'inbox')
+  //-     td
+  //-       a.btn.btn-primary.btn-xs(href='#') #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+  //-     td
+  //-       b #{itemtasktype.TaskType.description}
+  //-       br
+  //-       i #{itemtasktype.Inbox.number}
+
+  //-   else if (itemtasktype.TaskType.model == 'authority')
+  //-     td
+  //-       a.btn.btn-primary.btn-xs(href='#') #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+  //-     td
+  //-       b #{itemtasktype.TaskType.description}
+  //-       br
+  //-       i #{itemtasktype.Authority.name}
+  //-       br
+  //-       i #{moment(itemtasktype.Authority.date).format("DD/MM/YYYY")}
+  //-       br
+  //-       i #{itemtasktype.Authority.location}
+
+  //-   else if (itemtasktype.TaskType.model == 'info')
+  //-     td
+  //-       a.btn.btn-primary.btn-xs(href='#') #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+  //-     td
+  //-       b #{itemtasktype.TaskType.description}
+  //-       br
+  //-       i #{itemtasktype.Information.description}
+
+  //-   else if (itemtasktype.TaskType.model == 'schedule')
+  //-     td
+  //-       a.btn.btn-primary.btn-xs(href='#') #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+  //-     td
+  //-       b #{itemtasktype.TaskType.description}
+  //-       br
+  //-       i #{itemtasktype.Schedule.title} - #{itemtasktype.Schedule.type}
+
+  //-   else if (itemtasktype.TaskType.model == 'program')
+  //-     td
+  //-       a.btn.btn-primary.btn-xs(href='#') #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+  //-     td
+  //-       b #{itemtasktype.TaskType.description}
+  //-       br
+  //-       i #{itemtasktype.Program.title}
+
+  //-   else if (itemtasktype.TaskType.model == 'source')
+  //-     td
+  //-       a.btn.btn-primary.btn-xs(href='#') #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
+  //-     td
+  //-       b #{itemtasktype.TaskType.description}
+  //-       br
+  //-       i #{itemtasktype.Source.name}
+
+
+  //-   td
+  //-     | #{itemtasktype.binding}
+
+  //-   td
+  //-     each problem in itemtasktype.Problems
+  //-       i.label.label-warning #{problem.name}
+  //-       br
+
+  //-   td
+  //-     | #{moment(itemtasktype.term).format("DD-MM-YYYY")}
+  //-     br
+  //-     if (moment.duration(moment(itemtasktype.term).diff(moment())).days() < 3)
+  //-       i.label.label-danger
+  //-         |#{moment(itemtasktype.term).fromNow()}
+  //-     else
+  //-       i.label.label-success
+  //-         |#{moment(itemtasktype.term).fromNow()}
+
+
+  //-   td
+  //-     if (itemtasktype.status == 'active')
+  //-       | В работе
+  //-     if (itemtasktype.status == 'add')
+  //-       | Рассмотреть
+  //-     if (itemtasktype.status == 'close')
+  //-       | Выполнено

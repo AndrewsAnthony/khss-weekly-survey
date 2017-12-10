@@ -1,0 +1,66 @@
+doctype html
+html
+  head
+    meta(http-equiv="Content-Type",content="text/html;charset=UTF-8")
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible",content="IE=edge")
+    meta(name="viewport", content="width=device-width")
+    title КП ХСС
+    style.
+        #loading_layer {
+          position: absolute;
+          width:100%;
+          height:100%;
+          z-index:999999;
+          background-color: #FFF;
+          top: 0; left: 0; bottom: 0; right: 0;
+        }
+
+        .loader {
+          border: 10px solid #f3f3f3;
+          border-top: 10px solid #337ab7;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          animation: spin 2s linear infinite;
+          top: 0; left: 0; bottom: 0; right: 0;
+          margin: auto;
+          position: absolute;
+          color: #337ab7;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+
+    //- link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/mobile-bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/font-awesome.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-select.css')
+    link(rel='stylesheet', href='/stylesheets/typeaheadjs.css')
+    link(rel='stylesheet', href='/stylesheets/fileinput.css')
+    link(rel='stylesheet', href='/stylesheets/fileinput-theme-explorer.css')
+    link(rel='stylesheet', href='/stylesheets/magnific-popup.css')
+    link(rel='stylesheet', href='/stylesheets/multi-select.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+
+  body
+    block content
+    script(src='/scripts/jquery-1.11.0.min.js')
+    script(src='/scripts/jquery.ba-throttle-debounce.min.js')
+    script(src='/scripts/bootstrap.min.js')
+    script(src='/scripts/typeahead.bundle.min.js')
+    script(src='/scripts/fileinput.min.js')
+    script(src='/scripts/theme/fileinput-theme.min.js')
+    script(src='/scripts/locale/ru(fileinput).js')
+    script(src='/scripts/validation/jquery.validate.min.js')
+    script(src='/scripts/locale/ru(validate).js')
+    script(src='/scripts/conditionize.flexible.jquery.js')
+    script(src='/scripts/bootstrap-select.min.js')
+    script(src='/scripts/jquery.lazy.min.js')
+    script(src='/scripts/jquery-bootstrap-modal-steps.min.js')
+    script(src='/scripts/jquery.magnific-popup.min.js')
+    script(src='/scripts/jquery.multi-select.js')
+    script(src='/scripts/main.js')

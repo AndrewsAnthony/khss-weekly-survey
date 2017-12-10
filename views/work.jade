@@ -1,0 +1,390 @@
+extends layout
+
+block content
+  #loading_layer
+    .loader
+
+  nav.navbar.navbar-default.navbar-fixed-top
+    .container-fluid
+
+      .navbar-header
+        button.navbar-toggle.collapsed(
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbar-collapse-top")
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="#")
+          i(style='color: #337ab7') КП-ХСС
+
+
+      .collapse.navbar-collapse#navbar-collapse-top
+
+        form.navbar-form.navbar-left(role="form" method='get' action='/house/')
+         .input-group
+            input#typeahead(type="text" class="form-control" placeholder="Выберите адрес...")
+            span.input-group-btn
+              button(class="btn btn-primary" type="submit")
+                i.fa.fa-search
+
+        ul.nav.navbar-nav.navbar-right
+          li.dropdown
+            a.dropdown-toggle(href="#" data-toggle="dropdown")
+              |Фамилия И.О.
+              span.caret
+              ul.dropdown-menu
+                li
+                  a(href="#") Профайл
+                li.divider
+                li
+                  a(href="#") Входящие
+                li
+                  a(href="#") Задачи
+                li
+                  a(href="#") Таблицы
+                li.divider
+                li
+                  a(href="#") Выйти
+          li
+            a(href="#") Сроки
+          if (!houses)
+            li
+              a(href='/house') Список всех домов
+
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+          .alert.alert-info
+            h3.text-center
+              b
+                i.text-uppercase= title
+
+          div(class="",role="tabpanel",data-example-id="togglable-tabs")
+            #mainTab.btn-pref.btn-group.btn-group-justified.btn-group-lg(role="tablist")
+              
+              div(role="presentation",class="btn-group")
+                button.btn.btn-primary(href="#tabAuthority",id="authority-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-university
+                    | &nbsp
+                    span.hidden-xs Приемы
+             
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabSchedule",id="schedule-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-list-alt
+                    | &nbsp
+                    span.hidden-xs Титула
+              
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabProtocol",id="protocol-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-users
+                    | &nbsp
+                    span.hidden-xs Протоколы
+              
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabProgram",id="program-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-globe
+                    | &nbsp
+                    span.hidden-xs Программы
+              
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabRepair",id="repair-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-gavel
+                    | &nbsp
+                    span.hidden-xs Работы
+
+            #mainTabContent.tab-content
+              div(role="tabpanel",class="tab-pane fade in active",id="tabAuthority")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createAuthority") Добавить прием
+                    ul.list-group
+                      each authority in authorities
+                        li.list-group-item
+                          .dropdown.pull-right
+                            button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+                              span.caret
+                            ul.dropdown-menu
+                              //- li.dropdown-header Просмотр
+                              //- - var authoritydocs = authority.Files.filter(function(file){return file.type == 'document'})
+                              //- if authoritydocs.length
+                              //-   li
+                              //-     each doc in authoritydocs
+                              //-       a(href= '../upload/' + doc.path)
+                              //-         i.fa.fa-paperclip
+                              //-         | &nbsp;
+                              //-         if doc.FileDescription.name
+                              //-           | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+                              //-         else
+                              //-           | #{moment(doc.createAt).format(DD/MM/YYYY)}
+                              //- else
+                              //-   li
+                              //-     a
+                              //-       s.small Документ
+
+                              //- - var authorityphotos = authority.Files.filter(function(file){return file.type == 'photo'})
+                              //- if authorityphotos.length
+                              //-   li.inboxgallery
+                              //-     a(href= '../upload/' + authorityphotos[0].path) Фотографии
+                              //-     each photo in authorityphotos.slice(1)
+                              //-       a.mfp-hide(
+                              //-       href= '../upload/' + photo.path
+                              //-       title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
+                              //- else
+                              //-   li
+                              //-     a
+                              //-       s.small Фотографии
+                              li
+                                a(href='work/authority/' + authority.id) Список домов
+                              li.dropdown-header Загрузить на сервер
+                              li
+                                a(
+                                href='#'
+                                data-toggle='modal'
+                                data-target='#createFile'
+                                data-object='authority'
+                                data-file='document'
+                                data-objecthouse= 0
+                                data-objectid= authority.id) Документ
+                              li
+                                a(
+                                href='#'
+                                data-toggle='modal'
+                                data-target='#createFile'
+                                data-object='authority'
+                                data-file='photo'
+                                data-objecthouse= 0
+                                data-objectid= authority.id) Фотографию
+                          | #{authority.name}
+                          br
+                          | #{moment(authority.date).format('DD-MM-YYYY')}
+                          br
+                          | #{authority.location}
+
+
+              div(role="tabpanel",class="tab-pane fade",id="tabSchedule")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createSchedule") Добавить титульный список
+                    ul.list-group
+                      each schedule in schedules
+                        li.list-group-item
+                          |#{schedule.title}
+                          br
+                          |#{schedule.type}
+
+              div(role="tabpanel",class="tab-pane fade",id="tabProtocol")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProtocol") Добавить протокол
+                    ul.list-group
+                      each protocol in protocols
+                        li.list-group-item
+                          | #{protocol.title}
+                          br
+                          | #{protocol.location}
+                          br
+                          | #{moment(protocol.date).format("DD-MM-YYYY")}
+
+              div(role="tabpanel",class="tab-pane fade",id="tabProgram")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProgram") Добавить программу
+                    ul.list-group
+                      each program in programs
+                        li.list-group-item
+                          | #{program.title}
+
+              div(role="tabpanel",class="tab-pane fade",id="tabRepair")
+                .row
+                  .col-sm-12
+                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createRepair") Добавить вид ремонта
+                    ul.list-group
+                      each problem in problems
+                        li.list-group-item
+                          | #{problem.name}
+
+            #createAuthority.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Создания нового приема городской власти
+
+                  .modal-body
+                    form(role="form" action= 'work/authority' method='post' id="formAuthority")
+                      .form-group
+                        label(for="nameAuthority") Кем был организован прием
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-university
+                          input(type="text" class="form-control" id="nameAuthority" placeholder="название приема" name='nameauthority')
+
+                      .form-group
+                        label(for="dateAuthority") Дата приема
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-calendar
+                          input(type="date" class="form-control" id="dateAuthority" placeholder="" name='dateauthority')
+
+                      .form-group
+                        label(for="locationAuthority") Где проводится
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-map-marker
+                          input(type="text" class="form-control" id="locationAuthority" placeholder="локация" name='locationauthority')
+
+                      button.btn.btn-primary(type="submit" id='sendAuthority') Создать
+
+                  .modal-footer
+                    button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            #createSchedule.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Создания нового титульного списка
+
+                  .modal-body
+                    form(role="form" action= 'work/schedule' method='post' id="formSchedule")
+                      .form-group
+                        label(for="titleSchedule") Название титула
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-font
+                          input(type="text" class="form-control" id="titleSchedule" placeholder="" name='titleschedule')
+
+                      button.btn.btn-primary(type="submit" id='sendSchedule') Создать
+
+                  .modal-footer
+                    button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            #createProtocol.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Создания нового приема городской власти
+
+                  .modal-body
+                    form(role="form" action= 'work/protocol' method='post' id="formProtocol")
+                      .form-group
+                        label(for="titleProtocol") Название протокол
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-university
+                          input(type="text" class="form-control" id="titleProtocol" value='Текущий ремонт' name='titleprotocol')
+
+                      .form-group
+                        label(for="dateProtocol") Дата приема
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-calendar
+                          input(type="date" class="form-control" id="dateProtocol" placeholder="" name='dateprotocol' value= moment())
+
+                      .form-group
+                        label(for="locationProtocol") Где проводится
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-map-marker
+                          input(type="text" class="form-control" id="locationProtocol" placeholder="локация" name='locationprotocol' value='Департамент Жилищног Хозяйсства')
+
+                      button.btn.btn-primary(type="submit" id='sendProtocol') Создать
+
+                  .modal-footer
+                    button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            #createProgram.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Создания новую программу
+
+                  .modal-body
+                    form(role="form" action= 'work/program' method='post' id="formProgram")
+                      .form-group
+                        label(for="titleProgram") Название программы
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-font
+                          input(type="text" class="form-control" id="titleProgram" placeholder="" name='titleprogram')
+
+                      button.btn.btn-primary(type="submit" id='sendProgram') Создать
+
+                  .modal-footer
+                    button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            #createRepair.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Создания новый вид ремонта
+
+                  .modal-body
+                    form(role="form" action= 'work/кepair' method='post' id="formRepair")
+                      .form-group
+                        label(for="titleRepair") Название ремонта
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-font
+                          input(type="text" class="form-control" id="titleRepair" placeholder="" name='namerepair')
+
+                      button.btn.btn-primary(type="submit" id='sendRepair') Создать
+
+                  .modal-footer
+                    button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+
+
+
+            #createFile.modal.modal-step.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase.js-title-step
+                  .modal-body
+                    form(role="form" method='post' id="formFile")
+                      .hide(data-step="1" data-title="Описание для файла(ов)")
+                        input(type='hidden' id='hiddenFile' name='hiddenfile')
+                        .form-group
+                          label(for="fileDescription") Описание
+                          textarea(class="form-control" id="fileDescription" placeholder="Скопируйте текстовое содержимое файла" name='filedescription')
+
+                        .form-group#fileNameBlock
+                          label(for="fileName") Название
+                          input(type='text' class="form-control" id="fileName" placeholder="Отображение в приложении" name='filename')
+
+                        .form-group
+                          label(for="fileNote") Примечание
+                          input(type='text' class="form-control" id="fileNote" placeholder="Привязки, проблемы, телефоны" name='filenote')
+
+                      .hide(data-step="2" data-title="Загрузка файла(ов)")
+                        .file-loading
+                          input(id="inputFile" type="file" name='inputfile' multiple)
+
+
+                  .modal-footer
+                    button(
+                    type="button"
+                    class="btn btn-default js-btn-step pull-left"
+                    data-orientation="cancel"
+                    data-dismiss="modal")
+                    button(
+                    type="button"
+                    class="btn btn-default js-btn-step"
+                    data-orientation="previous")
+                    button(
+                    type="button"
+                    class="btn btn-primary js-btn-step"
+                    data-orientation="next")

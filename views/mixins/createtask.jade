@@ -1,0 +1,155 @@
+mixin createtask(house, tasktypes, users, problems)
+  #createTaskModal.modal.fade(role="dialog")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title Создания новой задачи
+
+        .modal-body
+          form#taskForm(role="form" action= '/house/' + house.id + '/task' method='post')
+
+            .form-group
+              label(for="mainTask") Задача
+              select(class="form-control" id="mainTask" name='maintask' style="width:100%")
+                option(value='') Не выбрано
+                option(value='letter-type') Написать письмо
+                option(value='photoreport-type') Сделать фотоотчет
+                option(value='information-type') 'Найти информацию
+
+            .block-letter
+              .form-group.conditional(data-condition="['letter-type'].includes(#mainTask)")
+                label(for="letterType") Тип письма
+                select(class="form-control" id="letterType" name='lettertype' style="width:100%")
+                  option(value='inbox-letter') Входящие
+                  option(value='authority-letter') Личные приемы городской власти
+                  option(value='info-letter') Информационное
+
+              .form-group.conditional(data-condition="['letter-type'].includes(#mainTask) && ['inbox-letter'].includes(#letterType)")
+                label(for="inboxLetter") Выберите входящие письмо
+                select(class="form-control" id="inboxLetter" name='inboxletter' style="width:100%")
+                  option(value='') Не выбрано
+                  each inbox in tasktypes.inboxs
+                    option(value= inbox.id) #{inbox.number}
+
+              .form-group.conditional(data-condition="['letter-type'].includes(#mainTask) && ['authority-letter'].includes(#letterType)")
+                label(for="authorityLetter") Выберите личный прием
+                select(class="form-control " id="authorityLetter" name='authorityletter' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value=1) личный прием Кернеса Г.А. (на 15.12.2017)
+                  option(value=2) личный прием Руденко В.И. (на 15.12.2017)
+
+              .form-group.conditional(data-condition="['letter-type'].includes(#mainTask) && ['info-letter'].includes(#letterType)")
+                label(for="infoLetter") Укажите вид информации
+                input(type="text" class="form-control" id="infoLetter" placeholder="" name='infoletter')
+
+            .block-photoreport
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask)")
+                label(for="photoreportType") Тип фотоотчета
+                select(class="form-control" id="photoreportType" name='photoreporttype' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value='inbox-photoreport') Входящие
+                  option(value='title-photoreport') Титульный список
+                  option(value='protocol-photoreport') Протокольное поручение
+                  option(value='repair-photoreport') Выполненные ремонтные работы
+                  option(value='program-photoreport') Программа городской власти
+                  option(value='authority-photoreport') Личный прием городской власти
+                  option(value='info-photoreport') Информационное
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['inbox-photoreport'].includes(#photoreportType)")
+                label(for="inboxPhotoreport") Выберите входящие письмо
+                select(class="form-control" id="inboxPhotoreport" name='inboxphotoreport' style="width:100%")
+                  option(value='') Не выбрано
+                  each inbox in tasktypes.inboxs
+                    option(value= inbox.id) #{inbox.number}
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['title-photoreport'].includes(#photoreportType)")
+                label(for="titlePhotoreport") Выберите титульный список
+                select(class="form-control " id="titlePhotoreport" name='titlephotoreport' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value=1) Текущий ремонт шиферой кровли 2017г.
+                  option(value=2) Текущий ремонт мягкой кровли 2017г.
+                  option(value=3) Капитальный ремонт шиферной кровли 2017г.
+                  option(value=4) Капитальный ремонт мягкой кровли 2017г.
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['protocol-photoreport'].includes(#photoreportType)")
+                label(for="protocolPhotoreport") Выберите протокольное поручение
+                select(class="form-control " id="protocolPhotoreport" name='protocolphotoreport' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value=1) Текущий ремонт в ДЖХ 17.12.2017г.
+                  option(value=2) Капитальный ремонт в ДЖХ 17.12.2017г.
+                  option(value=3) Капитальный ремонт в Адм. Основянского района 15.12.2017г.
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['repair-photoreport'].includes(#photoreportType)")
+                label(for="repairPhotoreport") Выберите тип ремонта
+                select(class="form-control " id="repairPhotoreport" name='repairphotoreport' style="width:100%")
+                  option(value='') Не выбрано
+                  each problem in problems
+                    option(value= problem.id) #{problem.name}
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['program-photoreport'].includes(#photoreportType)")
+                label(for="programPhotoreport") Выберите программу
+                select(class="form-control " id="programPhotoreport" name='programphotoreport' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value=1) Фотопочта 2017г.
+                  option(value=2) Осенний осмотр 2017г.
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['authority-photoreport'].includes(#photoreportType)")
+                label(for="authorityPhotoreport") Выберите личный прием
+                select(class="form-control " id="authorityPhotoreport" name='authorityphotoreport' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value=1) личный прием Кернеса Г.А. (на 15.12.2017)
+                  option(value=2) личный прием Руденко В.И. (на 15.12.2017)
+
+              .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['info-photoreport'].includes(#photoreportType)")
+                label(for="infoPhotoreport") Укажите вид информации
+                input(type="text" class="form-control" id="infoPhotoreport" placeholder="" name='infophotoreport')
+
+            .block-information
+              .form-group.conditional(data-condition="['information-type'].includes(#mainTask)")
+                label(for="informationSource") Источник информации
+                select(class="form-control" id="informationType" name='informationsource' style="width:100%")
+                  option(value='') Не выбрано
+                  option(value=1) КП "Жилкомсервис"
+                  option(value=2) Администрация района
+                  option(value=3) Департамент жилищного хозяства
+                  option(value='info-information') Другой источник
+
+              .form-group.conditional(data-condition="['information-type'].includes(#mainTask) && ['info-information'].includes(#informationType)")
+                label(for="infoInformation") Укажите вид информации
+                input(type="text" class="form-control" id="infoInformation" placeholder="" name='infoinformation')
+
+            .form-group
+              label(for="userTask") Закреплен за сотрудником
+              select(class="form-control" id="userTask" name='usertask')
+                option(value='') Не выбрано
+                each user in users
+                  if (user.id !== user.Depatment.ChiefId)
+                    option(value= user.id) #{user.name} (#{user.Depatment.name})
+
+            .form-group
+              label(for="problemTask") Вопросы в задачи
+              select(class="form-control" id="problemTask" name='problemtask' multiple="multiple")
+                option(value='') Не выбрано
+                each problem in problems
+                  option(value= problem.id) #{problem.name}
+
+            .form-group
+              label(for="bindingTask") Привязка к местности
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-building-o
+                input(type="text" class="form-control" id="bindingTask" placeholder="Привязка к месту" name='bindingtask')
+
+            .form-group
+              label(for="termTask") Дата срока исполнения
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-calendar
+                input(type="date" class="form-control" id="termTask" placeholder="Введите срок исполнения" name='termtask')
+
+
+            button(type="submit" class="btn btn-default") Добавить
+
+        .modal-footer
+          button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
