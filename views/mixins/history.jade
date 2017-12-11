@@ -4,7 +4,7 @@ mixin history(itemtask, pathToImage)
 
   if (itemtask.TaskType.model == 'inbox')
     .panel-group
-      div(class= "panel panel-" + ((itemtask.status == 'active') ? 'default': ((itemtask.status == 'add') ? 'info' : 'success')))
+      div(class= "panel panel-" + ((itemtask.status == 'active') ? 'primary': ((itemtask.status == 'add') ? 'default' : 'success')))
         .panel-heading
           h4.panel-title
             a(

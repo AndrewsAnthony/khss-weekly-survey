@@ -95,22 +95,20 @@ router.get('/:id', function(req, res) {
     }] }) );
   promiseArr.push( models.ItemTask.findAll({ where: { HouseId: req.params.id },
     include: [models.Problem, 'Implementer', 'TaskType', 'Inbox',
-    'Protocol', 'Information', 'Authority', 'Source',  'Schedule', 'Program', 'Repair',  {
+    'Protocol', 'Information', 'Authority',  'Schedule', 'Program', 'Repair',  {
         model: models.File,
         order: ['createdAt','DESC'],
         include: [models.FileDescription]
     }] }) );
   promiseArr.push( models.Schedule.findAll() );
   promiseArr.push( models.Program.findAll() );
-  promiseArr.push( models.Source.findAll() );
+  promiseArr.push( models.Authority.findAll() );
   promiseArr.push( models.Information.findAll() );
   promiseArr.push( models.Protocol.findAll() );
 
 
   Promise.all(promiseArr)
-  .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, source, information, protocol]){
-      console.log("house", house.Authorities);
-
+  .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol]){
     res.render('index', {
       title: 'Пример для одного адреса',
       houses: null,
@@ -122,7 +120,7 @@ router.get('/:id', function(req, res) {
         depatments,
         problems,
         itemtasks,
-        tasktypes: {schedule, program, source, information, protocol, inboxs}
+        tasktypes: {schedule, program, authority, information, protocol, inboxs}
       }
     })
 
@@ -305,41 +303,56 @@ router.post('/file/upload', function(req, res) {
 
 })
 
-router.post('/:id/task/', function(req, res) {
+router.post('/:id/task/', function(req, res, next) {
+
+  const chainObj = {};
 
   models.Task.findOne({
     where: {
       name: req.body.maintask,
-      type: req.body[req.body.maintask.replace('-','')]
+      type: (req.body.maintask.split('-')[0] == 'information') ? 'info-information' : req.body[req.body.maintask.replace('-','')]
     }
   })
-  .then(function(tasktype){
-    models.ItemTask.create(
-    {
-      taskable: tasktype.model,
-      taskable_id: req.body[tasktype.type.replace('-','')],
+  .then(tasktype => {
+    chainObj.tasktype = tasktype;
+    console.log("chainObj", chainObj.tasktype);
+    if (chainObj.tasktype.model == 'information') {
+      return models.Information.create({
+        description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.tasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
+        source: chainObj.tasktype.name.split('-')[0]
+      })
+    }
+    return Promise.resolve(null);
+  })
+  .then(info => {
+    chainObj.info = info
+    return  models.ItemTask.create({
+      taskable: chainObj.tasktype.model,
+      taskable_id: chainObj.info ? chainObj.info.id : req.body[tasktype.type.replace('-','')],
       term: req.body.termtask,
       binding: req.body.bindingtask,
       HouseId: req.params.id,
-      TaskTypeId: tasktype.id,
+      TaskTypeId: chainObj.tasktype.id,
       ImplementerId: req.body.usertask
-    }
-  )
-  .then(function(itemtask){
-    if (!req.body.problemtask) {
-      res.json({ itemtask })
-      return;
-    }
-    itemtask.setProblems(req.body.problemtask)
-  .then(function(problems){
-    res.json({ itemtask , problems})
-  })
-  .catch(function(err){
-    console.log("err", err);
-    res.status('500').send('ошибка при обработке данных')
-      })
     })
   })
+  .then(itemtask => {
+    chainObj.itemtask = itemtask
+    if (req.body.problemtask) {
+      return chainObj.itemtask.setProblems(req.body.problemtask)
+    }
+    return Promise.resolve(null);
+  })
+  .then(problem =>{
+    chainObj.problem = problem
+    console.log("chainObj", chainObj);
+    res.json(chainObj)
+  })
+  .catch( err => {
+    console.log("err", err);
+    res.status('500').next('ошибка при обработке данных')
+  })
+
 
 });
 

@@ -2,6 +2,7 @@
 module.exports = function(sequelize, DataTypes) {
   var Information = sequelize.define('Information', {
     description: DataTypes.STRING,
+    source: DataTypes.STRING,
     status: {
       type: DataTypes.STRING,
       defaultValue: "active"

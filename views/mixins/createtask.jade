@@ -15,7 +15,7 @@ mixin createtask(house, tasktypes, users, problems)
                 option(value='') Не выбрано
                 option(value='letter-type') Написать письмо
                 option(value='photoreport-type') Сделать фотоотчет
-                option(value='information-type') 'Найти информацию
+                option(value='information-type') Подготовить информацию
 
             .block-letter
               .form-group.conditional(data-condition="['letter-type'].includes(#mainTask)")
@@ -36,8 +36,8 @@ mixin createtask(house, tasktypes, users, problems)
                 label(for="authorityLetter") Выберите личный прием
                 select(class="form-control " id="authorityLetter" name='authorityletter' style="width:100%")
                   option(value='') Не выбрано
-                  option(value=1) личный прием Кернеса Г.А. (на 15.12.2017)
-                  option(value=2) личный прием Руденко В.И. (на 15.12.2017)
+                  each authority in tasktypes.authority
+                    option(value= authority.id) #{authority.name} в #{authority.location} на  #{moment(authority.date).format('DD-MM-YYYY')}
 
               .form-group.conditional(data-condition="['letter-type'].includes(#mainTask) && ['info-letter'].includes(#letterType)")
                 label(for="infoLetter") Укажите вид информации
@@ -67,18 +67,16 @@ mixin createtask(house, tasktypes, users, problems)
                 label(for="titlePhotoreport") Выберите титульный список
                 select(class="form-control " id="titlePhotoreport" name='titlephotoreport' style="width:100%")
                   option(value='') Не выбрано
-                  option(value=1) Текущий ремонт шиферой кровли 2017г.
-                  option(value=2) Текущий ремонт мягкой кровли 2017г.
-                  option(value=3) Капитальный ремонт шиферной кровли 2017г.
-                  option(value=4) Капитальный ремонт мягкой кровли 2017г.
+                  each schedule in tasktypes.schedule
+                    option(value= schedule.id) #{schedule.title} #{moment(schedule.createdAt).format('DD-MM-YYYY')}
+
 
               .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['protocol-photoreport'].includes(#photoreportType)")
                 label(for="protocolPhotoreport") Выберите протокольное поручение
                 select(class="form-control " id="protocolPhotoreport" name='protocolphotoreport' style="width:100%")
                   option(value='') Не выбрано
-                  option(value=1) Текущий ремонт в ДЖХ 17.12.2017г.
-                  option(value=2) Капитальный ремонт в ДЖХ 17.12.2017г.
-                  option(value=3) Капитальный ремонт в Адм. Основянского района 15.12.2017г.
+                  each protocol in tasktypes.protocol
+                    option(value= protocol.id) #{protocol.title} в #{protocol.location} на #{moment(protocol.date).format('YYYY')}
 
               .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['repair-photoreport'].includes(#photoreportType)")
                 label(for="repairPhotoreport") Выберите тип ремонта
@@ -91,15 +89,15 @@ mixin createtask(house, tasktypes, users, problems)
                 label(for="programPhotoreport") Выберите программу
                 select(class="form-control " id="programPhotoreport" name='programphotoreport' style="width:100%")
                   option(value='') Не выбрано
-                  option(value=1) Фотопочта 2017г.
-                  option(value=2) Осенний осмотр 2017г.
+                  each program in tasktypes.program
+                    option(value= program.id) #{program.title} #{moment(program.createdAt).format('YYYY')}
 
               .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['authority-photoreport'].includes(#photoreportType)")
                 label(for="authorityPhotoreport") Выберите личный прием
                 select(class="form-control " id="authorityPhotoreport" name='authorityphotoreport' style="width:100%")
                   option(value='') Не выбрано
-                  option(value=1) личный прием Кернеса Г.А. (на 15.12.2017)
-                  option(value=2) личный прием Руденко В.И. (на 15.12.2017)
+                  each authority in tasktypes.authority
+                    option(value= authority.id) #{authority.name} в #{authority.location} на  #{moment(authority.date).format('DD-MM-YYYY')}
 
               .form-group.conditional(data-condition="['photoreport-type'].includes(#mainTask) && ['info-photoreport'].includes(#photoreportType)")
                 label(for="infoPhotoreport") Укажите вид информации
@@ -107,15 +105,6 @@ mixin createtask(house, tasktypes, users, problems)
 
             .block-information
               .form-group.conditional(data-condition="['information-type'].includes(#mainTask)")
-                label(for="informationSource") Источник информации
-                select(class="form-control" id="informationType" name='informationsource' style="width:100%")
-                  option(value='') Не выбрано
-                  option(value=1) КП "Жилкомсервис"
-                  option(value=2) Администрация района
-                  option(value=3) Департамент жилищного хозяства
-                  option(value='info-information') Другой источник
-
-              .form-group.conditional(data-condition="['information-type'].includes(#mainTask) && ['info-information'].includes(#informationType)")
                 label(for="infoInformation") Укажите вид информации
                 input(type="text" class="form-control" id="infoInformation" placeholder="" name='infoinformation')
 

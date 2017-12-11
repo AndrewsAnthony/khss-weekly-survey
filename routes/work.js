@@ -54,7 +54,7 @@ router.post('/authority/:id/house', function(req, res, next) {
   }
 
   req.body.houselist = req.body.houselist.filter(Boolean);
-  
+
   if(req.body.houselist.length){
     models.sequelize.transaction(function (t) {
       return models.Authority.findById(req.params.id, {transaction: t})
@@ -67,18 +67,18 @@ router.post('/authority/:id/house', function(req, res, next) {
   } else {
     next(new Error('Пустой список данных или неверные входные данные'))
   }
-  
+
 })
 
 
 router.post('/authority', function(req, res, next) {
 
   models.sequelize.transaction(function (t) {
-    
+
     return models.Authority.findOne({
       where: {
         name: req.body.nameauthority,
-        date: new Date(req.body.dateauthority) 
+        date: new Date(req.body.dateauthority)
       }
     }, {transaction: t})
     .then(authority => {
@@ -120,7 +120,7 @@ router.get('/authority/:id', function(req, res, next) {
 
 
 router.post('/addoptions', function(req, res){
-  
+
   var street = req.body.street
   var district = req.body.district
 

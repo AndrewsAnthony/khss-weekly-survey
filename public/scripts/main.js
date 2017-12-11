@@ -137,7 +137,6 @@ $('document').ready(function(){
         required: "select[name='maintask'] option[value='information-type']:selected"
       },
       infoinformation: {
-        required: "select[name='maintask'] option[value='information-type']:selected, select[name='informationtype'] option[value='infoinformation']:selected",
         minlength: 5
       },
       usertask: {
