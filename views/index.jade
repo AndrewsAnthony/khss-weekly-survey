@@ -76,8 +76,8 @@ block content
                     i.fa.fa-search
 
         if (obj.panel)
-          .alert.alert-success
-            h3.text-center
+          .well.well-sm
+            h4.text-center
               b
                 i.text-uppercase #{obj.house.street}, #{obj.house.number}
 
@@ -118,15 +118,15 @@ block content
                       li.list-group-item Участок  - #{obj.house.district}
                       li.list-group-item Кровля  - #{obj.house.roof}
                       li.list-group-item Площадь  - #{obj.house.roofarea}
-                  
+
                     if (obj.house.Authorities && obj.house.Authorities.length)
                       h3
                         i Список программ городской власти по данному адресу
                       ul.list-group
                         each authority in obj.house.Authorities
                           li.list-group-item
-                            a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location} 
-                    
+                            a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location}
+
                     div Карта Google отключена
                     //- a.btn.btn-default(href=)
 
