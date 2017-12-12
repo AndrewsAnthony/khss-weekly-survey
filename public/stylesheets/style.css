@@ -139,3 +139,7 @@ button[data-target^='#create'], button[data-target^='#change'] {
   border-bottom: 3px solid red;
   margin-bottom: 10px
 }
+
+.navbar-fixed-top .navbar-collapse, .navbar-fixed-bottom .navbar-collapse {
+  max-height: 420px;
+}

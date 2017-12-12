@@ -30,6 +30,8 @@ block content
                 i.fa.fa-search
 
         ul.nav.navbar-nav.navbar-right
+          li
+            a(href="#") Сроки
           li.dropdown
             a.dropdown-toggle(href="#" data-toggle="dropdown")
               |Фамилия И.О.
@@ -42,16 +44,14 @@ block content
                   a(href="#") Входящие
                 li
                   a(href="#") Задачи
-                li
-                  a(href="#") Таблицы
+                if (!houses)
+                  li.divider
+                  li
+                    a(href='/house') Список всех домов
                 li.divider
                 li
                   a(href="#") Выйти
-          li
-            a(href="#") Сроки
-          if (!houses)
-            li
-              a(href='/house') Список всех домов
+
 
 
   .container(role="main")
@@ -78,14 +78,19 @@ block content
                     a(
                     data-toggle="collapse"
                     href="#house" + house.id)
-                      span #{house.street}, #{house.number}
+                      span
+                        if (house.street_new_rus)
+                          | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
+                          | #{' '}
+                          span.text-muted #{house.street_rus} #{house.name_rus}, #{house.building}
+                        else
+                          | #{house.street_rus} #{house.name_rus}, #{house.building}
 
                 .panel-collapse.collapse(id="house" + house.id)
                   .panel-body
                     each task in house.ItemTasks
                       +history(task, '../../..')
-                      //- ul.list-group
-                      //-   li.list-group-item #{task.TaskType.description}
+
 
 
           #changeList.modal.fade(role="dialog")
@@ -123,7 +128,11 @@ block content
                     .form-group
                       select(id='houseListOptions' multiple='multiple' name='houselist')
                         each house in authority.Houses
-                          option(value= house.id selected) #{house.street}, #{house.number}
+                          option(value= house.id selected)
+                            if (house.street_new_rus)
+                              | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
+                            else
+                              | #{house.street_rus} #{house.name_rus}, #{house.building}
 
 
                     button.btn.btn-primary(type="submit" id='sendProtocol') Сохранить

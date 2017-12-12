@@ -33,6 +33,8 @@ block content
                   i.fa.fa-search
 
         ul.nav.navbar-nav.navbar-right
+          li
+            a(href="#") Сроки
           li.dropdown
             a.dropdown-toggle(href="#" data-toggle="dropdown")
               |Фамилия И.О.
@@ -45,20 +47,19 @@ block content
                   a(href="#") Входящие
                 li
                   a(href="#") Задачи
-                li
-                  a(href="#") Таблицы
+
                 li.divider
                 li
                   a(href="../work") Список работ
+                if (!houses)
+                  li.divider
+                  li
+                    a(href='/house') Список всех домов
                 li.divider
                 li
                   a(href="#") Выйти
 
-          li
-            a(href="#") Сроки
-          if (!houses)
-            li
-              a(href='/house') Список всех домов
+
 
 
   .container(role="main")
@@ -79,8 +80,11 @@ block content
           .well.well-sm
             h4.text-center
               b
-                i.text-uppercase #{obj.house.street}, #{obj.house.number}
-
+                i.text-uppercase
+                  if (obj.house.street_new_rus)
+                    | #{obj.house.street_new_rus} #{obj.house.name_new_rus}, #{obj.house.building}
+                  else
+                    | #{obj.house.street_rus} #{obj.house.name_rus}, #{obj.house.building}
           div(class="",role="tabpanel",data-example-id="togglable-tabs")
             #mainTab.btn-pref.btn-group.btn-group-justified.btn-group-lg(role="tablist")
               div(role="presentation",class="btn-group")
@@ -115,9 +119,44 @@ block content
                     h3
                       i Данные из дислокации
                     ul.list-group
-                      li.list-group-item Участок  - #{obj.house.district}
-                      li.list-group-item Кровля  - #{obj.house.roof}
-                      li.list-group-item Площадь  - #{obj.house.roofarea}
+                      li.list-group-item
+                        b Район
+                        span.badge #{obj.house.district}
+                      li.list-group-item
+                        b Участок
+                        span.badge #{obj.house.sector}
+                      if (obj.house.street_new_rus)
+                        li.list-group-item.bg-warning
+                          b Старое название
+                          span.badge #{obj.house.street_rus} #{obj.house.name_rus}, #{obj.house.building}
+                          .clearfix
+                      li.list-group-item
+                        b Год постройки
+                        span.badge #{obj.house.year}
+                      li.list-group-item
+                        b Общая площадь дома
+                        span.badge #{obj.house.house_area}
+                      li.list-group-item
+                        b Площадь зайстройки
+                        span.badge #{obj.house.building_area}
+                      li.list-group-item
+                        b Количество подъездов
+                        span.badge #{obj.house.entrance}
+                      li.list-group-item
+                        b Этажность дома
+                        span.badge #{obj.house.floar}
+                      li.list-group-item
+                        b Жильцов по прописке
+                        span.badge #{obj.house.residents}
+                      li.list-group-item
+                        b Количество квартир
+                        span.badge #{obj.house.apartments}
+                      li.list-group-item
+                        b Тип кровли
+                        span.badge #{obj.house.roof_material}
+                      li.list-group-item
+                        b Площадь кровли
+                        span.badge #{obj.house.roof_area}
 
                     if (obj.house.Authorities && obj.house.Authorities.length)
                       h3
@@ -346,6 +385,12 @@ block content
 
         if (houses)
           ul.list-group
-          each house, ind in houses || []
+          each house, ind in houses.slice(0,100) || []
             li.list-group-item
-              a(href='/house/' + house.id) #{ind + 1}) #{house.street}, #{house.number}
+              a(href='/house/' + house.id)
+                if (house.street_new_rus)
+                  | #{ind + 1}) <b>#{house.street_new_rus} #{house.name_new_rus}, #{house.building}</b> / #{house.district} район - уч. #{house.sector}
+                  | #{' '}
+                  span.text-muted (стр.наз. #{house.street_rus} #{house.name_rus})
+                else
+                  | #{ind + 1}) <b>#{house.street_rus} #{house.name_rus}, #{house.building}</b> / #{house.district} район - уч. #{house.sector}
