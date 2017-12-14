@@ -50,12 +50,6 @@ module.exports = function(sequelize, DataTypes) {
       as: 'Protocol'
     });
 
-    ItemTask.belongsTo(models.Source, {
-      foreignKey: "taskable_id",
-      constraints: false,
-      as: 'Source'
-    });
-
     ItemTask.belongsTo(models.Program, {
       foreignKey: "taskable_id",
       constraints: false,

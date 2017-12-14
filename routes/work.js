@@ -122,24 +122,33 @@ router.get('/authority/:id', function(req, res, next) {
 router.post('/addoptions', function(req, res){
 
   var street = req.body.street
-  var district = req.body.district
+  var sector = req.body.sector
 
   if (street) {
     street = '%' + street + '%'
     console.log("street", street);
     models.House.findAll({
       where: {
-        street: {
-          [Op.like]: street
-        }
+        [Op.or]: [
+          {
+            name_rus: {
+              [Op.like]: street
+            }
+          },
+          {
+            name_new_rus: {
+              [Op.like]: street
+            }
+          }
+        ]
       }
     })
     .then(houses => res.json(houses))
     .catch(err => res.status(404).json('Системная ошибка'))
-  } else if (district){
+  } else if (sector){
     models.House.findAll({
       where: {
-        district: district
+        sector: sector
       }
     })
     .then(houses => res.json(houses))

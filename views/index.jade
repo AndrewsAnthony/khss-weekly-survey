@@ -67,8 +67,9 @@ block content
       .col-sm-12.well
 
         if (!obj.panel && !houses)
-          h1.text-center.alert.alert-info
-            i=title
+          .well.well-sm
+            h1.text-center
+              i= title
           form(role="form" method='get' action='/')
             .input-group
                 input#typeahead(type="text" class="form-control" placeholder="Поиск")
@@ -115,7 +116,7 @@ block content
             #mainTabContent.tab-content
               div(role="tabpanel",class="tab-pane fade in active",id="tabInfo")
                 .row
-                  .col-md-12
+                  .col-md-6
                     h3
                       i Данные из дислокации
                     ul.list-group
@@ -158,7 +159,8 @@ block content
                         b Площадь кровли
                         span.badge #{obj.house.roof_area}
 
-                    if (obj.house.Authorities && obj.house.Authorities.length)
+                  if (obj.house.Authorities && obj.house.Authorities.length)
+                    .col-md-6
                       h3
                         i Список программ городской власти по данному адресу
                       ul.list-group
@@ -166,11 +168,11 @@ block content
                           li.list-group-item
                             a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location}
 
-                    div Карта Google отключена
-                    //- a.btn.btn-default(href=)
+                div Карта Google отключена
+                //- a.btn.btn-default(href=)
 
-                    //- button.btn.btn-default(data-address='' + obj.house.street + ', ' + obj.house.number + ', Харьков')#uploadMap Загрузить Карту Google
-                    //- #map(style="width: 320px; height: 480px;")
+                //- button.btn.btn-default(data-address='' + obj.house.street + ', ' + obj.house.number + ', Харьков')#uploadMap Загрузить Карту Google
+                //- #map(style="width: 320px; height: 480px;")
 
               div(role="tabpanel",class="tab-pane fade",id="tabInbox")
                 .row

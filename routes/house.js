@@ -1,16 +1,15 @@
-var models     = require('../models');
-var Op = models.sequelize.Op
-
-var express    = require('express');
-var path       = require('path');
-var formidable = require('formidable');
-var fse        = require('fs-extra')
-var mkdirp     = require('mkdirp-promise');
-var Jimp       = require("jimp");
-var getSlug    = require('speakingurl');
-var moment     = require('moment');
-var slash      = require('slash');
-var router     = express.Router();
+const models     = require('../models');
+const Op         = models.sequelize.Op;
+const express    = require('express');
+const path       = require('path');
+const formidable = require('formidable');
+const fse        = require('fs-extra');
+const mkdirp     = require('mkdirp-promise');
+const Jimp       = require("jimp");
+const getSlug    = require('speakingurl');
+const moment     = require('moment');
+const slash      = require('slash');
+const router     = express.Router();
 
 
 router.post('/typeahead', function(req, res) {
@@ -21,18 +20,37 @@ router.post('/typeahead', function(req, res) {
   if (street && number) {
     models.House.findAll({
       where: {
-        [Op.and]: [
-        {
-          street: {
-            [Op.like]: `%${street}%`
+        [Op.or]: [
+          {
+            [Op.and]: [
+              {
+                name_rus: {
+                  [Op.like]: `%${street}%`
+                }
+              },
+              {
+                building: {
+                  [Op.like]: `%${number}%`
+                }
+              }
+            ]
+          },
+          {
+            [Op.and]: [
+              {
+                name_new_rus: {
+                  [Op.like]: `%${street}%`
+                }
+              },
+              {
+                building: {
+                  [Op.like]: `%${number}%`
+                }
+              }
+            ]
           }
-        },
-        {
-          number: {
-            [Op.like]: `%${number}%`
-          }
-        }
         ]
+
       }
     })
     .then(function(house) {
@@ -206,7 +224,7 @@ router.post('/file/upload', function(req, res) {
       models.House.findById(fields.objecthouse)
       .then(house => {
         var dbUploadDir = path.join(
-            getSlug(`${house.street} ${house.number}`, {lang: 'ru'})
+            getSlug(`${house.street_rus} ${house.name_rus} ${house.building}`, {lang: 'ru'})
           , fields.object
           , fields.file
         );

@@ -215,7 +215,9 @@ $('document').ready(function(){
   }, {
     name: 'address',
     limit: 10,
-    display: function(item){ return item.street + ', ' + item.number},
+    display: function(item){ return (item.name_new_rus)
+      ? item.street_new_rus + ' ' + item.name_new_rus + ', ' + item.building + ' (стр. наз. ' + item.street_rus + ' ' + item.name_rus + ', ' + item.building + ')'
+      :  item.street_rus + ' ' + item.name_rus + ', ' + item.building },
     source: addressFetcher
   }).bind('typeahead:select', function(ev, suggestion) {
     $(ev.target.form).attr('action', '/house/' + suggestion.id)
@@ -230,22 +232,9 @@ $('document').ready(function(){
   });
 
   $('a[href^="#inboxNumber"]').on('click', function(event) {
-
-    // $(this).tab('show'); tabInbox
-    // history.pushState(null, null, $(event.target).attr("href"));
-    // var target = $( $(this).attr('href') );
-
-    // if( target.length ) {
-      // event.preventDefault();
-      $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
-      $('[href="#tabInbox"]').tab('show').addClass("btn-primary")
-
-      // $('html, body').animate({
-      //     scrollTop: target.offset().bottom
-      // }, 500);
-    // }
-
-});
+    $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+    $('[href="#tabInbox"]').tab('show').addClass("btn-primary")
+  });
 
 
   var extradata = {};
@@ -400,7 +389,10 @@ $('#addStreetOptions').click(function(e){
     $.post('/work/addoptions', {street: data})
     .done(function(data){
       var options = data.map(function(house){
-        return { value: house.id, text: house.street + ', ' + house.number}
+        if (house.name_new_rus) {
+          return { value: house.id, text: house.street_new_rus + ' ' + house.name_new_rus + ', ' + house.building}
+        }
+        return { value: house.id, text: house.street_rus + ' ' + house.name_rus + ', ' + house.building}
       })
       $('#houseListOptions').multiSelect('addOption', options)
       $this.removeClass('disabled')
@@ -419,11 +411,14 @@ $('#addStreetOptions').click(function(e){
 
 $('.addDistrictOptions').click(function(e){
 
-  var district = $(this).data('district')
-  $.post('/work/addoptions', {district: district})
+  var sector = $(this).data('sector')
+  $.post('/work/addoptions', {sector: sector})
   .done(function(data){
     var options = data.map(function(house){
-      return { value: house.id, text: house.street + ', ' + house.number}
+      if (house.name_new_rus) {
+        return { value: house.id, text: house.street_new_rus + ' ' + house.name_new_rus + ', ' + house.building}
+      }
+      return { value: house.id, text: house.street_rus + ' ' + house.name_rus + ', ' + house.building}
     })
     $('#houseListOptions').multiSelect('addOption', options)
     $('#alertOptions').collapse('show').find('span').text('Добавлено ' + options.length)

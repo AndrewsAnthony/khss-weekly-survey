@@ -121,9 +121,9 @@ block content
                         button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown") Добавить Участок
                           span.caret
                         ul.dropdown-menu
-                          each dist in [42, 43, 44, 45, 65, 66, 58, 59, 60, 61]
+                          each sector in [42, 43, 44, 45, 65, 66, 58, 59, 60, 61]
                             li
-                              a.addDistrictOptions(href="#" data-district= dist) Участок #{dist}
+                              a.addDistrictOptions(href="#" data-sector= sector) Участок #{sector}
 
                     .form-group
                       select(id='houseListOptions' multiple='multiple' name='houselist')
