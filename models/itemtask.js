@@ -78,7 +78,7 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
-    // Authority -> File
+    // ItemTask -> File
     ItemTask.hasMany(models.File, {
       foreignKey: 'fileable_id',
       scope: {
@@ -86,6 +86,9 @@ module.exports = function(sequelize, DataTypes) {
       },
       constraints: false
     });
+
+    // ItemTask -> NoteTask
+    ItemTask.hasMany(models.NoteTask)
 
   }
 

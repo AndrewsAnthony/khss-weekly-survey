@@ -351,6 +351,20 @@ $('#createFile').modalSteps({
   extradata = {}
 })
 
+$('#createNoteTask')
+.on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var taskid = button.data('taskid')
+  var houseid = button.data('houseid')
+  var modal = $(this)
+  $('#hiddenTaskId').val(taskid);
+  $('#hiddenHouseId').val(houseid);
+})
+.on('hidden.bs.modal', function(event){
+  $('#hiddenTaskId').val('');
+  $('#hiddenHouseId').val('');
+})
+
 
 $('.inboxgallery').each(function() {
   $(this).magnificPopup({
@@ -371,8 +385,6 @@ $('.taskgallery').each(function() {
     }
   });
 });
-
-document.getElementById("loading_layer").style.display="none";
 
 
 $('#houseListOptions').multiSelect({
@@ -437,12 +449,7 @@ $('#changeList').on('keyup keypress', "input", function(e) {
   }
 });
 
-// var hash = window.location.hash;
-// var link = $('a');
-// $('.nav-tabs > li > a').click(function (e) {
-//   e.preventDefault();
-//   hash = link.attr("href");
-//   window.location = hash;
-// });
+
+document.getElementById("loading_layer").style.display="none";
 
 })

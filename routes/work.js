@@ -104,7 +104,7 @@ router.get('/authority/:id', function(req, res, next) {
   const id = parseInt(req.params.id, 10)
 
   models.Authority.findById(id, { include: [{
-    model: models.House, include: [{ model: models.ItemTask, include:['Inbox', 'Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]}]}]
+    model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
   }]})
   .then(authority => {
     res.render('work/authority', {

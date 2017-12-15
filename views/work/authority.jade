@@ -78,6 +78,7 @@ block content
                     a(
                     data-toggle="collapse"
                     href="#house" + house.id)
+                      span.badge.pull-right #{house.ItemTasks.length}
                       span
                         if (house.street_new_rus)
                           | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
@@ -88,6 +89,9 @@ block content
 
                 .panel-collapse.collapse(id="house" + house.id)
                   .panel-body
+                    p
+                      i
+                        a(href='/house/' + house.id) Подробная информация по адресу
                     each task in house.ItemTasks
                       +history(task, '../../..')
 

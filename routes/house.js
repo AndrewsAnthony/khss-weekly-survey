@@ -117,6 +117,10 @@ router.get('/:id', function(req, res) {
         model: models.File,
         order: ['createdAt','DESC'],
         include: [models.FileDescription]
+    }, {
+      model: models.NoteTask,
+      order: [['createdAt','ASC']],
+      include: [models.User]
     }] }) );
   promiseArr.push( models.Schedule.findAll() );
   promiseArr.push( models.Program.findAll() );
@@ -127,6 +131,7 @@ router.get('/:id', function(req, res) {
 
   Promise.all(promiseArr)
   .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol]){
+      console.log("itemtasks", itemtasks[0].NoteTasks);
     res.render('index', {
       title: 'Пример для одного адреса',
       houses: null,
@@ -202,6 +207,33 @@ router.post('/:id/inbox/', function(req, res) {
   })
 
 });
+
+router.post('/task/note', function(req, res, next) {
+
+  const chainObj = {};
+  models.sequelize.transaction(function(t){
+    return  models.ItemTask.update({status: 'add'}, {
+              where: {
+                id: req.body.hiddentaskid
+              },
+              transaction: t
+            })
+            .then((task) => {
+              chainObj.task = task;
+              return models.NoteTask.create({
+                text: req.body.notetext,
+                ItemTaskId: req.body.hiddentaskid,
+                UserId: null
+              }, {transaction: t})
+            })
+  })
+  .then(() => res.redirect(/house/ + req.body.hiddenhouseid))
+  .catch(err => {
+    err.message = 'Проблемы при обработки запроса'
+    err.status = 404;
+    next(err)
+  })
+})
 
 router.post('/file/upload', function(req, res) {
 
@@ -333,7 +365,6 @@ router.post('/:id/task/', function(req, res, next) {
   })
   .then(tasktype => {
     chainObj.tasktype = tasktype;
-    console.log("chainObj", chainObj.tasktype);
     if (chainObj.tasktype.model == 'information') {
       return models.Information.create({
         description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.tasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
@@ -346,7 +377,7 @@ router.post('/:id/task/', function(req, res, next) {
     chainObj.info = info
     return  models.ItemTask.create({
       taskable: chainObj.tasktype.model,
-      taskable_id: chainObj.info ? chainObj.info.id : req.body[tasktype.type.replace('-','')],
+      taskable_id: chainObj.info ? chainObj.info.id : req.body[chainObj.tasktype.type.replace('-','')],
       term: req.body.termtask,
       binding: req.body.bindingtask,
       HouseId: req.params.id,

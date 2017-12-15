@@ -2,7 +2,6 @@
 module.exports = function(sequelize, DataTypes) {
   var Schedule = sequelize.define('Schedule', {
     title: DataTypes.STRING,
-    type: DataTypes.STRING,
     year: DataTypes.STRING,
     status: {
       type: DataTypes.STRING,

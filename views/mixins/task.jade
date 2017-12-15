@@ -1,6 +1,6 @@
 mixin tasklist(itemtasktype, house)
   tr.img-thumbnail(style='border-right-color:' + ((itemtasktype.status == 'add')?'#ec9f13':(itemtasktype.status == 'close')?'green':'red'))
-    -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", info: "Найти информацию"}
+    -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", information: "Предоставить информацию"}
     td(data-title='Исполнитель')
       b #{itemtasktype.Implementer.name.split(' ')[0] + ' ' + itemtasktype.Implementer.name.split(' ')[1][0] + '.' + itemtasktype.Implementer.name.split(' ')[2][0] }
       br
@@ -23,7 +23,7 @@ mixin tasklist(itemtasktype, house)
         br
         i #{itemtasktype.Authority.location}
 
-    else if (itemtasktype.TaskType.model == 'info')
+    else if (itemtasktype.TaskType.model == 'information')
       td(data-title='Вид задания')
         b #{itemtasktype.TaskType.description}
         br
@@ -41,19 +41,27 @@ mixin tasklist(itemtasktype, house)
         br
         i #{itemtasktype.Program.title}
 
-    else if (itemtasktype.TaskType.model == 'source')
+    else if (itemtasktype.TaskType.model == 'protocol')
       td(data-title='Вид задания')
         b #{itemtasktype.TaskType.description}
         br
-        i #{itemtasktype.Source.name}
+        i #{itemtasktype.Protocol.title}
+        br
+        i #{moment(itemtasktype.Protocol.date).format("DD-MM-YYYY")}
+        br
+        i #{itemtasktype.Protocol.location}
+
 
     td(data-title='Привязка к местности')
-      | #{itemtasktype.binding}
+      | #{itemtasktype.binding || " "}
 
     td(data-title='Проблемы в задании')
-      each problem in itemtasktype.Problems
-        i #{"- " + problem.name}
-        br
+      if (itemtasktype.Problems.length)
+        each problem in itemtasktype.Problems
+          i #{"- " + problem.name}
+          br
+      else
+        | #{' '}
 
     td(data-title='Срок исполнения')
       | #{moment(itemtasktype.term).calendar()}
@@ -66,20 +74,20 @@ mixin tasklist(itemtasktype, house)
           |#{moment(itemtasktype.term).fromNow()}
 
 
-    td(data-title='Статус')
-      if (itemtasktype.status == 'active')
-        | В работе
-      else if  (itemtasktype.status == 'add')
-        | Рассмотреть
-      else if (itemtasktype.status == 'close')
-        | Выполнено
-      br
+    td(data-title=' ')
       .dropup
         button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
           span.caret
         ul.dropdown-menu
           li.dropdown-header Другие действия
           li.dropdown-header Загрузить на сервер
+          li
+            a(
+            href='#'
+            data-toggle='modal'
+            data-target='#createNoteTask'
+            data-taskid= itemtasktype.id
+            data-houseid= house.id) Заметка
           li
             a(
             href='#'

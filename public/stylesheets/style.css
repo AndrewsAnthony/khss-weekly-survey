@@ -54,6 +54,11 @@ button[data-target^='#create'], button[data-target^='#change'] {
 .no-more-tables th {
   text-align: center;
 }
+
+.no-more-tables tr {
+  border-right: 5px solid;
+}
+
 @media only screen and (max-width: 800px) {
 
   /* Force table to not be like tables anymore */
@@ -95,7 +100,7 @@ button[data-target^='#create'], button[data-target^='#change'] {
   padding-top: 15px;
 }
   .no-more-tables tr {
-    border-right: 3px solid;
+    border-right: 5px solid;
   }
 
   .no-more-tables td:last-child button {
@@ -142,4 +147,31 @@ button[data-target^='#create'], button[data-target^='#change'] {
 
 .navbar-fixed-top .navbar-collapse, .navbar-fixed-bottom .navbar-collapse {
   max-height: 420px;
+}
+
+.arrow-toggle:before {
+  font-family: 'Glyphicons Halflings';
+  content: "\e080";
+  float: right;
+  color: #029acf;
+  padding: 0 0 0 10px;
+}
+.arrow-toggle.collapsed:before {
+  content: "\e114";
+}
+
+dl, dl.dl-horizontal {
+  margin: 0;
+}
+
+blockquote {
+  margin: 0 0 0 5px;
+  padding: 0 10px;
+  font-size: x-small;
+}
+.noteTask, .fileTask {
+  padding: 10px 0 0;
+}
+.noteTask button {
+  margin-bottom: 10px;
 }

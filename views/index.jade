@@ -121,48 +121,48 @@ block content
                       i Данные из дислокации
                     ul.list-group
                       li.list-group-item
-                        b Район
                         span.badge #{obj.house.district}
+                        b Район
                       li.list-group-item
-                        b Участок
                         span.badge #{obj.house.sector}
+                        b Участок
                       if (obj.house.street_new_rus)
                         li.list-group-item.bg-warning
-                          b Старое название
                           span.badge #{obj.house.street_rus} #{obj.house.name_rus}, #{obj.house.building}
+                          b Старое название
                           .clearfix
                       li.list-group-item
-                        b Год постройки
                         span.badge #{obj.house.year}
+                        b Год постройки
                       li.list-group-item
-                        b Общая площадь дома
                         span.badge #{obj.house.house_area}
+                        b Общая площадь дома
                       li.list-group-item
-                        b Площадь зайстройки
                         span.badge #{obj.house.building_area}
+                        b Площадь зайстройки
                       li.list-group-item
-                        b Количество подъездов
                         span.badge #{obj.house.entrance}
+                        b Количество подъездов
                       li.list-group-item
-                        b Этажность дома
                         span.badge #{obj.house.floar}
+                        b Этажность дома
                       li.list-group-item
-                        b Жильцов по прописке
                         span.badge #{obj.house.residents}
+                        b Жильцов по прописке
                       li.list-group-item
-                        b Количество квартир
                         span.badge #{obj.house.apartments}
+                        b Количество квартир
                       li.list-group-item
-                        b Тип кровли
                         span.badge #{obj.house.roof_material}
+                        b Тип кровли
                       li.list-group-item
-                        b Площадь кровли
                         span.badge #{obj.house.roof_area}
+                        b Площадь кровли
 
                   if (obj.house.Authorities && obj.house.Authorities.length)
                     .col-md-6
                       h3
-                        i Список программ городской власти по данному адресу
+                        i Программы городской власти
                       ul.list-group
                         each authority in obj.house.Authorities
                           li.list-group-item
@@ -329,7 +329,7 @@ block content
                             th Привязка к местности
                             th Проблемы в задании
                             th Срок исполнения
-                            th Статус
+                            th
                         tbody
                           each itemtask in obj.itemtasks
                             +tasklist(itemtask, obj.house)
@@ -341,6 +341,27 @@ block content
                   .col-sm-12
                     each itemtask in obj.itemtasks
                       +history(itemtask, '..')
+
+            #createNoteTask.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Добавить Заметку
+                  .modal-body
+                    form(role="form" method='post' id="formNote" action='/house/task/note')
+                      input(type="hidden" name='hiddentaskid' id='hiddenTaskId')
+                      input(type="hidden" name='hiddenhouseid' id='hiddenHouseId')
+                      .form-group
+                        label(for="noteText") Заметка
+                        textarea(class="form-control" id="noteText" placeholder="Текст заметки" name='notetext')
+                      button.btn.btn-primary(type="submit") Отправить
+                  .modal-footer
+                    button(
+                    type="button"
+                    class="btn btn-default"
+                    data-dismiss="modal") Закрыть
+
 
 
             #createFile.modal.modal-step.fade(role="dialog")

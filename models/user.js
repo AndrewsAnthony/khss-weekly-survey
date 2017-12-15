@@ -11,6 +11,8 @@ module.exports = function(sequelize, DataTypes) {
     User.belongsTo(models.Depatment);
 
     User.hasMany(models.ItemTask, {foreignKey: 'ImplementerId'});
+
+    User.hasMany(models.NoteTask);
   };
 
   return User;
