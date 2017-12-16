@@ -178,6 +178,33 @@ block content
                 .row
                   .col-sm-12
                     button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
+                    
+                    form(role="form")
+                      .input-group
+                        .input-group-btn.search-panel
+                          button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown")
+                            span.replacetext Поиск по #{" "}
+                            span.caret
+                          ul.dropdown-menu
+                            li
+                              a(href="#" data-search='all') По всем
+                            li
+                              a(href="#" data-search='0') # Письма
+                            li
+                              a(href="#" data-search='1') Исполнители
+                            li
+                              a(href="#" data-search='2') Привязка
+                            li
+                              a(href="#" data-search='3') Проблемы
+                            li
+                              a(href="#" data-search='4') Срок
+
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
                     .no-more-tables
                       table.table.table-striped.text-center
                         thead
@@ -188,24 +215,24 @@ block content
                             th Проблемы
                             th Срок
                             th
-                        tbody
+                        tbody.list
                           each inbox in obj.inboxs
                             tr.img-thumbnail(style='border-right-color:' + ((inbox.status == 'add')?'#ec9f13':(inbox.status == 'close')?'green':'red'))
-                              td(data-title='# Письмо')
+                              td(data-title='# Письмо').inboxletter
                                 b(id= 'inboxNumber' + inbox.id) #{inbox.number}
                                 br
                                 | От #{moment(inbox.inboxdate).format("DD-MM-YYYY")}
-                              td(data-title='Исполнители')
+                              td(data-title='Исполнители').inboximplementer
                                 each depatment in inbox.Depatments
                                   i #{"- " + depatment.name}
                                   br
-                              td(data-title='Привязка')
+                              td(data-title='Привязка').inboxbinding
                                 span #{inbox.binding}
-                              td(data-title='Проблемы')
+                              td(data-title='Проблемы').inboxproblem
                                 each problem in inbox.Problems
                                   i #{"- " + problem.name}
                                   br
-                              td(data-title='Срок') #{moment(inbox.term).fromNow()}
+                              td(data-title='Срок').inboxterm #{moment(inbox.term).fromNow()}
                               td
                                 .dropup
                                   button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '

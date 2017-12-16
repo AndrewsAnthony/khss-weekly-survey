@@ -449,6 +449,31 @@ $('#changeList').on('keyup keypress', "input", function(e) {
   }
 });
 
+var listSearchColumns = [ 'inboxletter', 'inboximplementer', 'inboxbinding', 'inboxproblem', 'inboxterm' ]
+var inboxList = new List('tabInbox', {
+  valueNames: listSearchColumns
+});
+
+$('.search-panel .dropdown-menu a').click(function(e) {
+  e.preventDefault();
+  var text = $(this).text() + ' ';
+  var searchdata = $(this).data('search')
+  console.log("searchdata", searchdata);
+  $('.search-panel .replacetext').text(text);
+  isNaN(searchdata = parseInt(searchdata, 10))
+    ? inboxList.currentSearchColumns = listSearchColumns
+    : inboxList.currentSearchColumns = listSearchColumns.slice(searchdata, searchdata + 1)
+});
+
+$('input.search').parent().find('button').on('click', function(event){
+  $('input.search').val('')
+  inboxList.search()
+})
+
+$('input.search').keyup(function() {
+  var searchString = $(this).val();
+  inboxList.search(searchString, inboxList.currentSearchColumns);
+});
 
 document.getElementById("loading_layer").style.display="none";
 

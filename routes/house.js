@@ -131,7 +131,6 @@ router.get('/:id', function(req, res) {
 
   Promise.all(promiseArr)
   .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol]){
-      console.log("itemtasks", itemtasks[0].NoteTasks);
     res.render('index', {
       title: 'Пример для одного адреса',
       houses: null,
