@@ -4,7 +4,9 @@ include ./mixins/task.jade
 include ./mixins/history.jade
 include ./mixins/createtask.jade
 
+
 block content
+  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
   #loading_layer
     .loader
 
@@ -24,7 +26,7 @@ block content
 
 
       .collapse.navbar-collapse#navbar-collapse-top
-        if (obj.panel && !houses)
+        if (obj.panel && !houses && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
           form.navbar-form.navbar-left(role="form" method='get' action='/house/')
            .input-group
               input#typeahead(type="text" class="form-control" placeholder="Выберите адрес...")
@@ -33,25 +35,18 @@ block content
                   i.fa.fa-search
 
         ul.nav.navbar-nav.navbar-right
-          li
-            a(href="#") Сроки
           li.dropdown
             a.dropdown-toggle(href="#" data-toggle="dropdown")
-              |Фамилия И.О.
+              | #{inicialName(user.name)}
               span.caret
               ul.dropdown-menu
                 li
-                  a(href="#") Профайл
-                li.divider
-                li
-                  a(href="#") Входящие
-                li
-                  a(href="#") Задачи
-
-                li.divider
-                li
-                  a(href="../work") Список работ
-                if (!houses)
+                  a(href="#user" + user.id) Задачи            
+                if (R.any(R.whereEq({name: 'showWork'}), user.Rules))
+                  li.divider
+                  li
+                    a(href="../work") Список работ
+                if (!houses && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
                   li.divider
                   li
                     a(href='/house') Список всех домов
@@ -66,7 +61,7 @@ block content
     .row
       .col-sm-12.well
 
-        if (!obj.panel && !houses)
+        if (!obj.panel && !houses && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
           .well.well-sm
             h1.text-center
               i= title
@@ -77,7 +72,7 @@ block content
                   button.btn.btn-primary(type="submit")
                     i.fa.fa-search
 
-        if (obj.panel)
+        if (obj.panel && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
           .well.well-sm
             h4.text-center
               b
@@ -159,7 +154,7 @@ block content
                         span.badge #{obj.house.roof_area}
                         b Площадь кровли
 
-                  if (obj.house.Authorities && obj.house.Authorities.length)
+                  if (obj.house.Authorities && obj.house.Authorities.length && R.any(R.whereEq({name: 'showWork'}), user.Rules))
                     .col-md-6
                       h3
                         i Программы городской власти
@@ -177,7 +172,8 @@ block content
               div(role="tabpanel",class="tab-pane fade",id="tabInbox")
                 .row
                   .col-sm-12
-                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
+                    if (R.any(R.whereEq({name: 'createInbox'}), user.Rules))
+                      button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
                     
                     form(role="form")
                       .input-group
@@ -256,7 +252,7 @@ block content
                                           s.small Документ
 
                                     - var inboxphotos = inbox.Files.filter(function(file){return file.type == 'photo'})
-                                    if inboxphotos.length
+                                    if (inboxphotos.length)
                                       li.inboxgallery
                                         a(href= '../upload/' + inboxphotos[0].path) Фотографии
                                         each photo in inboxphotos.slice(1)
@@ -267,86 +263,87 @@ block content
                                       li
                                         a
                                           s.small Фотографии
+                                    if (R.any(R.whereEq({name: 'addFile'}), user.Rules))
+                                      li.dropdown-header Загрузить на сервер
+                                      li
+                                        a(
+                                        href='#'
+                                        data-toggle='modal'
+                                        data-target='#createFile'
+                                        data-object='inbox'
+                                        data-file='document'
+                                        data-objecthouse= obj.house.id
+                                        data-objectid= inbox.id) Документ
+                                      li
+                                        a(
+                                        href='#'
+                                        data-toggle='modal'
+                                        data-target='#createFile'
+                                        data-object='inbox'
+                                        data-file='photo'
+                                        data-objecthouse=  obj.house.id
+                                        data-objectid= inbox.id) Фотографию
 
-                                    li.dropdown-header Загрузить на сервер
-                                    li
-                                      a(
-                                      href='#'
-                                      data-toggle='modal'
-                                      data-target='#createFile'
-                                      data-object='inbox'
-                                      data-file='document'
-                                      data-objecthouse= obj.house.id
-                                      data-objectid= inbox.id) Документ
-                                    li
-                                      a(
-                                      href='#'
-                                      data-toggle='modal'
-                                      data-target='#createFile'
-                                      data-object='inbox'
-                                      data-file='photo'
-                                      data-objecthouse=  obj.house.id
-                                      data-objectid= inbox.id) Фотографию
+                    if (R.any(R.whereEq({name: 'createInbox'}), user.Rules))
+                      #createInboxModal.modal.fade(role="dialog")
+                        .modal-dialog
+                          .modal-content
+                            .modal-header
+                              button(type="button" class="close" data-dismiss="modal") &times;
+                              h4.modal-title.text-uppercase Создания нового входящего
+
+                            .modal-body
+                              form(role="form" action= obj.house.id + '/inbox' method='post' id="formInbox")
+                                .form-group
+                                  label(for="numberInbox") Номер и дата входящего письма
+                                  .input-group
+                                    i.input-group-addon №
+                                    input(type="text" class="form-control" id="numberInbox" placeholder="Введите номер письма" name='numberInbox')
+                                  br
+                                  .input-group
+                                    span.input-group-addon
+                                      i.fa.fa-calendar
+                                    input(type="date" class="form-control" id="dateInbox" placeholder="Введите дату письма" name='dateInbox')
+
+                                .form-group
+                                  label(for="depatmentInbox") Закреплен за отделом
+                                  select(class="form-control" id="depatmentInbox" multiple="multiple" name='depatment' style="width:100%")
+                                    option(value='') Не выбрано
+                                    each depatment in obj.depatments
+                                      option(value= depatment.id) #{depatment.name}
+
+                                .form-group
+                                  label(for="problemInbox") Вопросы в письме
+                                  select(class="form-control" id="problemInbox" name='problem' multiple="multiple" style="width:100%")
+                                    option(value='') Не выбрано
+                                    each problem in obj.problems
+                                      option(value= problem.id) #{problem.name}
+
+                                .form-group
+                                  label(for="bindingInbox") Привязка к заявителю
+                                  .input-group
+                                    span.input-group-addon
+                                      i.fa.fa-building-o
+                                    input(type="text" class="form-control" id="bindingInbox" placeholder="Привязка к месту" name='bindingInbox')
+
+                                .form-group
+                                  label(for="termInbox") Дата срока исполнения
+                                  .input-group
+                                    span.input-group-addon
+                                      i.fa.fa-calendar
+                                    input(type="date" class="form-control" id="termInbox" placeholder="Введите срок исполнения" name='termInbox')
 
 
-                    #createInboxModal.modal.fade(role="dialog")
-                      .modal-dialog
-                        .modal-content
-                          .modal-header
-                            button(type="button" class="close" data-dismiss="modal") &times;
-                            h4.modal-title.text-uppercase Создания нового входящего
+                                button.btn.btn-primary(type="submit" id='sendInbox') Создать входящие
 
-                          .modal-body
-                            form(role="form" action= obj.house.id + '/inbox' method='post' id="formInbox")
-                              .form-group
-                                label(for="numberInbox") Номер и дата входящего письма
-                                .input-group
-                                  i.input-group-addon №
-                                  input(type="text" class="form-control" id="numberInbox" placeholder="Введите номер письма" name='numberInbox')
-                                br
-                                .input-group
-                                  span.input-group-addon
-                                    i.fa.fa-calendar
-                                  input(type="date" class="form-control" id="dateInbox" placeholder="Введите дату письма" name='dateInbox')
-
-                              .form-group
-                                label(for="depatmentInbox") Закреплен за отделом
-                                select(class="form-control" id="depatmentInbox" multiple="multiple" name='depatment' style="width:100%")
-                                  option(value='') Не выбрано
-                                  each depatment in obj.depatments
-                                    option(value= depatment.id) #{depatment.name}
-
-                              .form-group
-                                label(for="problemInbox") Вопросы в письме
-                                select(class="form-control" id="problemInbox" name='problem' multiple="multiple" style="width:100%")
-                                  option(value='') Не выбрано
-                                  each problem in obj.problems
-                                    option(value= problem.id) #{problem.name}
-
-                              .form-group
-                                label(for="bindingInbox") Привязка к заявителю
-                                .input-group
-                                  span.input-group-addon
-                                    i.fa.fa-building-o
-                                  input(type="text" class="form-control" id="bindingInbox" placeholder="Привязка к месту" name='bindingInbox')
-
-                              .form-group
-                                label(for="termInbox") Дата срока исполнения
-                                .input-group
-                                  span.input-group-addon
-                                    i.fa.fa-calendar
-                                  input(type="date" class="form-control" id="termInbox" placeholder="Введите срок исполнения" name='termInbox')
-
-
-                              button.btn.btn-primary(type="submit" id='sendInbox') Создать входящие
-
-                          .modal-footer
-                            button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+                            .modal-footer
+                              button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
 
               div(role="tabpanel",class="tab-pane fade",id="tabTask")
                 .row
                   .col-sm-12
-                    button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createTaskModal") Создать задачу
+                    if (R.any(R.whereEq({name: 'createTask'}), user.Rules))
+                      button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createTaskModal") Создать задачу
                     .no-more-tables
                       table.table.table-striped.text-center
                         thead
@@ -359,9 +356,10 @@ block content
                             th
                         tbody
                           each itemtask in obj.itemtasks
-                            +tasklist(itemtask, obj.house)
+                            +tasklist(itemtask, obj.house, user.Rules)
 
-                      +createtask(obj.house, obj.tasktypes, obj.users, obj.problems)
+                      if (R.any(R.whereEq({name: 'createTask'}), user.Rules))
+                        +createtask(obj.house, obj.tasktypes, obj.users, obj.problems)
 
               div(role="tabpanel",class="tab-pane fade",id="tabHistory")
                 .row
@@ -433,7 +431,7 @@ block content
                     class="btn btn-primary js-btn-step"
                     data-orientation="next")
 
-        if (houses)
+        if (houses && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
           ul.list-group
           each house, ind in houses.slice(0,100) || []
             li.list-group-item

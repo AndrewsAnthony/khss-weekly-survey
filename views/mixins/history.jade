@@ -2,7 +2,7 @@ mixin history(itemtask, pathToFile)
 
   - function filterFile(arr, type){ if(type == 'photo') {return R.pipe(R.filter(item => R.prop('type', item) == type),R.groupBy(item => moment(item.createdAt).format("YYYY-MM-DD")),R.toPairs, R.sort(R.descend(R.nth(0))))(arr)} else {return R.filter(item => R.prop('type', item) == type)(arr)} }
 
-  - function inicialName(str){return str.split(' ')[0] + ' ' + str.split(' ')[1][0] + '.' + str.split(' ')[2][0] + '.'}
+  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr(' ')[2][0] + '.'}
 
   -var itemTaskState = {active: { letter: "Написать письмо", photoreport: "Сделать фотоотчет", information: "Предоставить информацию"}, add: { letter: "Письмо добавлено", photoreport: "Фотоотчет загружен", information: "Информация добавлена"}, close: { letter: "Письмо закрыто", photoreport: "Фотоотчет", information: "Информация"}}
 

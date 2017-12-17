@@ -47,13 +47,27 @@ function isLoggedIn(req, res, next) {
 
 app.use('/work', isLoggedIn, works);
 app.use('/house', isLoggedIn, houses);
-app.use('/', auth, isLoggedIn, function(req, res){
-  res.render('index', {
-    title: 'Любить Харьков – работать для людей',
-    obj: {
-      panel: false
-    }
-  });
+app.use('/', auth, isLoggedIn, function(req, res, next){
+  models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  })
+  .then((user) => {
+    res.render('index', {
+      title: 'Любить Харьков – работать для людей',
+      user,
+      obj: {
+        panel: false
+      }
+    });
+  })
+  .catch(err => {
+    console.log(err)
+    next(err)
+  })
+  
 });
 
 // catch 404 and forward to error handler

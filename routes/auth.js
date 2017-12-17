@@ -11,9 +11,6 @@ router.get('/signin', function(req, res, next){
 
 router.post('/signin', function(req, res, next){ 
   passport.authenticate('local', function(err, user, info) {
-    console.log("err", err);
-    console.log("user", user);
-    console.log("info", info);
     if (err) { return next(err); }
     if (!user) { return res.render('signin', { info }); }
     req.logIn(user, function () {
@@ -28,8 +25,6 @@ router.get('/signup', function(req, res, next){
 
 router.post('/signup', function(req, res, next){
   Authorization.register(req.body.email, req.body.password, function(err, user){
-    console.log("err1", err);
-    console.log("user1", user);
     err
       ? res.render('signup', {error: err})
       : ( 
@@ -41,7 +36,7 @@ router.post('/signup', function(req, res, next){
           })
         })
         .catch(err => {
-          user.destroy().then((err) => res.render('signup', {error: err}))
+          user.destroy().then(() => res.render('signup', {error: err}))
         })
       )
   })

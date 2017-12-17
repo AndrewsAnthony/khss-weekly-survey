@@ -27,6 +27,8 @@ module.exports = function(sequelize, DataTypes) {
     User.hasMany(models.ItemTask, {foreignKey: 'ImplementerId'});
 
     User.hasMany(models.NoteTask);
+
+    User.belongsToMany(models.Rule, {through: 'UserRule'});
   };
 
   return User;

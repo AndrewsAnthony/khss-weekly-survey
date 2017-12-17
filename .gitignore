@@ -15,5 +15,9 @@ package-lock.json
 config
 
 # Uploaded files
-public/upload/*
+public/upload
 uploadfiles
+exportdata
+
+# Plugins
+plugins

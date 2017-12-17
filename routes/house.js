@@ -101,6 +101,7 @@ router.get('/:id', function(req, res) {
     res.status(404).send('Неверный запрос на сервер')
   }
   const promiseArr = []
+
   promiseArr.push( models.House.findOne({ where: { id: req.params.id }, include: [models.Authority] }) );
   promiseArr.push( models.Depatment.findAll({ attributes: ['id','name'] }) );
   promiseArr.push( models.User.findAll({include: [models.Depatment] }) );
@@ -127,13 +128,21 @@ router.get('/:id', function(req, res) {
   promiseArr.push( models.Authority.findAll() );
   promiseArr.push( models.Information.findAll() );
   promiseArr.push( models.Protocol.findAll() );
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
 
 
   Promise.all(promiseArr)
-  .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol]){
+  .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol, user]){
+        console.log("user", user);
     res.render('index', {
       title: 'Пример для одного адреса',
       houses: null,
+      user,
       obj: {
         panel: true,
         house,
@@ -142,7 +151,7 @@ router.get('/:id', function(req, res) {
         depatments,
         problems,
         itemtasks,
-        tasktypes: {schedule, program, authority, information, protocol, inboxs}
+        tasktypes: {schedule, program, authority, information, protocol, inboxs},
       }
     })
 
@@ -155,11 +164,19 @@ router.get('/:id', function(req, res) {
 });
 
 router.get('/', function(req, res, next) {
-  models.House.findAll()
-  .then(function(houses) {
+  console.log("req.user.id", req.user.id);
+  Promise.all([models.House.findAll(), models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  })])
+  .then(function([houses, user]) {
+      console.log("user", user);
     res.render('index', {
       title: 'Пример для всех адресов',
       houses: houses,
+      user,
       obj: {
         panel: false
       }

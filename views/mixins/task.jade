@@ -1,4 +1,4 @@
-mixin tasklist(itemtasktype, house)
+mixin tasklist(itemtasktype, house, rules)
   tr.img-thumbnail(style='border-right-color:' + ((itemtasktype.status == 'add')?'#ec9f13':(itemtasktype.status == 'close')?'green':'red'))
     -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", information: "Предоставить информацию"}
     td(data-title='Исполнитель')
@@ -80,29 +80,30 @@ mixin tasklist(itemtasktype, house)
           span.caret
         ul.dropdown-menu
           li.dropdown-header Другие действия
-          li.dropdown-header Загрузить на сервер
-          li
-            a(
-            href='#'
-            data-toggle='modal'
-            data-target='#createNoteTask'
-            data-taskid= itemtasktype.id
-            data-houseid= house.id) Заметка
-          li
-            a(
-            href='#'
-            data-toggle='modal'
-            data-target='#createFile'
-            data-object='task'
-            data-file='document'
-            data-objecthouse= house.id
-            data-objectid= itemtasktype.id) Документ
-          li
-            a(
-            href='#'
-            data-toggle='modal'
-            data-target='#createFile'
-            data-object='task'
-            data-file='photo'
-            data-objecthouse= house.id
-            data-objectid= itemtasktype.id) Фотографию
+          if (R.any(R.whereEq({name: 'addFile'}), rules))
+            li.dropdown-header Загрузить на сервер
+            li
+              a(
+              href='#'
+              data-toggle='modal'
+              data-target='#createNoteTask'
+              data-taskid= itemtasktype.id
+              data-houseid= house.id) Заметка
+            li
+              a(
+              href='#'
+              data-toggle='modal'
+              data-target='#createFile'
+              data-object='task'
+              data-file='document'
+              data-objecthouse= house.id
+              data-objectid= itemtasktype.id) Документ
+            li
+              a(
+              href='#'
+              data-toggle='modal'
+              data-target='#createFile'
+              data-object='task'
+              data-file='photo'
+              data-objecthouse= house.id
+              data-objectid= itemtasktype.id) Фотографию
