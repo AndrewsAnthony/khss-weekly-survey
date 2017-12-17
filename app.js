@@ -1,17 +1,23 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express       = require('express');
+var passport      = require('passport');
+var path          = require('path');
+var favicon       = require('serve-favicon');
+var logger        = require('morgan');
+var cookieParser  = require('cookie-parser');
+var bodyParser    = require('body-parser');
+var session       = require('express-session');
 
-var houses = require('./routes/house');
-var works  = require('./routes/work');
+var models        = require('./models');
+var Authorization = models.Authorization;
 
-var app = express();
+var houses        = require('./routes/house');
+var works         = require('./routes/work');
+var auth         = require('./routes/auth');
+
+var app           = express();
 app.locals.moment = require('moment');
 app.locals.moment.locale('ru');
-app.locals.R = require('ramda');
+app.locals.R      = require('ramda');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,10 +30,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({ secret: 'super-secret', saveUninitialized: true}));
 
-app.use('/work', works);
-app.use('/house', houses);
-app.use('/', function(req, res){
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use('local', Authorization.createStrategy());
+passport.serializeUser(Authorization.serializeUser());
+passport.deserializeUser(Authorization.deserializeUser());
+
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated())
+    return next();
+  res.redirect('/signin');
+}
+
+app.use('/work', isLoggedIn, works);
+app.use('/house', isLoggedIn, houses);
+app.use('/', auth, isLoggedIn, function(req, res){
   res.render('index', {
     title: 'Любить Харьков – работать для людей',
     obj: {

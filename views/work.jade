@@ -29,6 +29,8 @@ block content
                 i.fa.fa-search
 
         ul.nav.navbar-nav.navbar-right
+          li
+            a(href="#") Сроки
           li.dropdown
             a.dropdown-toggle(href="#" data-toggle="dropdown")
               |Фамилия И.О.
@@ -41,16 +43,13 @@ block content
                   a(href="#") Входящие
                 li
                   a(href="#") Задачи
-                li
-                  a(href="#") Таблицы
+                if (!houses)
+                  li.divider
+                  li
+                    a(href='/house') Список всех домов
                 li.divider
                 li
-                  a(href="#") Выйти
-          li
-            a(href="#") Сроки
-          if (!houses)
-            li
-              a(href='/house') Список всех домов
+                  a(href="/logout") Выйти
 
 
   .container(role="main")

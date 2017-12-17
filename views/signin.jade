@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  nav.navbar.navbar-default.navbar-fixed-top
+    .container-fluid
+      ul.nav.navbar-nav.pull-right
+        li
+          a(href='/signup') Регистрация
+      .navbar-header
+        a.navbar-brand(href="#")
+          i(style='color: #337ab7') КП-ХСС
+
+  .container
+    if (info)
+      .alert.alert-info.alert-dismissable
+        a(href="#" class="close" data-dismiss="alert" aria-label="close") &times;
+        strong Инофрмация!
+        | #{" " + info.message}
+
+    .well.row
+      h2.text-center
+        b Форма Входа
+      hr
+      form#signin(name='signin' method='post' action='signin').form.col-md-6.col-md-offset-3
+        .form-group
+          label(for='email') Email
+          input(type='text' name='email').form-control
+        .form-group
+          label(for='Password') Пароль
+          input(type='password' name='password').form-control
+        button.btn.btn-primary(type='submit') Войти
