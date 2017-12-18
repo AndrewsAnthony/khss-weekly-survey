@@ -1,0 +1,44 @@
+mixin header(user, showSearch, showHistory, showWork) 
+  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
+  nav.navbar.navbar-default.navbar-fixed-top
+    .container-fluid
+
+      .navbar-header
+        button.navbar-toggle.collapsed(
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbar-collapse-top")
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="#")
+          i(style='color: #337ab7') КП-ХСС
+
+      .collapse.navbar-collapse#navbar-collapse-top
+        if (showSearch && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+          form.navbar-form.navbar-left(role="form" method='get' action='/house/')
+           .input-group
+              input#typeahead(type="text" class="form-control" placeholder="Выберите адрес...")
+              span.input-group-btn
+                button(class="btn btn-primary" type="submit")
+                  i.fa.fa-search
+
+        ul.nav.navbar-nav.navbar-right
+          li.dropdown
+            a.dropdown-toggle(href="#" data-toggle="dropdown")
+              | #{inicialName(user.name)}
+              span.caret
+              ul.dropdown-menu
+                li
+                  a(href="#user" + user.id) Профайл и Задачи           
+                if (showWork && R.any(R.whereEq({name: 'showWork'}), user.Rules))
+                  li.divider
+                  li
+                    a(href="../work") Список работ
+                if (showHistory && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+                  li.divider
+                  li
+                    a(href='/house') Недавно добавленные
+                li.divider
+                li
+                  a(href="/logout") Выйти

@@ -1,0 +1,61 @@
+mixin authoritylist(authority)
+  li.list-group-item
+    .dropdown.pull-right
+      button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+        span.caret
+      ul.dropdown-menu
+        //- li.dropdown-header Просмотр
+        //- - var authoritydocs = authority.Files.filter(function(file){return file.type == 'document'})
+        //- if authoritydocs.length
+        //-   li
+        //-     each doc in authoritydocs
+        //-       a(href= '../upload/' + doc.path)
+        //-         i.fa.fa-paperclip
+        //-         | &nbsp;
+        //-         if doc.FileDescription.name
+        //-           | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+        //-         else
+        //-           | #{moment(doc.createAt).format(DD/MM/YYYY)}
+        //- else
+        //-   li
+        //-     a
+        //-       s.small Документ
+
+        //- - var authorityphotos = authority.Files.filter(function(file){return file.type == 'photo'})
+        //- if authorityphotos.length
+        //-   li.inboxgallery
+        //-     a(href= '../upload/' + authorityphotos[0].path) Фотографии
+        //-     each photo in authorityphotos.slice(1)
+        //-       a.mfp-hide(
+        //-       href= '../upload/' + photo.path
+        //-       title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
+        //- else
+        //-   li
+        //-     a
+        //-       s.small Фотографии
+        li
+          a(href='work/authority/' + authority.id) Список домов
+        li.dropdown-header Загрузить на сервер
+        li
+          a(
+          href='#'
+          data-toggle='modal'
+          data-target='#createFile'
+          data-object='authority'
+          data-file='document'
+          data-objecthouse= 0
+          data-objectid= authority.id) Документ
+        li
+          a(
+          href='#'
+          data-toggle='modal'
+          data-target='#createFile'
+          data-object='authority'
+          data-file='photo'
+          data-objecthouse= 0
+          data-objectid= authority.id) Фотографию
+    | #{authority.name}
+    br
+    | #{moment(authority.date).format('DD-MM-YYYY')}
+    br
+    | #{authority.location}

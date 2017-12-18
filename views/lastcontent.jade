@@ -1,0 +1,32 @@
+extends layout
+
+block style
+  include ./style/index
+block scripts
+  include ./script/index
+
+include ./mixins/header
+
+block content
+  #loading_layer
+    .loader
+  
+  +header(user, true, false, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+        .well.well-sm
+            h1.text-center
+              i= title
+        if (R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+          ul.list-group
+            each house, ind in houses
+              li.list-group-item
+                a(href='/house/' + house.id)
+                  if (house.street_new_rus)
+                    | #{ind + 1}) <b>#{house.street_new_rus} #{house.name_new_rus}, #{house.building}</b> / #{house.district} район - уч. #{house.sector}
+                    | #{' '}
+                    span.text-muted (стр.наз. #{house.street_rus} #{house.name_rus})
+                  else
+                    | #{ind + 1}) <b>#{house.street_rus} #{house.name_rus}, #{house.building}</b> / #{house.district} район - уч. #{house.sector}

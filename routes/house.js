@@ -63,8 +63,8 @@ router.post('/typeahead', function(req, res) {
   } else {
     res.status(404).send('Ошибка запроса')
   }
-})
 
+})
 
 router.get('/check/inbox', function(req, res) {
   var numberInbox = req.query.numberInbox;
@@ -138,21 +138,15 @@ router.get('/:id', function(req, res) {
 
   Promise.all(promiseArr)
   .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol, user]){
-        console.log("user", user);
-    res.render('index', {
-      title: 'Пример для одного адреса',
-      houses: null,
+    res.render('house', {
       user,
-      obj: {
-        panel: true,
-        house,
-        inboxs,
-        users,
-        depatments,
-        problems,
-        itemtasks,
-        tasktypes: {schedule, program, authority, information, protocol, inboxs},
-      }
+      house,
+      inboxs,
+      users,
+      depatments,
+      problems,
+      itemtasks,
+      tasktypes: {schedule, program, authority, information, protocol, inboxs}
     })
 
   })
@@ -164,35 +158,29 @@ router.get('/:id', function(req, res) {
 });
 
 router.get('/', function(req, res, next) {
-  console.log("req.user.id", req.user.id);
-  Promise.all([models.House.findAll(), models.User.findOne({
+  
+  Promise.all([models.House.findAll({ offset: 6500, limit: 25 }), models.User.findOne({
     where: {
       AuthorizationId: req.user.id
     },
     include: [models.Rule]
   })])
   .then(function([houses, user]) {
-      console.log("user", user);
-    res.render('index', {
-      title: 'Пример для всех адресов',
-      houses: houses,
+    res.render('lastcontent', {
       user,
-      obj: {
-        panel: false
-      }
+      houses,
+      title: 'Список домов'
     });
   })
   .catch(function(err){
     console.log(err)
     next()
   });
+
 });
 
-
-
-
-// router.get('/house/:id/inbox/', function(req, res) {});
 router.post('/:id/inbox/', function(req, res) {
+  
   var newInbox = null;
   models.sequelize.transaction(function(t){
     return models.Inbox.create({
@@ -246,9 +234,9 @@ router.post('/task/note', function(req, res, next) {
   .then(() => res.redirect(/house/ + req.body.hiddenhouseid))
   .catch(err => {
     err.message = 'Проблемы при обработки запроса'
-    err.status = 404;
     next(err)
   })
+
 })
 
 router.post('/file/upload', function(req, res) {
@@ -418,10 +406,6 @@ router.post('/:id/task/', function(req, res, next) {
     res.status('500').next('ошибка при обработке данных')
   })
 
-
 });
-
-
-
 
 module.exports = router;

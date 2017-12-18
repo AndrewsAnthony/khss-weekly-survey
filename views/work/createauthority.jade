@@ -1,0 +1,35 @@
+mixin createauthority()
+  #createAuthority.modal.fade(role="dialog")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title.text-uppercase Создания нового приема городской власти
+
+        .modal-body
+          form(role="form" action= 'work/authority' method='post' id="formAuthority")
+            .form-group
+              label(for="nameAuthority") Кем был организован прием
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-university
+                input(type="text" class="form-control" id="nameAuthority" placeholder="название приема" name='nameauthority')
+
+            .form-group
+              label(for="dateAuthority") Дата приема
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-calendar
+                input(type="date" class="form-control" id="dateAuthority" placeholder="" name='dateauthority')
+
+            .form-group
+              label(for="locationAuthority") Где проводиться
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-map-marker
+                input(type="text" class="form-control" id="locationAuthority" placeholder="локация" name='locationauthority')
+
+            button.btn.btn-primary(type="submit" id='sendAuthority') Создать
+
+        .modal-footer
+          button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть

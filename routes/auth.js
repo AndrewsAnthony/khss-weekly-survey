@@ -28,8 +28,12 @@ router.post('/signup', function(req, res, next){
     err
       ? res.render('signup', {error: err})
       : ( 
-        console.log("user2", user),
-        user.createUser(models.User,{})
+        models.sequelize.transaction(t => {
+          return user.createUser({}, {transaction: t})
+                  .then(authUser => {
+                    return authUser.setRules([1], {transaction: t})
+                  })
+        })
         .then(() => {
           req.logIn(user, function () {
             return res.redirect('/');

@@ -1,0 +1,205 @@
+extends layout
+
+block style
+  include ./style/house
+block scripts
+  include ./script/house
+
+include ./mixins/header
+include ./mixins/history
+
+include ./mixins/inbox
+include ./mixins/task
+include ./mixins/createinbox
+include ./mixins/createtask
+
+include ./mixins/createnote
+include ./mixins/createfile
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+        if (R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+          .well.well-sm
+            h4.text-center
+              b
+                i.text-uppercase
+                  if (house.street_new_rus)
+                    | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
+                  else
+                    | #{house.street_rus} #{house.name_rus}, #{house.building}
+          div(class="",role="tabpanel",data-example-id="togglable-tabs")
+            #mainTab.btn-pref.btn-group.btn-group-justified.btn-group-lg(role="tablist")
+              div(role="presentation",class="btn-group")
+                button.btn.btn-primary(href="#tabInfo",id="info-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-info
+                    | &nbsp
+                    span.hidden-xs Информ. по дому
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabInbox",id="inbox-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-envelope-o
+                    | &nbsp
+                    span.hidden-xs Входящие
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabTask",id="task-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-tags
+                    | &nbsp
+                    span.hidden-xs Задачи
+              div(role="presentation",class="btn-group")
+                button.btn.btn-default(href="#tabHistory",id="history-tab",role="tab",data-toggle="tab",aria-expanded="false")
+                  div
+                    i.fa.fa-history
+                    | &nbsp
+                    span.hidden-xs История
+
+            #mainTabContent.tab-content
+              div(role="tabpanel",class="tab-pane fade in active",id="tabInfo")
+                .row
+                  .col-md-6
+                    h3
+                      i Данные из дислокации
+                    ul.list-group
+                      li.list-group-item
+                        span.badge #{house.district}
+                        b Район
+                      li.list-group-item
+                        span.badge #{house.sector}
+                        b Участок
+                      if (house.street_new_rus)
+                        li.list-group-item.bg-warning
+                          span.badge #{house.street_rus} #{house.name_rus}, #{house.building}
+                          b Старое название
+                          .clearfix
+                      li.list-group-item
+                        span.badge #{house.year}
+                        b Год постройки
+                      li.list-group-item
+                        span.badge #{house.house_area}
+                        b Общая площадь дома
+                      li.list-group-item
+                        span.badge #{house.building_area}
+                        b Площадь зайстройки
+                      li.list-group-item
+                        span.badge #{house.entrance}
+                        b Количество подъездов
+                      li.list-group-item
+                        span.badge #{house.floar}
+                        b Этажность дома
+                      li.list-group-item
+                        span.badge #{house.residents}
+                        b Жильцов по прописке
+                      li.list-group-item
+                        span.badge #{house.apartments}
+                        b Количество квартир
+                      li.list-group-item
+                        span.badge #{house.roof_material}
+                        b Тип кровли
+                      li.list-group-item
+                        span.badge #{house.roof_area}
+                        b Площадь кровли
+
+                  if (house.Authorities && house.Authorities.length && R.any(R.whereEq({name: 'showWork'}), user.Rules))
+                    .col-md-6
+                      h3
+                        i Программы городской власти
+                      ul.list-group
+                        each authority in house.Authorities
+                          li.list-group-item
+                            a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location}
+
+                div Карта Google отключена
+                //- a.btn.btn-default(href=)
+
+                //- button.btn.btn-default(data-address='' + house.street + ', ' + house.number + ', Харьков')#uploadMap Загрузить Карту Google
+                //- #map(style="width: 320px; height: 480px;")
+
+              div(role="tabpanel",class="tab-pane fade",id="tabInbox")
+                .row
+                  .col-sm-12
+                    if (R.any(R.whereEq({name: 'createInbox'}), user.Rules))
+                      button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
+                    
+                    form(role="form")
+                      .input-group
+                        .input-group-btn.search-panel
+                          button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown")
+                            span.replacetext Поиск по #{" "}
+                            span.caret
+                          ul.dropdown-menu
+                            li
+                              a(href="#" data-search='all') По всем
+                            li
+                              a(href="#" data-search='0') # Письма
+                            li
+                              a(href="#" data-search='1') Исполнители
+                            li
+                              a(href="#" data-search='2') Привязка
+                            li
+                              a(href="#" data-search='3') Проблемы
+                            li
+                              a(href="#" data-search='4') Срок
+
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
+                    .no-more-tables
+                      table.table.table-striped.text-center
+                        thead
+                          tr.img-thumbnail
+                            th # Письма
+                            th Исполнители
+                            th Привязка
+                            th Проблемы
+                            th Срок
+                            th
+                        tbody.list
+                          each inbox in inboxs
+                            +inboxlist(inbox, house, user.Rules)
+
+                    if (R.any(R.whereEq({name: 'createInbox'}), user.Rules))
+                      +createinbox(house, depatments, problems)
+
+              div(role="tabpanel",class="tab-pane fade",id="tabTask")
+                .row
+                  .col-sm-12
+                    if (R.any(R.whereEq({name: 'createTask'}), user.Rules))
+                      button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createTaskModal") Создать задачу
+                    .no-more-tables
+                      table.table.table-striped.text-center
+                        thead
+                          tr.img-thumbnail
+                            th Исполнитель
+                            th Вид задания
+                            th Привязка к местности
+                            th Проблемы в задании
+                            th Срок исполнения
+                            th
+                        tbody
+                          each itemtask in itemtasks
+                            +tasklist(itemtask, house, user.Rules)
+
+                      if (R.any(R.whereEq({name: 'createTask'}), user.Rules))
+                        +createtask(house, tasktypes, users, problems)
+
+              div(role="tabpanel",class="tab-pane fade",id="tabHistory")
+                .row
+                  .col-sm-12
+                    each itemtask in itemtasks
+                      +history(itemtask, '..')
+
+            if (R.any(R.whereEq({name: 'addFile'}), user.Rules))
+              +createnote()
+              +createfile()

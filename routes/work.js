@@ -21,12 +21,19 @@ router.get('/', function(req, res) {
   promiseArr.push( models.Authority.findAll() );
   promiseArr.push( models.Program.findAll() );
   promiseArr.push( models.Protocol.findAll() );
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }) );
 
 
   Promise.all(promiseArr)
-  .then(function([problems, schedules, authorities, programs, protocols]){
+  .then(function([problems, schedules, authorities, programs, protocols, user]){
 
     res.render('work', {
+      user,
       title: 'Список работ на 2017г.',
       problems,
       schedules,
@@ -103,12 +110,22 @@ router.get('/authority/:id', function(req, res, next) {
 
   const id = parseInt(req.params.id, 10)
 
-  models.Authority.findById(id, { include: [{
-    model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
-  }]})
-  .then(authority => {
+  Promise.all([
+    models.Authority.findById(id, { include: [{
+      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
+    }]
+    }),
+    models.User.findOne({
+      where: {
+        AuthorizationId: req.user.id
+      },
+      include: [models.Rule]
+    })
+    ])
+  .then(([authority, user]) => {
     res.render('work/authority', {
-      authority
+      authority,
+      user
     })
   })
   .catch(function(err){

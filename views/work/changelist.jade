@@ -1,0 +1,47 @@
+mixin changelist(model)
+  #changeList.modal.fade(role="dialog")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title.text-uppercase Добавить / Изменить список домов
+
+        .modal-body
+          #alertOptions.alert.alert-info.collapse
+            a(href="#alertOptions" class="close" data-toggle="collapse" aria-label="close") &times;
+            span Текст сообщения
+
+          form(role="form" action= model.id + '/house' method='post' id="formProtocol")
+            .form-group
+              label(for="titleProtocol") Добавить Улицу
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-map-marker
+                input#findStreetOptions(type="text" class="form-control" name='getoptions')
+                .input-group-btn
+                  button.btn.btn-primary#addStreetOptions(type="button")
+                    i.fa.fa-plus
+
+            .form-group
+              .dropdown
+                button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown") Добавить Участок
+                  span.caret
+                ul.dropdown-menu
+                  each sector in [42, 43, 44, 45, 65, 66, 58, 59, 60, 61]
+                    li
+                      a.addDistrictOptions(href="#" data-sector= sector) Участок #{sector}
+
+            .form-group
+              select(id='houseListOptions' multiple='multiple' name='houselist')
+                each house in authority.Houses
+                  option(value= house.id selected)
+                    if (house.street_new_rus)
+                      | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
+                    else
+                      | #{house.street_rus} #{house.name_rus}, #{house.building}
+
+
+            button.btn.btn-primary(type="submit" id='sendProtocol') Сохранить
+
+        .modal-footer
+          button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть

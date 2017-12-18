@@ -10,9 +10,10 @@ var session       = require('express-session');
 var models        = require('./models');
 var Authorization = models.Authorization;
 
+var index         = require('./routes/index');
 var houses        = require('./routes/house');
 var works         = require('./routes/work');
-var auth         = require('./routes/auth');
+var auth          = require('./routes/auth');
 
 var app           = express();
 app.locals.moment = require('moment');
@@ -47,28 +48,7 @@ function isLoggedIn(req, res, next) {
 
 app.use('/work', isLoggedIn, works);
 app.use('/house', isLoggedIn, houses);
-app.use('/', auth, isLoggedIn, function(req, res, next){
-  models.User.findOne({
-    where: {
-      AuthorizationId: req.user.id
-    },
-    include: [models.Rule]
-  })
-  .then((user) => {
-    res.render('index', {
-      title: 'Любить Харьков – работать для людей',
-      user,
-      obj: {
-        panel: false
-      }
-    });
-  })
-  .catch(err => {
-    console.log(err)
-    next(err)
-  })
-  
-});
+app.use('/', auth, isLoggedIn, index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

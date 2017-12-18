@@ -34,33 +34,13 @@ html
           100% { transform: rotate(360deg); }
         }
 
-
     link(rel='stylesheet', href='/stylesheets/mobile-bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/font-awesome.min.css')
-    link(rel='stylesheet', href='/stylesheets/bootstrap-select.css')
-    link(rel='stylesheet', href='/stylesheets/typeaheadjs.css')
-    link(rel='stylesheet', href='/stylesheets/fileinput.css')
-    link(rel='stylesheet', href='/stylesheets/fileinput-theme-explorer.css')
-    link(rel='stylesheet', href='/stylesheets/magnific-popup.css')
-    link(rel='stylesheet', href='/stylesheets/multi-select.css')
+    block style
     link(rel='stylesheet', href='/stylesheets/style.css')
 
   body
     block content
-    script(src='/scripts/jquery-1.11.0.min.js')
-    script(src='/scripts/jquery.ba-throttle-debounce.min.js')
-    script(src='/scripts/bootstrap.min.js')
-    script(src='/scripts/typeahead.bundle.min.js')
-    script(src='/scripts/fileinput.min.js')
-    script(src='/scripts/theme/fileinput-theme.min.js')
-    script(src='/scripts/locale/ru(fileinput).js')
-    script(src='/scripts/validation/jquery.validate.min.js')
-    script(src='/scripts/locale/ru(validate).js')
-    script(src='/scripts/conditionize.flexible.jquery.js')
-    script(src='/scripts/bootstrap-select.min.js')
-    script(src='/scripts/jquery.lazy.min.js')
-    script(src='/scripts/jquery-bootstrap-modal-steps.min.js')
-    script(src='/scripts/jquery.magnific-popup.min.js')
-    script(src='/scripts/jquery.multi-select.js')
-    script(src='/scripts/list.min.js')
-    script(src='/scripts/main.js')
+    script(src='/scripts/libs/jquery-1.11.0.min.js')
+    script(src='/scripts/libs/bootstrap.min.js')
+    block scripts

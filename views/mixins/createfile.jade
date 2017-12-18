@@ -1,0 +1,42 @@
+mixin createfile(house, depatments, problems)
+  #createFile.modal.modal-step.fade(role="dialog")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title.text-uppercase.js-title-step
+        .modal-body
+          form(role="form" method='post' id="formFile")
+            .hide(data-step="1" data-title="Описание для файла(ов)")
+              input(type='hidden' id='hiddenFile' name='hiddenfile')
+              .form-group
+                label(for="fileDescription") Описание
+                textarea(class="form-control" id="fileDescription" placeholder="Скопируйте текстовое содержимое файла" name='filedescription')
+
+              .form-group#fileNameBlock
+                label(for="fileName") Название
+                input(type='text' class="form-control" id="fileName" placeholder="Отображение в приложении" name='filename')
+
+              .form-group
+                label(for="fileNote") Примечание
+                input(type='text' class="form-control" id="fileNote" placeholder="Привязки, проблемы, телефоны" name='filenote')
+
+            .hide(data-step="2" data-title="Загрузка файла(ов)")
+              .file-loading
+                input(id="inputFile" type="file" name='inputfile' multiple)
+
+
+        .modal-footer
+          button(
+          type="button"
+          class="btn btn-default js-btn-step pull-left"
+          data-orientation="cancel"
+          data-dismiss="modal")
+          button(
+          type="button"
+          class="btn btn-default js-btn-step"
+          data-orientation="previous")
+          button(
+          type="button"
+          class="btn btn-primary js-btn-step"
+          data-orientation="next")

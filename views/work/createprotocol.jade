@@ -1,0 +1,35 @@
+mixin createprotocol()
+  #createProtocol.modal.fade(role="dialog")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title.text-uppercase Создания нового приема городской власти
+
+        .modal-body
+          form(role="form" action= 'work/protocol' method='post' id="formProtocol")
+            .form-group
+              label(for="titleProtocol") Название протокол
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-university
+                input(type="text" class="form-control" id="titleProtocol" value='Текущий ремонт' name='titleprotocol')
+
+            .form-group
+              label(for="dateProtocol") Дата приема
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-calendar
+                input(type="date" class="form-control" id="dateProtocol" placeholder="" name='dateprotocol' value= moment())
+
+            .form-group
+              label(for="locationProtocol") Где проводится
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-map-marker
+                input(type="text" class="form-control" id="locationProtocol" placeholder="локация" name='locationprotocol' value='Департамент Жилищног Хозяйсства')
+
+            button.btn.btn-primary(type="submit" id='sendProtocol') Создать
+
+        .modal-footer
+          button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть

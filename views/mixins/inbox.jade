@@ -1,0 +1,71 @@
+mixin inboxlist(inbox, house, rules)
+  tr.img-thumbnail(style='border-right-color:' + ((inbox.status == 'add')?'#ec9f13':(inbox.status == 'close')?'green':'red'))
+    td(data-title='# Письмо').inboxletter
+      b(id= 'inboxNumber' + inbox.id) #{inbox.number}
+      br
+      | От #{moment(inbox.inboxdate).format("DD-MM-YYYY")}
+    td(data-title='Исполнители').inboximplementer
+      each depatment in inbox.Depatments
+        i #{"- " + depatment.name}
+        br
+    td(data-title='Привязка').inboxbinding
+      span #{inbox.binding}
+    td(data-title='Проблемы').inboxproblem
+      each problem in inbox.Problems
+        i #{"- " + problem.name}
+        br
+    td(data-title='Срок').inboxterm #{moment(inbox.term).fromNow()}
+    td
+      .dropup
+        button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+          span.caret
+        ul.dropdown-menu
+          li.dropdown-header Просмотр
+          - var inboxdocs = inbox.Files.filter(function(file){return file.type == 'document'})
+          if inboxdocs.length
+            li
+              each doc in inboxdocs
+                a(href= '../upload/' + doc.path)
+                  i.fa.fa-paperclip
+                  | &nbsp;
+                  if doc.FileDescription.name
+                    | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+                  else
+                    | #{moment(doc.createAt).format(DD/MM/YYYY)}
+          else
+            li
+              a
+                s.small Документ
+
+          - var inboxphotos = inbox.Files.filter(function(file){return file.type == 'photo'})
+          if (inboxphotos.length)
+            li.inboxgallery
+              a(href= '../upload/' + inboxphotos[0].path) Фотографии
+              each photo in inboxphotos.slice(1)
+                a.mfp-hide(
+                href= '../upload/' + photo.path
+                title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
+          else
+            li
+              a
+                s.small Фотографии
+          if (R.any(R.whereEq({name: 'addFile'}), rules))
+            li.dropdown-header Загрузить на сервер
+            li
+              a(
+              href='#'
+              data-toggle='modal'
+              data-target='#createFile'
+              data-object='inbox'
+              data-file='document'
+              data-objecthouse= house.id
+              data-objectid= inbox.id) Документ
+            li
+              a(
+              href='#'
+              data-toggle='modal'
+              data-target='#createFile'
+              data-object='inbox'
+              data-file='photo'
+              data-objecthouse=  house.id
+              data-objectid= inbox.id) Фотографию
