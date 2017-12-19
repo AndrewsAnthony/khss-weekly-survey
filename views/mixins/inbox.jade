@@ -20,6 +20,10 @@ mixin inboxlist(inbox, house, rules)
         button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
           span.caret
         ul.dropdown-menu
+          if (R.any(R.whereEq({name: 'changeInbox'}), rules))
+            li.dropdown-header Администрирование
+            li
+              a(href='/house/inbox/' + inbox.id + '/edit') Редактировать
           li.dropdown-header Просмотр
           - var inboxdocs = inbox.Files.filter(function(file){return file.type == 'document'})
           if inboxdocs.length

@@ -34,7 +34,7 @@ mixin header(user, showSearch, showHistory, showWork)
                 if (showWork && R.any(R.whereEq({name: 'showWork'}), user.Rules))
                   li.divider
                   li
-                    a(href="../work") Список работ
+                    a(href="/work") Список работ
                 if (showHistory && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
                   li.divider
                   li
