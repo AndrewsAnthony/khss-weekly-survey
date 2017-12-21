@@ -1,0 +1,71 @@
+extends layout
+
+block style
+  include ./style/user
+block scripts
+  include ./script/user
+
+include ./mixins/header
+
+include ./mixins/inbox
+include ./mixins/task
+include ./mixins/history
+
+include ./mixins/createnote
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+        if (R.any(R.whereEq({name: 'showProfile'}), user.Rules))
+          .well.well-sm
+            .row
+              .col-sm-6.col-md-3.text-center
+                img(src= user.image max-width='300px').img-responsive.img-thumbnail
+              .col-sm-6.col-md-9.text-center
+                h4 #{user.name}
+                small
+                  cite #{user.Depatment.name}
+                ul.list-group
+                  li.list-group-item
+                    i.fa.fa-envelope-o
+                    | #{" " + user.email}
+                  li.list-group-item
+                    i.fa.fa-phone
+                    | #{" " + user.phone}
+          h3.text-center Входящие на отдел
+          ul.list-group
+            each inbox in user.Depatment.Inboxes
+              li.list-group-item
+                .dropdown.pull-right
+                  button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+                    span.caret
+                  ul.dropdown-menu
+                    li
+                      a()
+                span
+                  if (inbox.House.street_new_rus)
+                    b #{inbox.House.street_new_rus} #{inbox.House.name_new_rus}, #{inbox.House.building}
+                    span.text-muted (стр.наз. #{inbox.House.street_rus} #{inbox.House.name_rus})
+                  else
+                    b #{inbox.House.street_rus} #{inbox.House.name_rus}, #{inbox.House.building}
+                br
+                span
+                  | #{"# " + inbox.number}
+                  | от
+                  | #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
+                br
+                span.label.label-primary #{moment(inbox.term).fromNow()}
+                .clearfix
+
+          h3.text-center Задачи
+          // - var listHouse = R.compose(R.toPairs,R.map(task => task.House.id))(user.ItemTasks)
+          // - var sortByStreet = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
+          //- | #{JSON.stringify(sortByStreet)}
+          //- each task in user.ItemTasks
+          //-   +history(task, '')

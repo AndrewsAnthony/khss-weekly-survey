@@ -14,6 +14,7 @@ var index         = require('./routes/index');
 var houses        = require('./routes/house');
 var works         = require('./routes/work');
 var auth          = require('./routes/auth');
+var user          = require('./routes/user');
 
 var app           = express();
 app.locals.moment = require('moment');
@@ -48,6 +49,7 @@ function isLoggedIn(req, res, next) {
 
 app.use('/work', isLoggedIn, works);
 app.use('/house', isLoggedIn, houses);
+app.use('/user', isLoggedIn, user);
 app.use('/', auth, isLoggedIn, index);
 
 // catch 404 and forward to error handler

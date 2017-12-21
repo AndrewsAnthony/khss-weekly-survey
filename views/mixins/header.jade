@@ -1,4 +1,4 @@
-mixin header(user, showSearch, showHistory, showWork) 
+mixin header(user, showSearch, showHistory, showWork)
   - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
   nav.navbar.navbar-default.navbar-fixed-top
     .container-fluid
@@ -30,7 +30,7 @@ mixin header(user, showSearch, showHistory, showWork)
               span.caret
               ul.dropdown-menu
                 li
-                  a(href="#user" + user.id) Профайл и Задачи           
+                  a(href="/user/" + user.id) Профайл и Задачи
                 if (showWork && R.any(R.whereEq({name: 'showWork'}), user.Rules))
                   li.divider
                   li
