@@ -1,0 +1,10 @@
+mixin createnotetask(itemtask)
+  .noteTask
+    button.arrow-toggle.collapsed.btn.btn-primary.btn-sm(data-toggle="collapse" data-target="#notetask" + itemtask.id)
+      i.fa.fa-commenting
+      | #{" "}Заметки
+    .collapse(id= "notetask" + itemtask.id)
+      each note, ind in itemtask.NoteTasks
+        blockquote(class= ((ind%2) ?'blockquote-reverse':''))
+          p #{note.text}
+          footer #{moment(note.createAt).format("DD/MM/YYYY")}
