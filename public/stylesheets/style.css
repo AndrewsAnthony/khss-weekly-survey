@@ -153,7 +153,7 @@ button[data-target^='#create'], button[data-target^='#change'] {
   font-family: 'Glyphicons Halflings';
   content: "\e080";
   float: right;
-  color: #029acf;
+  color: #55555;
   padding: 0 0 0 10px;
 }
 .arrow-toggle.collapsed:before {
@@ -167,7 +167,7 @@ dl, dl.dl-horizontal {
 blockquote {
   margin: 0 0 0 5px;
   padding: 0 10px;
-  font-size: x-small;
+  font-size: small;
 }
 .noteTask, .fileTask {
   padding: 10px 0 0;

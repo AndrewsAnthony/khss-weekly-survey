@@ -1,3 +1,6 @@
+include ./displayfile
+include ./notetask
+
 mixin history(itemtask, pathToFile)
 
   - function filterFile(arr, type){ if(type == 'photo') {return R.pipe(R.filter(item => R.prop('type', item) == type),R.groupBy(item => moment(item.createdAt).format("YYYY-MM-DD")),R.toPairs, R.sort(R.descend(R.nth(0))))(arr)} else {return R.filter(item => R.prop('type', item) == type)(arr)} }
@@ -82,47 +85,10 @@ mixin history(itemtask, pathToFile)
                   i #{problem.name}
                   if (ind !== (itemtask.Problems.length - 1))
                     | #{', '}
-
+        
         .panel-footer
           if (itemtask.NoteTasks.length)
-            .noteTask
-              button.arrow-toggle.collapsed.btn.btn-default.btn-sm(data-toggle="collapse" data-target="#notetask" + itemtask.id)
-                i.fa.fa-commenting
-                | #{" "}Заметки
-              .collapse(id= "notetask" + itemtask.id)
-                each note, ind in itemtask.NoteTasks
-                  blockquote(class= ((ind%2) ?'blockquote-reverse':''))
-                    p #{note.text}
-                    footer #{moment(note.createAt).format("DD/MM/YYYY")}
+            +createnotetask(itemtask)
 
           if (itemtask.Files.length)
-            .fileTask
-              button.btn.btn-default.btn-sm.startLoadTask
-                i.fa.fa-files-o
-                | #{" "}Подгрузить файлы (#{itemtask.Files.length} шт.)
-              .hidden-files.hide
-                dl.dl-horizontal
-                  - var groupDocument = filterFile(itemtask.Files, 'document')
-                  if (groupDocument.length)
-                    dt Загруженные файлы
-                    dd
-                      ul
-                        each doc in groupDocument
-                          li
-                            a(href= pathToFile + '/upload/' + doc.path)
-                              i.fa.fa-paperclip
-                              | #{" "}
-                              if doc.FileDescription.name
-                                | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
-                              else
-                                | #{moment(doc.createAt).format(DD/MM/YYYY)}
-                              br
-                              | #{doc.FileDescription.note}
-
-                  each groupImage in filterFile(itemtask.Files, 'photo')
-                    dt #{groupImage[0]}
-                    dd
-                      .gal.taskgallery
-                        each file in groupImage[1]
-                          a(href= pathToFile + '/upload/' + file.path title= file.FileDescription.note + '<br>Дата добавления: ' + moment(file.createdAt).format("DD-MM-YYYY"))
-                            img.lazy.img-thumbnail.img-responsive(data-src= pathToFile + '/upload/' + file.thumbnail src= pathToFile + '/images/loading-sm.gif')
+            +uploadfilesbutton(itemtask.Files, pathToFile)
