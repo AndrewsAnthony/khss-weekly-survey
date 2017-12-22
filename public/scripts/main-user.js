@@ -131,6 +131,33 @@ $('document').ready(function(){
       .toggleClass('glyphicon-chevron-down');
   });
 
+  $('button.startLoadFile').click(function() {
+    $(this).addClass('hide')
+    $(this).parent().find('.hidden-files').removeClass('hide').find('.lazy').lazy({
+      bind: "event"
+    });
+  });
+
+  $('.inboxgallery').each(function() {
+    $(this).magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      gallery: {
+        enabled:true
+      }
+    });
+  });
+
+  $('.photogallery').each(function() {
+    $(this).magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      gallery: {
+        enabled:true
+      }
+    });
+  });
+
   document.getElementById("loading_layer").style.display="none";
 
 })

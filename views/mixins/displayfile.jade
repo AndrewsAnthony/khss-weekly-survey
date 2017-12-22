@@ -1,0 +1,37 @@
+mixin uploadfilesbutton(filearray, pathToFile)
+  
+  - function filterFile(arr, type){ if(type == 'photo') {return R.pipe(R.filter(item => R.prop('type', item) == type),R.groupBy(item => moment(item.createdAt).format("YYYY-MM-DD")),R.toPairs, R.sort(R.descend(R.nth(0))))(arr)} else {return R.filter(item => R.prop('type', item) == type)(arr)} }
+
+  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
+
+  if (filearray.length)
+    .fileBlock
+      button.btn.btn-default.btn-sm.startLoadFile
+        i.fa.fa-files-o
+        | #{" "}Подгрузить файлы (#{filearray.length} шт.)
+      .hidden-files.hide
+        dl.dl-horizontal
+          - var groupDocument = filterFile(filearray, 'document')
+          if (groupDocument.length)
+            dt Загруженные файлы
+            dd
+              ul
+                each doc in groupDocument
+                  li
+                    a(href= pathToFile + '/upload/' + doc.path)
+                      i.fa.fa-paperclip
+                      | #{" "}
+                      if doc.FileDescription.name
+                        | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+                      else
+                        | #{moment(doc.createAt).format(DD/MM/YYYY)}
+                      br
+                      | #{doc.FileDescription.note}
+
+          each groupImage in filterFile(filearray, 'photo')
+            dt #{groupImage[0]}
+            dd
+              .gal.photogallery
+                each file in groupImage[1]
+                  a(href= pathToFile + '/upload/' + file.path title= file.FileDescription.note + '<br>Дата добавления: ' + moment(file.createdAt).format("DD-MM-YYYY"))
+                    img.lazy.img-thumbnail.img-responsive(data-src= pathToFile + '/upload/' + file.thumbnail src= pathToFile + '/images/loading-sm.gif')

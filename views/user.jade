@@ -10,6 +10,7 @@ include ./mixins/header
 include ./mixins/inbox
 include ./mixins/task
 include ./mixins/history
+include ./mixins/displayfile
 
 include ./mixins/createnote
 
@@ -40,7 +41,8 @@ block content
                   li.list-group-item
                     i.fa.fa-phone
                     | #{" " + user.phone}
-          h3.text-center Входящие на отдел
+          h3.text-center
+            i Входящие на отдел
           - var prepareHouse = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
           - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
 
@@ -73,8 +75,10 @@ block content
                                 i #{problem.name}
                                 if (ins !== (inbox.Problems.length - 1))
                                   | #{', '}
+                        +uploadfilesbutton(inbox.Files, '')
 
-          h3.text-center Задачи Необходимые выполнить
+          h3.text-center
+            i Задачи необходимые выполнить
           // - var listHouse = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
           // - var sortByStreet = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
           //- | #{JSON.stringify(sortByStreet)}
