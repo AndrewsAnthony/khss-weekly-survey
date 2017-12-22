@@ -42,8 +42,8 @@ block content
                     i.fa.fa-phone
                     | #{" " + user.phone}
           
-          .well.well-sm 
-            h3.text-center
+          .well.well-sm
+            h3.text-center.bg-danger
               i Входящие на отдел
 
             - var prepareHouse = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
@@ -68,6 +68,9 @@ block content
                       .list-group.collapse(id="inbox-" + (key + '-' + ind))
                         .list-group-item
                           dl.dl-horizontal
+                            dt Ссылка для перехода
+                            dd
+                              a(href='/house/' + key) Перейти к адресу
                             if (inbox.binding)
                               dt Привязка
                               dd #{inbox.binding}
@@ -82,7 +85,7 @@ block content
                           +uploadfilesbutton(inbox.Files, '')
           
           .well.well-sm
-            h3.text-center
+            h3.text-center.bg-danger
               i Задачи необходимые выполнить
             each itemtask in user.ItemTasks
               +history(itemtask, '')
