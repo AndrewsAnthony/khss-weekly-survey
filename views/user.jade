@@ -41,46 +41,48 @@ block content
                   li.list-group-item
                     i.fa.fa-phone
                     | #{" " + user.phone}
-          h3.text-center
-            i Входящие на отдел
-          - var prepareHouse = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
-          - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
+          
+          .well.well-sm 
+            h3.text-center
+              i Входящие на отдел
 
-          .just-padding
-            .list-group.list-group-root.well
-              each house, key in prepareHouse
-                a(href="#house-" + key class="list-group-item" data-toggle="collapse")
-                  i.glyphicon.glyphicon-chevron-right
-                  | #{house}
-                  span.badge #{groupInboxes[key].length}
-                .list-group.collapse(id="house-" + key)
-                  each inbox, ind in groupInboxes[key]
-                    a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse")
-                      i.glyphicon.glyphicon-chevron-right
-                      span
-                        | #{' '}
-                        | Входящие #{"# " + inbox.number} от #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
-                       br
-                      span.label.label-primary #{moment(inbox.term).fromNow()}
-                    .list-group.collapse(id="inbox-" + (key + '-' + ind))
-                      .list-group-item
-                        dl.dl-horizontal
-                          if (inbox.binding)
-                            dt Привязка
-                            dd #{inbox.binding}
-                          if (inbox.Problems.length)
-                            dt Проблемы
-                            dd
-                              each problem, ins in inbox.Problems
-                                i #{problem.name}
-                                if (ins !== (inbox.Problems.length - 1))
-                                  | #{', '}
-                        +uploadfilesbutton(inbox.Files, '')
+            - var prepareHouse = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
+            - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
 
-          h3.text-center
-            i Задачи необходимые выполнить
-          // - var listHouse = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
-          // - var sortByStreet = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
-          //- | #{JSON.stringify(sortByStreet)}
-          //- each task in user.ItemTasks
-          //-   +history(task, '')
+            .just-padding
+              .list-group.list-group-root.well
+                each house, key in prepareHouse
+                  a(href="#house-" + key class="list-group-item" data-toggle="collapse")
+                    i.glyphicon.glyphicon-chevron-right
+                    | #{house}
+                    span.badge #{groupInboxes[key].length}
+                  .list-group.collapse(id="house-" + key)
+                    each inbox, ind in groupInboxes[key]
+                      a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse")
+                        i.glyphicon.glyphicon-chevron-right
+                        span
+                          | #{' '}
+                          | Входящие #{"# " + inbox.number} от #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
+                         br
+                        span.label.label-primary #{moment(inbox.term).fromNow()}
+                      .list-group.collapse(id="inbox-" + (key + '-' + ind))
+                        .list-group-item
+                          dl.dl-horizontal
+                            if (inbox.binding)
+                              dt Привязка
+                              dd #{inbox.binding}
+                            if (inbox.Problems.length)
+                              dt Проблемы
+                              dd
+                                each problem, ins in inbox.Problems
+                                  i #{problem.name}
+                                  if (ins !== (inbox.Problems.length - 1))
+                                    | #{', '}
+                          hr
+                          +uploadfilesbutton(inbox.Files, '')
+          
+          .well.well-sm
+            h3.text-center
+              i Задачи необходимые выполнить
+            each itemtask in user.ItemTasks
+              +history(itemtask, '')
