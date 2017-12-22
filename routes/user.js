@@ -33,7 +33,7 @@ router.get('/:id', function(req, res, next) {
         model: models.Depatment,
         include: [{
           model: models.Inbox,
-          include: [models.House, {model: models.File, include: [models.FileDescription]}]
+          include: [models.House, models.Problem, {model: models.File, include: [models.FileDescription]}]
         }]
       }
       ]}

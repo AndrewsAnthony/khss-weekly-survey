@@ -61,7 +61,18 @@ block content
                        br
                       span.label.label-primary #{moment(inbox.term).fromNow()}
                     .list-group.collapse(id="inbox-" + (key + '-' + ind))
-                      a(href="#" class="list-group-item") Информация по входящему
+                      .list-group-item
+                        dl.dl-horizontal
+                          if (inbox.binding)
+                            dt Привязка
+                            dd #{inbox.binding}
+                          if (inbox.Problems.length)
+                            dt Проблемы
+                            dd
+                              each problem, ins in inbox.Problems
+                                i #{problem.name}
+                                if (ins !== (inbox.Problems.length - 1))
+                                  | #{', '}
 
           h3.text-center Задачи Необходимые выполнить
           // - var listHouse = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
