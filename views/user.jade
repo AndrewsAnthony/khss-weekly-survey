@@ -14,6 +14,8 @@ include ./mixins/history
 include ./mixins/createnote
 
 block content
+  - function createNameHouse(house) { console.log(house);return house.street_new_rus ? house.street_new_rus + " " +  house.name_new_rus + ", " + house.building + " (стр.наз. " + house.street_rus + " " +  house.name_rus + ")" :  house.street_rus + " " + house.name_rus + ", " + house.building }
+
   #loading_layer
     .loader
 
@@ -39,32 +41,30 @@ block content
                     i.fa.fa-phone
                     | #{" " + user.phone}
           h3.text-center Входящие на отдел
-          ul.list-group
-            each inbox in user.Depatment.Inboxes
-              li.list-group-item
-                .dropdown.pull-right
-                  button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
-                    span.caret
-                  ul.dropdown-menu
-                    li
-                      a()
-                span
-                  if (inbox.House.street_new_rus)
-                    b #{inbox.House.street_new_rus} #{inbox.House.name_new_rus}, #{inbox.House.building}
-                    span.text-muted (стр.наз. #{inbox.House.street_rus} #{inbox.House.name_rus})
-                  else
-                    b #{inbox.House.street_rus} #{inbox.House.name_rus}, #{inbox.House.building}
-                br
-                span
-                  | #{"# " + inbox.number}
-                  | от
-                  | #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
-                br
-                span.label.label-primary #{moment(inbox.term).fromNow()}
-                .clearfix
+          - var prepareHouse = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
+          - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
 
-          h3.text-center Задачи
-          // - var listHouse = R.compose(R.toPairs,R.map(task => task.House.id))(user.ItemTasks)
+          .just-padding
+            .list-group.list-group-root.well
+              each house, key in prepareHouse
+                a(href="#house-" + key class="list-group-item" data-toggle="collapse")
+                  i.glyphicon.glyphicon-chevron-right
+                  | #{house}
+                  span.badge #{groupInboxes[key].length}
+                .list-group.collapse(id="house-" + key)
+                  each inbox, ind in groupInboxes[key]
+                    a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse")
+                      i.glyphicon.glyphicon-chevron-right
+                      span
+                        | #{' '}
+                        | Входящие #{"# " + inbox.number} от #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
+                       br
+                      span.label.label-primary #{moment(inbox.term).fromNow()}
+                    .list-group.collapse(id="inbox-" + (key + '-' + ind))
+                      a(href="#" class="list-group-item") Информация по входящему
+
+          h3.text-center Задачи Необходимые выполнить
+          // - var listHouse = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
           // - var sortByStreet = R.compose(R.toPairs,R.groupBy(task => task.House.id))(user.ItemTasks)
           //- | #{JSON.stringify(sortByStreet)}
           //- each task in user.ItemTasks

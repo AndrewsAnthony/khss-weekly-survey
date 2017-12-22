@@ -113,8 +113,8 @@ mixin createtask(house, tasktypes, users, problems)
               select(class="form-control" id="userTask" name='usertask')
                 option(value='') Не выбрано
                 each user in users
-                  //- if (user.id !== user.Depatment.ChiefId)
-                  //- option(value= user.id) #{user.name} (#{user.Depatment.name})
+                  if (user.id !== user.Depatment.ChiefId)
+                    option(value= user.id) #{user.name} (#{user.Depatment.name})
 
             .form-group
               label(for="problemTask") Вопросы в задачи

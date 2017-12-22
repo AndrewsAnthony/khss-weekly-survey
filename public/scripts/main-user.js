@@ -125,6 +125,12 @@ $('document').ready(function(){
     inboxList.search(searchString, inboxList.currentSearchColumns);
   });
 
+  $('.list-group-item').on('click', function() {
+    $('.glyphicon', this)
+      .toggleClass('glyphicon-chevron-right')
+      .toggleClass('glyphicon-chevron-down');
+  });
+
   document.getElementById("loading_layer").style.display="none";
 
 })
