@@ -5,8 +5,6 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Depatment.associate = function(models) {
-    // Depatment -> User
-    Depatment.belongsTo(models.User, {as: 'Chief', constraints: false});
 
     // Depatment -> Inbox
     Depatment.belongsToMany(models.Inbox, {

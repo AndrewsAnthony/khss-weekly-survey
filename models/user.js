@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     image: {
       type: DataTypes.STRING,
-      defaultValue: "images/user.png"
+      defaultValue: "/images/user.png"
     },
     email: {
       type: DataTypes.STRING,
@@ -21,6 +21,8 @@ module.exports = function(sequelize, DataTypes) {
 
   User.associate = function (models) {
     User.belongsTo(models.Depatment);
+
+    User.hasOne(models.User, {as: 'Chief'});
 
     User.belongsTo(models.Authorization);
 
