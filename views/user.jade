@@ -46,12 +46,12 @@ block content
             h3.text-center.bg-danger
               i Входящие на отдел
 
-            - var prepareHouse = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
+            - var prepareHouseForInbox = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
             - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
-
+        
             .just-padding
               .list-group.list-group-root.well
-                each house, key in prepareHouse
+                each house, key in prepareHouseForInbox
                   a(href="#house-" + key class="list-group-item" data-toggle="collapse")
                     i.glyphicon.glyphicon-chevron-right
                     | #{house}
@@ -83,9 +83,65 @@ block content
                                     | #{', '}
                           hr
                           +uploadfilesbutton(inbox.Files, '')
-          
+
+          - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks));
+          - var groupItemTasks = R.map(R.groupBy(task => task.House.id))(R.pluck('ItemTasks', userTasks));
+          //- | #{JSON.stringify(prepareHouseForTask)}
+          //- | #{JSON.stringify(groupItemTasks)}
+
           .well.well-sm
-            h3.text-center.bg-danger
-              i Задачи необходимые выполнить
-            each itemtask in user.ItemTasks
-              +history(itemtask, '')
+            if (!userTasks)
+              h3.text-center.bg-danger
+                i Активные задачи
+              each itemtask in user.ItemTasks
+                +history(itemtask, '') 
+
+            if (userTasks)
+              ul.nav.nav-tabs
+                li.dropdown
+                  a.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | #{'Выбрать сотрудника '}
+                    span.caret
+                  ul.dropdown-menu
+                    each user in userTasks
+                      li
+                        a(href="#user" + user.id data-toggle="tab")
+                          if (user.id == user.ChiefId)
+                            | #{'Твои '} 
+                          else
+                            | #{user.name + " "}
+                          span.label.label-primary #{user.ItemTasks.length + ' задач'}
+            
+              h3.text-center.bg-danger
+                i Активные задачи отдела
+
+              .tab-content
+                each user, count in userTasks
+                  .tab-pane(id="user" + user.id)
+                    if (user.id !== user.ChiefId)
+                      .media.well.well-sm
+                        .media-left.media-top
+                          a(href="#")
+                            img.media-object(src= user.image width='64px')
+                        .media-body
+                          h4.media-heading
+                            b #{user.name}
+                          ul.list-unstyled
+                            li 
+                              u Контактные данные
+                            li #{user.email}
+                            li #{user.phone}
+                    .just-padding
+                      .list-group.list-group-root.well
+                        each house, key in prepareHouseForTask[count]
+                          a(href="#house-task-" + key class="list-group-item" data-toggle="collapse")
+                            i.glyphicon.glyphicon-chevron-right
+                            | #{house}
+                            span.badge #{groupItemTasks[count][key].length}
+                          .list-group.collapse(id="house-task-" + key)
+                            each itemtask, ind in groupItemTasks[count][key]
+                              .list-group-item
+                                +history(itemtask, '')
+
+                    //- each itemtask in user.ItemTasks
+                    //-   +history(itemtask, '')

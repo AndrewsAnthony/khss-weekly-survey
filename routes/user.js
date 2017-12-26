@@ -11,26 +11,35 @@ router.get('/:id', function(req, res, next) {
     return;
   }
 
+  const promiseArr = []
+
   function displayChief(chief){
-    models.User.findAll({
+    
+    promiseArr.push( models.User.findAll({
       where: {
         ChiefId: chief.id
       },
+      include: [{
+        model: models.ItemTask,
+        include: [
+          models.House, models.Problem, 'Implementer', 'TaskType', 'Inbox',
+          'Protocol', 'Information', 'Authority', 'Schedule', 'Program', 'Repair', {
+          model: models.File,
+          include: [models.FileDescription]
+        }, 
+        {
+          model: models.NoteTask,
+          include: [models.User]
+        }]
+      }]
+    }) )
+    
+    promiseArr.push( models.User.findOne({
+      where: {
+        id: chief.id
+      },
       include: [
         models.Rule,
-        {
-          model: models.ItemTask,
-          include: [
-            models.House, models.Problem, 'Implementer', 'TaskType', 'Inbox',
-            'Protocol', 'Information', 'Authority', 'Schedule', 'Program', 'Repair', {
-            model: models.File,
-            include: [models.FileDescription]
-          }, 
-          {
-            model: models.NoteTask,
-            include: [models.User]
-          }]
-        },
         {
           model: models.Depatment,
           include: [{
@@ -38,18 +47,21 @@ router.get('/:id', function(req, res, next) {
             include: [models.House, models.Problem, {model: models.File, include: [models.FileDescription]}]
           }]
         }
-      ]
-    })
-    .then(users => {
+      ]}
+    ) )
+    
+    Promise.all(promiseArr)
+    .then(([userTasks, user]) => {
       res.render('user', {
-        user: users.find(user => user.id == chief.id),
-        users
+        user,
+        userTasks
       });
     })
     .catch(err => {
       console.log(err)
       next(err)
     })
+  
   }
 
   function displayUser(user){
@@ -78,7 +90,7 @@ router.get('/:id', function(req, res, next) {
             include: [models.House, models.Problem, {model: models.File, include: [models.FileDescription]}]
           }]
         }
-        ]}
+      ]}
     )
     .then(user => {
       res.render('user', {
@@ -89,6 +101,7 @@ router.get('/:id', function(req, res, next) {
       console.log(err)
       next(err)
     })
+  
   }
 
   models.User.findOne({
