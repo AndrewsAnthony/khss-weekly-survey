@@ -84,17 +84,24 @@ block content
                           hr
                           +uploadfilesbutton(inbox.Files, '')
 
-          - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks));
-          - var groupItemTasks = R.map(R.groupBy(task => task.House.id))(R.pluck('ItemTasks', userTasks));
-          //- | #{JSON.stringify(prepareHouseForTask)}
-          //- | #{JSON.stringify(groupItemTasks)}
+          - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
+          - var groupItemTasks = R.map(R.groupBy(task => task.House.id))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
 
           .well.well-sm
             if (!userTasks)
               h3.text-center.bg-danger
                 i Активные задачи
-              each itemtask in user.ItemTasks
-                +history(itemtask, '') 
+              .just-padding
+                .list-group.list-group-root.well
+                  each house, key in prepareHouseForTask[0]
+                    a(href="#house-task-" + key class="list-group-item" data-toggle="collapse")
+                      i.glyphicon.glyphicon-chevron-right
+                      | #{house}
+                      span.badge #{groupItemTasks[0][key].length}
+                    .list-group.collapse(id="house-task-" + key)
+                      each itemtask, ind in groupItemTasks[0][key]
+                        .list-group-item
+                          +history(itemtask, '')
 
             if (userTasks)
               ul.nav.nav-tabs
@@ -105,7 +112,7 @@ block content
                   ul.dropdown-menu
                     each user in userTasks
                       li
-                        a(href="#user" + user.id data-toggle="tab")
+                        a(href="#user-" + user.id data-toggle="tab")
                           if (user.id == user.ChiefId)
                             | #{'Твои '} 
                           else
@@ -117,7 +124,7 @@ block content
 
               .tab-content
                 each user, count in userTasks
-                  .tab-pane(id="user" + user.id)
+                  .tab-pane(id="user-" + user.id)
                     if (user.id !== user.ChiefId)
                       .media.well.well-sm
                         .media-left.media-top
@@ -142,6 +149,3 @@ block content
                             each itemtask, ind in groupItemTasks[count][key]
                               .list-group-item
                                 +history(itemtask, '')
-
-                    //- each itemtask in user.ItemTasks
-                    //-   +history(itemtask, '')

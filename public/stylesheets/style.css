@@ -176,8 +176,8 @@ blockquote {
   margin-bottom: 10px;
 }
 
-.just-padding {
-  /*padding: 15px;*/
+.just-padding .panel-group{
+  margin-bottom: 0;
 }
 
 .list-group.list-group-root {
