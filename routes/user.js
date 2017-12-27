@@ -14,7 +14,7 @@ router.get('/:id', function(req, res, next) {
   const promiseArr = []
 
   function displayChief(chief){
-    
+
     promiseArr.push( models.User.findAll({
       where: {
         ChiefId: chief.id
@@ -26,14 +26,14 @@ router.get('/:id', function(req, res, next) {
           'Protocol', 'Information', 'Authority', 'Schedule', 'Program', 'Repair', {
           model: models.File,
           include: [models.FileDescription]
-        }, 
+        },
         {
           model: models.NoteTask,
           include: [models.User]
         }]
       }]
     }) )
-    
+
     promiseArr.push( models.User.findOne({
       where: {
         id: chief.id
@@ -49,7 +49,7 @@ router.get('/:id', function(req, res, next) {
         }
       ]}
     ) )
-    
+
     Promise.all(promiseArr)
     .then(([userTasks, user]) => {
       res.render('user', {
@@ -61,11 +61,11 @@ router.get('/:id', function(req, res, next) {
       console.log(err)
       next(err)
     })
-  
+
   }
 
   function displayUser(user){
-    
+
     models.User.findOne({
       where: {
         AuthorizationId: user.id
@@ -101,7 +101,7 @@ router.get('/:id', function(req, res, next) {
       console.log(err)
       next(err)
     })
-  
+
   }
 
   models.User.findOne({
@@ -110,12 +110,11 @@ router.get('/:id', function(req, res, next) {
     }
   })
   .then(user => {
-    
-    if (req.params.id !== user.id)
-      next(new Error('Перейдите в свой профайл'))
+
+    if (req.params.id !== user.id) displayUser(user)
     else (user.id == user.ChiefId)
           ? displayChief(user)
-          : displayUser(user)   
+          : displayUser(user)
   })
   .catch(err => {
     console.log(err)

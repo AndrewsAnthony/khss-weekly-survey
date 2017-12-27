@@ -41,14 +41,14 @@ block content
                   li.list-group-item
                     i.fa.fa-phone
                     | #{" " + user.phone}
-          
+
           .well.well-sm
             h3.text-center.bg-danger
               i Входящие на отдел
 
             - var prepareHouseForInbox = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
             - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
-        
+
             .just-padding
               .list-group.list-group-root.well
                 each house, key in prepareHouseForInbox
@@ -85,7 +85,12 @@ block content
                           +uploadfilesbutton(inbox.Files, '')
 
           - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
+
           - var groupItemTasks = R.map(R.groupBy(task => task.House.id))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
+
+          - var intersectionTasks = R.range(0, userTasks.length).reduce((useracc, user, ind) => { useracc[user] = prepareHouseForTask.reduce((acc, listaddress, listind) => { if (listind !== ind) acc[listind] = R.intersection(R.keys(prepareHouseForTask[user]), R.keys(listaddress)); return acc }, {}); return useracc}, {})
+
+          | #{JSON.stringify(intersectionTasks)}
 
           .well.well-sm
             if (!userTasks)
@@ -112,19 +117,33 @@ block content
                   ul.dropdown-menu
                     each user in userTasks
                       li
-                        a(href="#user-" + user.id data-toggle="tab")
+                        a(href="#user-task-" + user.id data-toggle="tab")
                           if (user.id == user.ChiefId)
-                            | #{'Твои '} 
+                            | #{'Твои '}
                           else
                             | #{user.name + " "}
                           span.label.label-primary #{user.ItemTasks.length + ' задач'}
-            
+                li.dropdown
+                  a.dropdown-toggle(data-toggle="dropdown" href="#")
+                    | #{'Пересечение задач '}
+                    span.caret
+                  ul.dropdown-menu
+                    each user, ind in userTasks
+                      li
+                        a(href="#user-intersaction-" + user.id data-toggle="tab")
+                          if (user.id == user.ChiefId)
+                            | #{'Твои '}
+                          else
+                            | #{user.name + " "}
+                          - var sumIntersaction = R.keys(intersectionTasks[ind]).reduce((acc, userid) => acc += intersectionTasks[ind][userid].length, 0)
+                          span.label.label-primary #{sumIntersaction + ' адресов'}
+
               h3.text-center.bg-danger
                 i Активные задачи отдела
 
               .tab-content
                 each user, count in userTasks
-                  .tab-pane(id="user-" + user.id)
+                  .tab-pane(id="user-task-" + user.id)
                     if (user.id !== user.ChiefId)
                       .media.well.well-sm
                         .media-left.media-top
@@ -134,18 +153,46 @@ block content
                           h4.media-heading
                             b #{user.name}
                           ul.list-unstyled
-                            li 
+                            li
                               u Контактные данные
                             li #{user.email}
                             li #{user.phone}
                     .just-padding
                       .list-group.list-group-root.well
                         each house, key in prepareHouseForTask[count]
-                          a(href="#house-task-" + key class="list-group-item" data-toggle="collapse")
+                          a(href="#house-task-"+ count + '-' + key class="list-group-item" data-toggle="collapse")
                             i.glyphicon.glyphicon-chevron-right
                             | #{house}
                             span.badge #{groupItemTasks[count][key].length}
-                          .list-group.collapse(id="house-task-" + key)
+                          .list-group.collapse(id="house-task-"+ count + '-' + key)
                             each itemtask, ind in groupItemTasks[count][key]
                               .list-group-item
                                 +history(itemtask, '')
+
+                each user, count in userTasks
+                  .tab-pane(id="user-intersaction-" + user.id)
+                    if (user.id !== user.ChiefId)
+                      .media.well.well-sm
+                        .media-left.media-top
+                          a(href="#")
+                            img.media-object(src= user.image width='64px')
+                        .media-body
+                          h4.media-heading
+                            b #{user.name}
+                          ul.list-unstyled
+                            li
+                              u Контактные данные
+                            li #{user.email}
+                            li #{user.phone}
+                    .just-padding
+                      .list-group.list-group-root.well
+                        each userid in R.keys(intersectionTasks[count])
+                          if (intersectionTasks[count][userid].length)
+                            a(href="#house-intersection-"+ count + '-' + userid class="list-group-item" data-toggle="collapse")
+                              i.glyphicon.glyphicon-chevron-right
+                              | #{prepareHouseForTask[userid][intersectionTasks[count][userid]]}
+                            //-   span.badge #{groupItemTasks[count][key].length}
+                            //- .list-group.collapse(id="house-task-"+ count + '-' + key)
+                            //-   each itemtask, ind in groupItemTasks[count][key]
+                            //-     .list-group-item
+                            //-       +history(itemtask, '')
