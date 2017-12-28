@@ -2,13 +2,13 @@ include ./displayfile
 include ./notetask
 
 mixin history(itemtask, pathToFile)
+  - var uniquekey = Math.random().toString().slice(2);
 
   - function filterFile(arr, type){ if(type == 'photo') {return R.pipe(R.filter(item => R.prop('type', item) == type),R.groupBy(item => moment(item.createdAt).format("YYYY-MM-DD")),R.toPairs, R.sort(R.descend(R.nth(0))))(arr)} else {return R.filter(item => R.prop('type', item) == type)(arr)} }
 
-  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
+  - function inicialName(str){ return str.split(' ').map(part => {return part[0].toUpperCase() + part.slice(1)}).join(' ')}
 
   -var itemTaskState = {active: { letter: "Написать письмо", photoreport: "Сделать фотоотчет", information: "Предоставить информацию"}, add: { letter: "Письмо добавлено", photoreport: "Фотоотчет загружен", information: "Информация добавлена"}, close: { letter: "Письмо закрыто", photoreport: "Фотоотчет", information: "Информация"}}
-
 
   .panel-group
     div(class= "panel panel-default")
@@ -17,7 +17,7 @@ mixin history(itemtask, pathToFile)
         h4.panel-title
           a.arrow-toggle.collapsed(
           data-toggle="collapse"
-          href="#collapsetask" + itemtask.id)
+          href="#collapse-task-" + itemtask.id + '-' + uniquekey)
 
             if (itemtask.TaskType.model == 'inbox')
               span.pull-left
@@ -65,10 +65,10 @@ mixin history(itemtask, pathToFile)
 
             span.pull-right
               i.fa.fa-calendar
-              | #{' ' + moment(itemtask.TaskType.createAt).calendar()}
+              | #{' ' + moment(itemtask.TaskType.createAt).format('DD-MM-YYYY')}
             .clearfix
 
-      .panel-collapse.collapse(id="collapsetask" + itemtask.id)
+      .panel-collapse.collapse(id="collapse-task-" + itemtask.id + '-' + uniquekey)
         .panel-body
           dl.dl-horizontal
             dt Исполнитель
@@ -85,7 +85,7 @@ mixin history(itemtask, pathToFile)
                   i #{problem.name}
                   if (ind !== (itemtask.Problems.length - 1))
                     | #{', '}
-        
+
         .panel-footer
           if (itemtask.NoteTasks.length)
             +createnotetask(itemtask)

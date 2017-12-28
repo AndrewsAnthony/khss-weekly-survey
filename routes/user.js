@@ -1,6 +1,12 @@
-const models  = require('../models');
-const express = require('express');
-const router  = express.Router();
+const models     = require('../models');
+const express    = require('express');
+const path       = require('path');
+const formidable = require('formidable');
+const fse        = require('fs-extra');
+const mkdirp     = require('mkdirp-promise');
+const Jimp       = require("jimp");
+const moment     = require('moment');
+const router     = express.Router();
 
 
 router.get('/:id', function(req, res, next) {
@@ -119,6 +125,112 @@ router.get('/:id', function(req, res, next) {
   .catch(err => {
     console.log(err)
     next(err)
+  })
+
+})
+
+router.post('/profile/field/edit', function(req, res, next) {
+  let redirectid = '..';
+  if (Object.keys(req.body).length == 3) {
+    models.User.findOne({
+      where: {
+        AuthorizationId: req.user.id
+      }
+    })
+    .then(user => {
+      redirectid = user.id
+      return user.update({
+              name: req.body.name,
+              email: req.body.email,
+              phone: req.body.phone
+            })
+    })
+    .then(() => {
+      res.redirect('/user/' + redirectid)
+      return;
+    })
+    .catch(err => {
+      console.log(err)
+      err.message = `Проблемы при загрузки файла,
+       обратитесь к администратору`
+      next(err)
+    })
+  } else {
+    const err = new Error(`Не все поля заполнены`)
+    next(err)
+  }
+
+})
+
+router.post('/profile/photo/edit', function(req, res, next) {
+  let redirectid = '..';
+  const form = new formidable.IncomingForm();
+
+  form.multiples = false;
+  form.uploadDir = path.join(__dirname, '../uploadfiles');
+
+  form.parse(req, function(err, fields, files){
+
+    if( err ){
+      console.log(err);
+      err.message = `Файл не загрузился. Проблемы при загрузки файла,
+       обратитесь к администратору`
+      next(err)
+      return;
+    }
+
+        console.log("files", files);
+        console.log("fields", fields);
+    if (files.image.size || files.image.name) {
+
+      models.User.findOne({
+        where: {
+          AuthorizationId: req.user.id
+        }
+      })
+      .then(user => {
+
+        const fileUploadDir = path.join(__dirname, '../public', 'userprofile')
+        const filePath = files.image.path;
+        const nameFile = moment().format('YYYY-MM-DD') + '_' + files.image.path.substr(-32) + path.extname(files.image.name)
+        const newFilePath = path.join(fileUploadDir, nameFile);
+
+        return fse.ensureDir(fileUploadDir)
+                .then(() => fse.move(filePath, newFilePath))
+                .then(() => fse.ensureDir(path.join(fileUploadDir,'thumbnails')))
+                .then(() => Jimp.read(newFilePath))
+                .then((currentFile) => {
+                    return currentFile
+                          .resize(64, Jimp.AUTO)
+                          .write(path.join(fileUploadDir,'thumbnails', nameFile));
+                })
+                .then(() => {
+                  redirectid = user.id
+                  return user.update({
+                          image: nameFile
+                        })
+                })
+      })
+      .then(() => {
+        res.redirect('/user/' + redirectid)
+        return;
+      })
+      .catch(err => {
+        console.log(err)
+        err.message = `Проблемы при загрузки файла,
+         обратитесь к администратору`
+        next(err)
+      })
+
+    } else {
+      const err = new Error(`Не отправлен файл`)
+      next(err)
+    }
+
+
+
+
+
   })
 
 })

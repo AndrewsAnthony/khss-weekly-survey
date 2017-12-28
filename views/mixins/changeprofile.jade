@@ -1,0 +1,46 @@
+mixin changeprofile(user)
+  #changeProfileModal.modal.fade(role="dialog")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title.text-uppercase Внесите изменения в свой профайл
+
+        .modal-body
+          form(role="form" action= '/user/profile/field/edit' method='post' id="formProfileField")
+            .form-group
+              label(for="nameProfile") Имя пользователя
+              .input-group
+                i.input-group-addon
+                  i.fa.fa-font
+                input(type="text" class="form-control" id="nameProfile" placeholder="Введите ФИО" name='name' value= user.name)
+
+            .form-group
+              label(for="emailProfile") Электронная почта
+              .input-group
+                i.input-group-addon
+                  i.fa.fa-envelope-o
+                input(type="text" class="form-control" id="emailProfile" placeholder="Введите электронную почту" name='email' value= user.email)
+
+            .form-group
+              label(for="phoneProfile") Контактный телефон
+              .input-group
+                i.input-group-addon
+                  i.fa.fa-phone
+                input(type="text" class="form-control" id="phoneProfile" placeholder="Введите телефон" name='phone' value= user.phone)
+            button.btn.btn-primary(type="submit" id='sendField') Созранить Отдельно Поля
+
+          hr
+
+          form(role="form" action= '/user/profile/photo/edit' method='post' id="formProfilePhoto" enctype='multipart/form-data')
+            .form-group
+              label(for="imageProfile").text-center
+                img(src= ((user.image) ? ('/userprofile/thumbnails/' + user.image) : '/images/user.png')).img-responsive.img-thumbnail
+              .input-group
+                i.input-group-addon
+                  i.fa.fa-file-image-o
+                input(type="file" class="form-control" id="imageProfile" name='image')
+            button.btn.btn-primary(type="submit" id='sendPhoto') Созранить Отдельно Фотографию
+
+        .modal-footer
+          button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть

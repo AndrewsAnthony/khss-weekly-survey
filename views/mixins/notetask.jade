@@ -1,9 +1,10 @@
 mixin createnotetask(itemtask)
+  - var uniquekey = Math.random().toString().slice(2);
   .noteTask
-    button.arrow-toggle.collapsed.btn.btn-primary.btn-sm(data-toggle="collapse" data-target="#notetask" + itemtask.id)
+    button.arrow-toggle.collapsed.btn.btn-primary.btn-sm(data-toggle="collapse" data-target="#notetask-" + itemtask.id + '-' + uniquekey)
       i.fa.fa-commenting
       | #{" "}Заметки
-    .collapse(id= "notetask" + itemtask.id)
+    .collapse(id= "notetask-" + itemtask.id + '-' + uniquekey)
       each note, ind in itemtask.NoteTasks
         blockquote(class= ((ind%2) ?'blockquote-reverse':''))
           p #{note.text}

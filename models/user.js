@@ -6,8 +6,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: "Новый пользователь КП"
     },
     image: {
-      type: DataTypes.STRING,
-      defaultValue: "/images/user.png"
+      type: DataTypes.STRING
     },
     email: {
       type: DataTypes.STRING,

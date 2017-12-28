@@ -1,5 +1,5 @@
 mixin header(user, showSearch, showHistory, showWork)
-  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
+  - function inicialName(str){ return str.split(' ').map(part => {return part[0].toUpperCase() + part.slice(1)}).join(' ')}
   nav.navbar.navbar-default.navbar-fixed-top
     .container-fluid
 

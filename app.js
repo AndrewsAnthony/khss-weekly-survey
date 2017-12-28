@@ -47,10 +47,10 @@ function isLoggedIn(req, res, next) {
   res.redirect('/signin');
 }
 
-app.use('/work', isLoggedIn, works);
-app.use('/house', isLoggedIn, houses);
-app.use('/user', isLoggedIn, user);
 app.use('/', auth, isLoggedIn, index);
+app.use('/user', isLoggedIn, user);
+app.use('/house', isLoggedIn, houses);
+app.use('/work', isLoggedIn, works);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

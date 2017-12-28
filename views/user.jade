@@ -11,11 +11,13 @@ include ./mixins/inbox
 include ./mixins/task
 include ./mixins/history
 include ./mixins/displayfile
+include ./mixins/changeprofile
 
 include ./mixins/createnote
 
 block content
-  - function createNameHouse(house) { console.log(house);return house.street_new_rus ? house.street_new_rus + " " +  house.name_new_rus + ", " + house.building + " (стр.наз. " + house.street_rus + " " +  house.name_rus + ")" :  house.street_rus + " " + house.name_rus + ", " + house.building }
+  - function createNameHouse(house) { return house.street_new_rus ? house.street_new_rus + " " +  house.name_new_rus + ", " + house.building + " (стр.наз. " + house.street_rus + " " +  house.name_rus + ")" :  house.street_rus + " " + house.name_rus + ", " + house.building }
+  - function inicialName(str){ return str.split(' ').map(part => {return part[0].toUpperCase() + part.slice(1)}).join(' ')}
 
   #loading_layer
     .loader
@@ -29,9 +31,9 @@ block content
           .well.well-sm
             .row
               .col-sm-6.col-md-3.text-center
-                img(src= user.image max-width='300px').img-responsive.img-thumbnail
+                img(src= ((user.image) ? ('/userprofile/' + user.image) : '/images/user.png')).img-responsive.img-thumbnail
               .col-sm-6.col-md-9.text-center
-                h4 #{user.name}
+                h4 #{inicialName(user.name)}
                 small
                   cite #{user.Depatment.name}
                 ul.list-group
@@ -41,6 +43,8 @@ block content
                   li.list-group-item
                     i.fa.fa-phone
                     | #{" " + user.phone}
+
+                button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeProfileModal") Изменить профайл
 
           .well.well-sm
             h3.text-center.bg-danger
@@ -88,9 +92,9 @@ block content
 
           - var groupItemTasks = R.map(R.groupBy(task => task.House.id))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
 
-          - var intersectionTasks = R.range(0, userTasks.length).reduce((useracc, user, ind) => { useracc[user] = prepareHouseForTask.reduce((acc, listaddress, listind) => { if (listind !== ind) acc[listind] = R.intersection(R.keys(prepareHouseForTask[user]), R.keys(listaddress)); return acc }, {}); return useracc}, {})
+          if (userTasks)
 
-          | #{JSON.stringify(intersectionTasks)}
+            - var intersectionHouse = R.range(0, userTasks.length).reduce((useracc, user, ind) => { useracc[user] = groupItemTasks.reduce((acc, listaddress, listind) => { if (listind !== ind){ intersectionAddress = R.intersection(R.keys(prepareHouseForTask[user]), R.keys(listaddress)); if (intersectionAddress.length) { intersectionAddress.forEach(address => { if (!acc[address]) { acc[address] = [listind] } else { acc[address].push(listind) } }) }; return acc } return acc }, {}); return useracc }, {})
 
           .well.well-sm
             if (!userTasks)
@@ -109,10 +113,10 @@ block content
                           +history(itemtask, '')
 
             if (userTasks)
-              ul.nav.nav-tabs
+              ul.nav.nav-tabs.nav-justified
                 li.dropdown.active
                   a.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | #{'Выбрать сотрудника '}
+                    | #{'Задачи '}
                     span.caret
                   ul.dropdown-menu
                     each user in userTasks
@@ -121,11 +125,11 @@ block content
                           if (user.id == user.ChiefId)
                             | #{'Твои '}
                           else
-                            | #{user.name + " "}
+                            | #{inicialName(user.name) + " "}
                           span.label.label-primary #{user.ItemTasks.length + ' задач'}
                 li.dropdown
                   a.dropdown-toggle(data-toggle="dropdown" href="#")
-                    | #{'Пересечение задач '}
+                    | #{'Пересечение'}
                     span.caret
                   ul.dropdown-menu
                     each user, ind in userTasks
@@ -134,9 +138,8 @@ block content
                           if (user.id == user.ChiefId)
                             | #{'Твои '}
                           else
-                            | #{user.name + " "}
-                          - var sumIntersaction = R.keys(intersectionTasks[ind]).reduce((acc, userid) => acc += intersectionTasks[ind][userid].length, 0)
-                          span.label.label-primary #{sumIntersaction + ' адресов'}
+                            | #{inicialName(user.name) + " "}
+                          span.label.label-primary #{R.keys(intersectionHouse[ind]).length + ' адрес' + ((R.keys(intersectionHouse[ind]).length == 1) ? "" : "а")}
 
               h3.text-center.bg-danger
                 i Активные задачи отдела
@@ -148,10 +151,10 @@ block content
                       .media.well.well-sm
                         .media-left.media-top
                           a(href="#")
-                            img.media-object(src= user.image width='64px')
+                            img.media-object(src= ((user.image) ? ('/userprofile/thumbnails/' + user.image) : '/images/user.png'))
                         .media-body
                           h4.media-heading
-                            b #{user.name}
+                            b #{inicialName(user.name)}
                           ul.list-unstyled
                             li
                               u Контактные данные
@@ -175,10 +178,10 @@ block content
                       .media.well.well-sm
                         .media-left.media-top
                           a(href="#")
-                            img.media-object(src= user.image width='64px')
+                            img.media-object(src= ((user.image) ? ('/userprofile/thumbnails/' + user.image) : '/images/user.png'))
                         .media-body
                           h4.media-heading
-                            b #{user.name}
+                            b #{inicialName(user.name)}
                           ul.list-unstyled
                             li
                               u Контактные данные
@@ -186,13 +189,27 @@ block content
                             li #{user.phone}
                     .just-padding
                       .list-group.list-group-root.well
-                        each userid in R.keys(intersectionTasks[count])
-                          if (intersectionTasks[count][userid].length)
-                            a(href="#house-intersection-"+ count + '-' + userid class="list-group-item" data-toggle="collapse")
+                        each houseid in R.keys(intersectionHouse[count])
+                          if (intersectionHouse[count][houseid].length)
+                            a(href="#house-intersection-"+ count + '-' + '-' + houseid class="list-group-item" data-toggle="collapse")
                               i.glyphicon.glyphicon-chevron-right
-                              | #{prepareHouseForTask[userid][intersectionTasks[count][userid]]}
-                            //-   span.badge #{groupItemTasks[count][key].length}
-                            //- .list-group.collapse(id="house-task-"+ count + '-' + key)
-                            //-   each itemtask, ind in groupItemTasks[count][key]
-                            //-     .list-group-item
-                            //-       +history(itemtask, '')
+                              span.badge #{"еще " + intersectionHouse[count][houseid].length + " сотрудник" + ((intersectionHouse[count][houseid].length == 1) ? "" : "а")}
+                              | #{prepareHouseForTask[count][houseid]}
+                            .list-group.collapse(id="house-intersection-" + count + '-' + '-' + houseid)
+                              each userid in intersectionHouse[count][houseid]
+                               .list-group-item
+                                  b
+                                    i
+                                      u #{inicialName(userTasks[userid]['name'])}
+                               each itemtask in groupItemTasks[userid][houseid]
+                                  .list-group-item
+                                    +history(itemtask, '')
+                              .list-group-item
+                                b
+                                  i
+                                    u #{inicialName(userTasks[count]['name'])}
+                              each itemtask in groupItemTasks[count][houseid]
+                                .list-group-item
+                                  +history(itemtask, '')
+
+          +changeprofile(user)
