@@ -1,25 +1,26 @@
-var express       = require('express');
-var passport      = require('passport');
-var path          = require('path');
-var favicon       = require('serve-favicon');
-var logger        = require('morgan');
-var cookieParser  = require('cookie-parser');
-var bodyParser    = require('body-parser');
-var session       = require('express-session');
+var express           = require('express');
+var passport          = require('passport');
+var path              = require('path');
+var favicon           = require('serve-favicon');
+var logger            = require('morgan');
+var cookieParser      = require('cookie-parser');
+var bodyParser        = require('body-parser');
+var session           = require('express-session');
 
-var models        = require('./models');
-var Authorization = models.Authorization;
+var models            = require('./models');
+var Authorization     = models.Authorization;
 
-var index         = require('./routes/index');
-var houses        = require('./routes/house');
-var works         = require('./routes/work');
-var auth          = require('./routes/auth');
-var user          = require('./routes/user');
+var index             = require('./routes/index');
+var houses            = require('./routes/house');
+var works             = require('./routes/work');
+var auth              = require('./routes/auth');
+var user              = require('./routes/user');
 
-var app           = express();
-app.locals.moment = require('moment');
+var app               = express();
+app.locals.moment     = require('moment');
 app.locals.moment.locale('ru');
-app.locals.R      = require('ramda');
+app.locals.R          = require('ramda');
+app.locals.viewHelper = require('./views/view-helper.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

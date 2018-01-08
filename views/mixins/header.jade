@@ -1,5 +1,4 @@
 mixin header(user, showSearch, showHistory, showWork)
-  - function inicialName(str){ return str.split(' ').map(part => {return part[0].toUpperCase() + part.slice(1)}).join(' ')}
   nav.navbar.navbar-default.navbar-fixed-top
     .container-fluid
 
@@ -15,7 +14,7 @@ mixin header(user, showSearch, showHistory, showWork)
           i(style='color: #337ab7') КП-ХСС
 
       .collapse.navbar-collapse#navbar-collapse-top
-        if (showSearch && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+        if (showSearch && viewHelper.checkUserRule('showHouse', user.Rules))
           form.navbar-form.navbar-left(role="form" method='get' action='/house/')
            .input-group
               input#typeahead(type="text" class="form-control" placeholder="Выберите адрес...")
@@ -26,16 +25,16 @@ mixin header(user, showSearch, showHistory, showWork)
         ul.nav.navbar-nav.navbar-right
           li.dropdown
             a.dropdown-toggle(href="#" data-toggle="dropdown")
-              | #{inicialName(user.name)}
+              | #{viewHelper.inicialName(user.name)}
               span.caret
               ul.dropdown-menu
                 li
                   a(href="/user/" + user.id) Профайл и Задачи
-                if (showWork && R.any(R.whereEq({name: 'showWork'}), user.Rules))
+                if (showWork && viewHelper.checkUserRule('showWork', user.Rules))
                   li.divider
                   li
                     a(href="../work") Список работ
-                if (showHistory && R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+                if (showHistory && viewHelper.checkUserRule('showHouse', user.Rules))
                   li.divider
                   li
                     a(href='/house') Недавно добавленные

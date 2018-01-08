@@ -81,7 +81,7 @@ $('document').ready(function(){
     });
   });
 
-  $('.taskgallery').each(function() {
+  $('.photogallery').each(function() {
     $(this).magnificPopup({
       delegate: 'a',
       type: 'image',

@@ -19,7 +19,7 @@ block content
         .well.well-sm
             h1.text-center
               i= title
-        if (R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+        if (viewHelper.checkUserRule('showHouse', user.Rules))
           ul.list-group
             each house, ind in houses
               li.list-group-item

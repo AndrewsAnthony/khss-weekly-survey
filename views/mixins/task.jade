@@ -80,7 +80,7 @@ mixin tasklist(itemtasktype, house, rules)
           span.caret
         ul.dropdown-menu
           li.dropdown-header Другие действия
-          if (R.any(R.whereEq({name: 'addFile'}), rules))
+          if (viewHelper.checkUserRule('addFile', user.Rules))
             li.dropdown-header Загрузить на сервер
             li
               a(

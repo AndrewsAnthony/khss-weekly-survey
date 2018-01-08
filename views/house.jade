@@ -26,7 +26,7 @@ block content
     .row
       .col-sm-12.well
 
-        if (R.any(R.whereEq({name: 'showHouse'}), user.Rules))
+        if (viewHelper.checkUserRule('showHouse', user.Rules))
           .well.well-sm
             h4.text-center
               b
@@ -108,7 +108,7 @@ block content
                         span.badge #{house.roof_area}
                         b Площадь кровли
 
-                  if (house.Authorities && house.Authorities.length && R.any(R.whereEq({name: 'showWork'}), user.Rules))
+                  if (house.Authorities && house.Authorities.length && viewHelper.checkUserRule('showWork', user.Rules))
                     .col-md-6
                       h3
                         i Программы городской власти
@@ -126,7 +126,7 @@ block content
               div(role="tabpanel",class="tab-pane fade",id="tabInbox")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createInbox'}), user.Rules))
+                    if (viewHelper.checkUserRule('createInbox', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
                     
                     form(role="form")
@@ -169,13 +169,13 @@ block content
                           each inbox in inboxs
                             +inboxlist(inbox, house, user.Rules)
 
-                    if (R.any(R.whereEq({name: 'createInbox'}), user.Rules))
+                    if (viewHelper.checkUserRule('createInbox', user.Rules))
                       +createinbox(house, depatments, problems)
 
               div(role="tabpanel",class="tab-pane fade",id="tabTask")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createTask'}), user.Rules))
+                    if (viewHelper.checkUserRule('createTask', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createTaskModal") Создать задачу
                     .no-more-tables
                       table.table.table-striped.text-center
@@ -191,7 +191,7 @@ block content
                           each itemtask in itemtasks
                             +tasklist(itemtask, house, user.Rules)
 
-                      if (R.any(R.whereEq({name: 'createTask'}), user.Rules))
+                      if (viewHelper.checkUserRule('createTask', user.Rules))
                         +createtask(house, tasktypes, users, problems)
 
               div(role="tabpanel",class="tab-pane fade",id="tabHistory")
@@ -200,6 +200,6 @@ block content
                     each itemtask in itemtasks
                       +history(itemtask, '..')
 
-            if (R.any(R.whereEq({name: 'addFile'}), user.Rules))
+            if (viewHelper.checkUserRule('addFile', user.Rules))
               +createnote()
               +createfile()

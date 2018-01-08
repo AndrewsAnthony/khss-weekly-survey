@@ -163,7 +163,7 @@ $('document').ready(function(){
   //   $('.selectpicker').selectpicker('mobile');
   // }
 
-  $('button.startLoadTask').click(function() {
+  $('button.startLoadFile').click(function() {
     $(this).addClass('hide')
     $(this).parent().find('.hidden-files').removeClass('hide').find('.lazy').lazy({
       bind: "event"
@@ -376,7 +376,7 @@ $('.inboxgallery').each(function() {
   });
 });
 
-$('.taskgallery').each(function() {
+$('.photogallery').each(function() {
   $(this).magnificPopup({
     delegate: 'a',
     type: 'image',

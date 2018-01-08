@@ -49,7 +49,7 @@ mixin inboxlist(inbox, house, rules)
             li
               a
                 s.small Фотографии
-          if (R.any(R.whereEq({name: 'addFile'}), rules))
+          if (viewHelper.checkUserRule('addFile', user.Rules))
             li.dropdown-header Загрузить на сервер
             li
               a(

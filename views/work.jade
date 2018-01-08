@@ -26,7 +26,7 @@ block content
   .container(role="main")
     .row
       .col-sm-12.well
-        if (R.any(R.whereEq({name: 'showWork'}), user.Rules))
+        if (viewHelper.checkUserRule('showWork', user.Rules))
           .well.well-sm
             h4.text-center
               b
@@ -74,7 +74,7 @@ block content
               div(role="tabpanel",class="tab-pane fade in active",id="tabAuthority")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createWork'}), user.Rules))
+                    if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createAuthority") Добавить прием
                     ul.list-group
                       each authority in authorities
@@ -84,7 +84,7 @@ block content
               div(role="tabpanel",class="tab-pane fade",id="tabSchedule")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createWork'}), user.Rules))
+                    if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createSchedule") Добавить титульный список
                     ul.list-group
                       each schedule in schedules
@@ -96,7 +96,7 @@ block content
               div(role="tabpanel",class="tab-pane fade",id="tabProtocol")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createWork'}), user.Rules))
+                    if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProtocol") Добавить протокол
                     ul.list-group
                       each protocol in protocols
@@ -110,7 +110,7 @@ block content
               div(role="tabpanel",class="tab-pane fade",id="tabProgram")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createWork'}), user.Rules))
+                    if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProgram") Добавить программу
                     ul.list-group
                       each program in programs
@@ -120,20 +120,20 @@ block content
               div(role="tabpanel",class="tab-pane fade",id="tabRepair")
                 .row
                   .col-sm-12
-                    if (R.any(R.whereEq({name: 'createWork'}), user.Rules))
+                    if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createRepair") Добавить вид ремонта
                     ul.list-group
                       each problem in problems
                         li.list-group-item
                           | #{problem.name}
 
-            if (R.any(R.whereEq({name: 'createWork'}), user.Rules))
+            if (viewHelper.checkUserRule('createWork', user.Rules))
               +createauthority()
               +createschedule()
               +createprotocol()
               +createprogram()
               +createrepair()
 
-            if (R.any(R.whereEq({name: 'addFile'}), user.Rules))
+            if (viewHelper.checkUserRule('addFile', user.Rules))
               +createnote()
               +createfile()

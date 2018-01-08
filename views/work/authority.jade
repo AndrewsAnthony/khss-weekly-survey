@@ -9,6 +9,7 @@ include ../mixins/header
 include ../mixins/history
 
 include ./authoritylist
+include ./changelist
 
 include ../mixins/createnote
 include ../mixins/createfile
@@ -22,7 +23,7 @@ block content
   .container(role="main")
     .row
       .col-sm-12.well
-        if (R.any(R.whereEq({name: 'showWork'}), user.Rules))
+        if (viewHelper.checkUserRule('showWork', user.Rules))
           .well.well-sm
             h4.text-center
               b
@@ -33,7 +34,7 @@ block content
                   br
                   | #{authority.location}
 
-          if (R.any(R.whereEq({name: 'changeWork'}), user.Rules))
+          if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
           each house in authority.Houses
             .panel-group
@@ -60,5 +61,5 @@ block content
                     each task in house.ItemTasks
                       +history(task, '../../..')
 
-            if (R.any(R.whereEq({name: 'changeWork'}), user.Rules))
-              +changelist(authority)
+          if (viewHelper.checkUserRule('changeWork', user.Rules))
+            +changelist(authority)

@@ -18,9 +18,9 @@ $('document').ready(function(){
     }
   });
 
-  $('select').selectpicker({
-    actionsBox: true
-  });
+  // $('select').selectpicker({
+  //   actionsBox: true
+  // });
 
   var addressFetcher = new Bloodhound({
     datumTokenizer: function(datum){
@@ -228,5 +228,67 @@ $('input.search').keyup(function() {
 });
 
 document.getElementById("loading_layer").style.display="none";
+
+$('#houseListOptions').multiSelect({
+  selectableHeader: "<h5 class='text-center bg-info'>Кандидаты</h5>",
+  selectionHeader: "<h5 class='text-center bg-info'>Текущие список</h5>"
+})
+
+$('#addStreetOptions').click(function(e){
+  $this = $(this)
+  $this.addClass('disabled')
+  var data = $('#findStreetOptions').val()
+  if(data.length > 3) {
+    $('#findStreetOptions').val('')
+    $.post('/work/addoptions', {street: data})
+    .done(function(data){
+      var options = data.map(function(house){
+        if (house.name_new_rus) {
+          return { value: house.id, text: house.street_new_rus + ' ' + house.name_new_rus + ', ' + house.building}
+        }
+        return { value: house.id, text: house.street_rus + ' ' + house.name_rus + ', ' + house.building}
+      })
+      $('#houseListOptions').multiSelect('addOption', options)
+      $this.removeClass('disabled')
+      $('#alertOptions').collapse('show').find('span').text('Добавлено ' + options.length)
+    })
+    .error(function(err){
+      $this.removeClass('disabled')
+      $('#alertOptions').collapse('show').find('span').text('Неверный запрос или произошла системная ошибка')
+    })
+  }
+  else {
+    $('#alertOptions').collapse('show').find('span').text('Необходимо более 3 символов')
+    $this.removeClass('disabled')
+  }
+})
+
+$('.addDistrictOptions').click(function(e){
+
+  var sector = $(this).data('sector')
+  $.post('/work/addoptions', {sector: sector})
+  .done(function(data){
+    var options = data.map(function(house){
+      if (house.name_new_rus) {
+        return { value: house.id, text: house.street_new_rus + ' ' + house.name_new_rus + ', ' + house.building}
+      }
+      return { value: house.id, text: house.street_rus + ' ' + house.name_rus + ', ' + house.building}
+    })
+    $('#houseListOptions').multiSelect('addOption', options)
+    $('#alertOptions').collapse('show').find('span').text('Добавлено ' + options.length)
+  })
+  .error(function(err){
+    $('#alertOptions').collapse('show').find('span').text('Произошла системная ошибка')
+  })
+
+})
+
+$('#changeList').on('keyup keypress', "input", function(e) {
+  var keyCode = e.keyCode || e.which;
+  if (keyCode === 13) {
+    e.preventDefault();
+    return false;
+  }
+});
 
 })

@@ -16,8 +16,6 @@ include ./mixins/changeprofile
 include ./mixins/createnote
 
 block content
-  - function createNameHouse(house) { return house.street_new_rus ? house.street_new_rus + " " +  house.name_new_rus + ", " + house.building + " (стр.наз. " + house.street_rus + " " +  house.name_rus + ")" :  house.street_rus + " " + house.name_rus + ", " + house.building }
-  - function inicialName(str){ return str.split(' ').map(part => {return part[0].toUpperCase() + part.slice(1)}).join(' ')}
 
   #loading_layer
     .loader
@@ -27,13 +25,13 @@ block content
   .container(role="main")
     .row
       .col-sm-12.well
-        if (R.any(R.whereEq({name: 'showProfile'}), user.Rules))
+        if (viewHelper.checkUserRule('showProfile', user.Rules))
           .well.well-sm
             .row
               .col-sm-6.col-md-3.text-center
                 img(src= ((user.image) ? ('/userprofile/' + user.image) : '/images/user.png')).img-responsive.img-thumbnail
               .col-sm-6.col-md-9.text-center
-                h4 #{inicialName(user.name)}
+                h4 #{user.name}
                 small
                   cite #{user.Depatment.name}
                 ul.list-group
@@ -50,7 +48,7 @@ block content
             h3.text-center.bg-danger
               i Входящие на отдел
 
-            - var prepareHouseForInbox = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
+            - var prepareHouseForInbox = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(viewHelper.createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
             - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
 
             .just-padding
@@ -88,7 +86,7 @@ block content
                           hr
                           +uploadfilesbutton(inbox.Files, '')
 
-          - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
+          - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(viewHelper.createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
 
           - var groupItemTasks = R.map(R.groupBy(task => task.House.id))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
 
@@ -125,7 +123,7 @@ block content
                           if (user.id == user.ChiefId)
                             | #{'Твои '}
                           else
-                            | #{inicialName(user.name) + " "}
+                            | #{viewHelper.inicialName(user.name) + " "}
                           span.label.label-primary #{user.ItemTasks.length + ' задач'}
                 li.dropdown
                   a.dropdown-toggle(data-toggle="dropdown" href="#")
@@ -138,7 +136,7 @@ block content
                           if (user.id == user.ChiefId)
                             | #{'Твои '}
                           else
-                            | #{inicialName(user.name) + " "}
+                            | #{viewHelper.inicialName(user.name) + " "}
                           span.label.label-primary #{R.keys(intersectionHouse[ind]).length + ' адрес' + ((R.keys(intersectionHouse[ind]).length == 1) ? "" : "а")}
 
               h3.text-center.bg-danger
@@ -154,7 +152,7 @@ block content
                             img.media-object(src= ((user.image) ? ('/userprofile/thumbnails/' + user.image) : '/images/user.png'))
                         .media-body
                           h4.media-heading
-                            b #{inicialName(user.name)}
+                            b #{viewHelper.inicialName(user.name)}
                           ul.list-unstyled
                             li
                               u Контактные данные
@@ -181,7 +179,7 @@ block content
                             img.media-object(src= ((user.image) ? ('/userprofile/thumbnails/' + user.image) : '/images/user.png'))
                         .media-body
                           h4.media-heading
-                            b #{inicialName(user.name)}
+                            b #{viewHelper.inicialName(user.name)}
                           ul.list-unstyled
                             li
                               u Контактные данные
@@ -200,14 +198,14 @@ block content
                                .list-group-item
                                   b
                                     i
-                                      u #{inicialName(userTasks[userid]['name'])}
+                                      u #{viewHelper.inicialName(userTasks[userid]['name'])}
                                each itemtask in groupItemTasks[userid][houseid]
                                   .list-group-item
                                     +history(itemtask, '')
                               .list-group-item
                                 b
                                   i
-                                    u #{inicialName(userTasks[count]['name'])}
+                                    u #{viewHelper.inicialName(userTasks[count]['name'])}
                               each itemtask in groupItemTasks[count][houseid]
                                 .list-group-item
                                   +history(itemtask, '')

@@ -1,9 +1,5 @@
 mixin uploadfilesbutton(filearray, pathToFile)
   
-  - function filterFile(arr, type){ if(type == 'photo') {return R.pipe(R.filter(item => R.prop('type', item) == type),R.groupBy(item => moment(item.createdAt).format("YYYY-MM-DD")),R.toPairs, R.sort(R.descend(R.nth(0))))(arr)} else {return R.filter(item => R.prop('type', item) == type)(arr)} }
-
-  - function inicialName(str){var strArr = str.split(' '); return strArr[0] + ' ' + strArr[1][0] + '.' + strArr[2][0] + '.'}
-
   if (filearray.length)
     .fileBlock
       button.btn.btn-primary.btn-sm.startLoadFile
@@ -11,7 +7,8 @@ mixin uploadfilesbutton(filearray, pathToFile)
         | #{" "}Подгрузить файлы (#{filearray.length} шт.)
       .hidden-files.hide
         dl.dl-horizontal
-          - var groupDocument = filterFile(filearray, 'document')
+          - var groupDocument = viewHelper.filterFile(filearray, 'document')
+          
           if (groupDocument.length)
             dt Загруженные файлы
             dd
@@ -28,7 +25,7 @@ mixin uploadfilesbutton(filearray, pathToFile)
                       br
                       | #{doc.FileDescription.note}
 
-          each groupImage in filterFile(filearray, 'photo')
+          each groupImage in viewHelper.filterFile(filearray, 'photo')
             dt #{groupImage[0]}
             dd
               .gal.photogallery
