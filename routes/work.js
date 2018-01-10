@@ -1,4 +1,3 @@
-
 const models     = require('../models');
 const Op         = models.sequelize.Op
 
@@ -77,7 +76,6 @@ router.post('/authority/:id/house', function(req, res, next) {
 
 })
 
-
 router.post('/authority', function(req, res, next) {
 
   models.sequelize.transaction(function (t) {
@@ -135,6 +133,87 @@ router.get('/authority/:id', function(req, res, next) {
 
 });
 
+router.post('/schedule/:id/house', function(req, res, next) {
+
+  if(!req.body.houselist) {
+    req.body.houselist = []
+  }
+
+  if(typeof req.body.houselist == 'string') {
+    req.body.houselist = [req.body.houselist]
+  }
+
+  req.body.houselist = req.body.houselist.filter(Boolean);
+
+  if(req.body.houselist.length){
+    models.sequelize.transaction(function (t) {
+      return models.Schedule.findById(req.params.id, {transaction: t})
+            .then(schedule => {
+              return schedule.setHouses(req.body.houselist)
+            })
+    })
+    .then(() => res.redirect('/work/schedule/' + req.params.id))
+    .catch((err) => next(new Error('Ошибки при добавлении в базу данных')))
+  } else {
+    next(new Error('Пустой список данных или неверные входные данные'))
+  }
+
+})
+
+router.post('/schedule', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Schedule.findOne({
+      where: {
+        title: req.body.titleschedule
+      }
+    }, {transaction: t})
+    .then(schedule => {
+
+      if (schedule === null) {
+        return models.Schedule.create({
+                title: req.body.titleschedule,
+                year: req.body.yearschedule
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
+
+router.get('/schedule/:id', function(req, res, next) {
+
+  const id = parseInt(req.params.id, 10)
+
+  Promise.all([
+    models.Schedule.findById(id, { include: [{
+      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
+    }]
+    }),
+    models.User.findOne({
+      where: {
+        AuthorizationId: req.user.id
+      },
+      include: [models.Rule]
+    })
+    ])
+  .then(([schedule, user]) => {
+    res.render('work/schedule', {
+      schedule,
+      user
+    })
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
 
 router.post('/addoptions', function(req, res){
 

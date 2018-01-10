@@ -1,0 +1,58 @@
+extends ../layout
+
+block style
+  include ../style/work
+block scripts
+  include ../script/work
+
+include ../mixins/header
+include ../mixins/history
+
+include ./schedulelist
+include ./changelist
+
+include ../mixins/createnote
+include ../mixins/createfile
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+        if (viewHelper.checkUserRule('showWork', user.Rules))
+          .well.well-sm
+            h4.text-center
+              b
+                i.text-uppercase
+                  | #{schedule.title}
+                  br
+                  | #{moment(schedule.year).format('YYYY')}
+
+          if (viewHelper.checkUserRule('changeWork', user.Rules))
+            button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
+          each house in schedule.Houses
+            .panel-group
+              div(class= "panel panel-default")
+                .panel-heading
+                  h4.panel-title
+                    a(
+                    data-toggle="collapse"
+                    href="#house" + house.id)
+                      span.badge.pull-right #{house.ItemTasks.length}
+                      span
+                        | #{viewHelper.createNameHouse(house)}
+
+                .panel-collapse.collapse(id="house" + house.id)
+                  .panel-body
+                    p
+                      i
+                        a(href='/house/' + house.id) Подробная информация по адресу
+                    each task in house.ItemTasks
+                      +history(task, '../../..')
+
+          if (viewHelper.checkUserRule('changeWork', user.Rules))
+            +changelist(schedule)

@@ -33,13 +33,9 @@ mixin changelist(model)
 
             .form-group
               select(id='houseListOptions' multiple='multiple' name='houselist')
-                each house in authority.Houses
+                each house in model.Houses
                   option(value= house.id selected)
-                    if (house.street_new_rus)
-                      | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
-                    else
-                      | #{house.street_rus} #{house.name_rus}, #{house.building}
-
+                    | #{ viewHelper.createNameHouse(house) }
 
             button.btn.btn-primary(type="submit" id='sendProtocol') Сохранить
 

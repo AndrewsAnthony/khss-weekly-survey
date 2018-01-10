@@ -8,6 +8,7 @@ block scripts
 include ./mixins/header
 
 include ./work/authoritylist
+include ./work/schedulelist
 include ./work/createauthority
 include ./work/createschedule
 include ./work/createprotocol
@@ -80,7 +81,6 @@ block content
                       each authority in authorities
                         +authoritylist(authority)
 
-
               div(role="tabpanel",class="tab-pane fade",id="tabSchedule")
                 .row
                   .col-sm-12
@@ -88,10 +88,7 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createSchedule") Добавить титульный список
                     ul.list-group
                       each schedule in schedules
-                        li.list-group-item
-                          |#{schedule.title}
-                          br
-                          |#{schedule.type}
+                        +schedulelist(schedule)
 
               div(role="tabpanel",class="tab-pane fade",id="tabProtocol")
                 .row

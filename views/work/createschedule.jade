@@ -15,6 +15,13 @@ mixin createschedule()
                   i.fa.fa-font
                 input(type="text" class="form-control" id="titleSchedule" placeholder="" name='titleschedule')
 
+            .form-group
+              label(for="yearSchedule") Год титула
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-line-chart
+                input(type="text" class="form-control" id="yearSchedule" placeholder="" name='yearschedule')
+
             button.btn.btn-primary(type="submit" id='sendSchedule') Создать
 
         .modal-footer

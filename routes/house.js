@@ -102,7 +102,7 @@ router.get('/:id', function(req, res) {
   }
   const promiseArr = []
 
-  promiseArr.push( models.House.findOne({ where: { id: req.params.id }, include: [models.Authority] }) );
+  promiseArr.push( models.House.findOne({ where: { id: req.params.id }, include: [models.Authority, models.Schedule] }) );
   promiseArr.push( models.Depatment.findAll({ attributes: ['id','name'] }) );
   promiseArr.push( models.User.findAll({include: [models.Depatment] }) );
   promiseArr.push( models.Problem.findAll() );
@@ -158,7 +158,7 @@ router.get('/:id', function(req, res) {
 });
 
 router.get('/', function(req, res, next) {
-  
+
   Promise.all([models.House.findAll({ offset: 6500, limit: 25 }), models.User.findOne({
     where: {
       AuthorizationId: req.user.id
@@ -180,7 +180,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/:id/inbox/', function(req, res) {
-  
+
   var newInbox = null;
   models.sequelize.transaction(function(t){
     return models.Inbox.create({

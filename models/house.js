@@ -109,6 +109,16 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'house_id',
       constraints: false
     });
+
+    // Authority -> House
+    House.belongsToMany(models.Schedule, {
+      through: {
+        model: models.TableHouse,
+        unique: false
+      },
+      foreignKey: 'house_id',
+      constraints: false
+    });
   }
 
   return House;

@@ -117,6 +117,15 @@ block content
                           li.list-group-item
                             a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location}
 
+                  if (house.Schedules && house.Schedules.length && viewHelper.checkUserRule('showWork', user.Rules))
+                    .col-md-6
+                      h3
+                        i Титульные списки
+                      ul.list-group
+                        each schedule in house.Schedules
+                          li.list-group-item
+                            a(href='../work/schedule/' + schedule.id) #{schedule.title} #{moment(schedule.year).format('YYYY')}
+
                 div Карта Google отключена
                 //- a.btn.btn-default(href=)
 
@@ -128,7 +137,7 @@ block content
                   .col-sm-12
                     if (viewHelper.checkUserRule('createInbox', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
-                    
+
                     form(role="form")
                       .input-group
                         .input-group-btn.search-panel

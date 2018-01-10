@@ -1,0 +1,60 @@
+mixin schedulelist(schedule)
+  li.list-group-item
+    .dropdown.pull-right
+      button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
+        span.caret
+      ul.dropdown-menu
+        //- li.dropdown-header Просмотр
+        //- - var scheduledocs = schedule.Files.filter(function(file){return file.type == 'document'})
+        //- if scheduledocs.length
+        //-   li
+        //-     each doc in scheduledocs
+        //-       a(href= '../upload/' + doc.path)
+        //-         i.fa.fa-paperclip
+        //-         | &nbsp;
+        //-         if doc.FileDescription.name
+        //-           | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+        //-         else
+        //-           | #{moment(doc.createAt).format(DD/MM/YYYY)}
+        //- else
+        //-   li
+        //-     a
+        //-       s.small Документ
+
+        //- - var schedulephotos = schedule.Files.filter(function(file){return file.type == 'photo'})
+        //- if schedulephotos.length
+        //-   li.inboxgallery
+        //-     a(href= '../upload/' + schedulephotos[0].path) Фотографии
+        //-     each photo in schedulephotos.slice(1)
+        //-       a.mfp-hide(
+        //-       href= '../upload/' + photo.path
+        //-       title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
+        //- else
+        //-   li
+        //-     a
+        //-       s.small Фотографии
+        li
+          a(href='work/schedule/' + schedule.id) Список домов
+        li.dropdown-header Загрузить на сервер
+        li
+          a(
+          href='#'
+          data-toggle='modal'
+          data-target='#createFile'
+          data-object='schedule'
+          data-file='document'
+          data-objecthouse= 0
+          data-objectid= schedule.id) Документ
+        li
+          a(
+          href='#'
+          data-toggle='modal'
+          data-target='#createFile'
+          data-object='schedule'
+          data-file='photo'
+          data-objecthouse= 0
+          data-objectid= schedule.id) Фотографию
+
+    | #{schedule.title}
+    br
+    | #{moment(schedule.year).format('YYYY')}
