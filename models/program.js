@@ -2,6 +2,7 @@
 module.exports = function(sequelize, DataTypes) {
   var Program = sequelize.define('Program', {
     title: DataTypes.STRING,
+    year: DataTypes.STRING,
     status: {
       type: DataTypes.STRING,
       defaultValue: "active"
@@ -25,6 +26,19 @@ module.exports = function(sequelize, DataTypes) {
       scope: {
         taskable: 'program'
       },
+      constraints: false
+    });
+
+    // Program -> House
+    Program.belongsToMany(models.House, {
+      through: {
+        model: models.TableHouse,
+        unique: false,
+        scope: {
+          houseable: 'program'
+        }
+      },
+      foreignKey: 'houseable_id',
       constraints: false
     });
 

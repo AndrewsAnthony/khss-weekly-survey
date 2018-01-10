@@ -96,13 +96,13 @@ router.get('/check/inbox', function(req, res) {
 })
 
 router.get('/:id', function(req, res) {
-  req.params.id = parseInt(req.params.id, '10')
+  req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
     res.status(404).send('Неверный запрос на сервер')
   }
   const promiseArr = []
 
-  promiseArr.push( models.House.findOne({ where: { id: req.params.id }, include: [models.Authority, models.Schedule] }) );
+  promiseArr.push( models.House.findById(req.params.id, { include: [models.Authority, models.Schedule, models.Protocol, models.Program] }) );
   promiseArr.push( models.Depatment.findAll({ attributes: ['id','name'] }) );
   promiseArr.push( models.User.findAll({include: [models.Depatment] }) );
   promiseArr.push( models.Problem.findAll() );

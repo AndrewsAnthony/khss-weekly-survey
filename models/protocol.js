@@ -30,6 +30,19 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // Protocol -> House
+    Protocol.belongsToMany(models.House, {
+      through: {
+        model: models.TableHouse,
+        unique: false,
+        scope: {
+          houseable: 'protocol'
+        }
+      },
+      foreignKey: 'houseable_id',
+      constraints: false
+    });
+
   }
 
   return Protocol;

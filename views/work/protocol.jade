@@ -27,13 +27,15 @@ block content
             h4.text-center
               b
                 i.text-uppercase
-                  | #{schedule.title}
+                  | #{protocol.title}
                   br
-                  | #{moment(schedule.year).format('YYYY')}
+                  | #{protocol.location}
+                  br
+                  | #{moment(protocol.date).format("DD-MM-YYYY")}
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
-          each house in schedule.Houses
+          each house in protocol.Houses
             .panel-group
               div(class= "panel panel-default")
                 .panel-heading
@@ -51,7 +53,7 @@ block content
                       i
                         a(href='/house/' + house.id) Подробная информация по адресу
                     each task in house.ItemTasks
-                      +history(task, '')
+                      +history(task, '../../..')
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
-            +changelist(schedule)
+            +changelist(protocol)

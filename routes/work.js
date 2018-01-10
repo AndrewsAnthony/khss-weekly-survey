@@ -11,6 +11,9 @@ const moment     = require('moment');
 const slash      = require('slash');
 const router     = express.Router();
 
+
+//================== main         ======================
+
 router.get('/', function(req, res) {
 
   const promiseArr = []
@@ -48,6 +51,8 @@ router.get('/', function(req, res) {
   })
 
 });
+
+//================== authority  ======================
 
 router.post('/authority/:id/house', function(req, res, next) {
 
@@ -133,6 +138,8 @@ router.get('/authority/:id', function(req, res, next) {
 
 });
 
+//================== schedule    ======================
+
 router.post('/schedule/:id/house', function(req, res, next) {
 
   if(!req.body.houselist) {
@@ -214,6 +221,179 @@ router.get('/schedule/:id', function(req, res, next) {
   })
 
 });
+
+//================== protocol    ======================
+
+router.post('/protocol/:id/house', function(req, res, next) {
+
+  if(!req.body.houselist) {
+    req.body.houselist = []
+  }
+
+  if(typeof req.body.houselist == 'string') {
+    req.body.houselist = [req.body.houselist]
+  }
+
+  req.body.houselist = req.body.houselist.filter(Boolean);
+
+  if(req.body.houselist.length){
+    models.sequelize.transaction(function (t) {
+      return models.Protocol.findById(req.params.id, {transaction: t})
+            .then(protocol => {
+              return protocol.setHouses(req.body.houselist)
+            })
+    })
+    .then(() => res.redirect('/work/protocol/' + req.params.id))
+    .catch((err) => next(new Error('Ошибки при добавлении в базу данных')))
+  } else {
+    next(new Error('Пустой список данных или неверные входные данные'))
+  }
+
+})
+
+router.post('/protocol', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Protocol.findOne({
+      where: {
+        title: req.body.titleprotocol,
+        date: new Date(req.body.dateprotocol)
+      }
+    }, {transaction: t})
+    .then(protocol => {
+
+      if (protocol === null) {
+        return models.Protocol.create({
+                title: req.body.titleprotocol,
+                date: req.body.dateprotocol,
+                location: req.body.locationprotocol
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
+
+router.get('/protocol/:id', function(req, res, next) {
+
+  const id = parseInt(req.params.id, 10)
+
+  Promise.all([
+    models.Protocol.findById(id, { include: [{
+      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
+    }]
+    }),
+    models.User.findOne({
+      where: {
+        AuthorizationId: req.user.id
+      },
+      include: [models.Rule]
+    })
+    ])
+  .then(([protocol, user]) => {
+    res.render('work/protocol', {
+      protocol,
+      user
+    })
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+//================== program      ======================
+
+router.post('/program/:id/house', function(req, res, next) {
+
+  if(!req.body.houselist) {
+    req.body.houselist = []
+  }
+
+  if(typeof req.body.houselist == 'string') {
+    req.body.houselist = [req.body.houselist]
+  }
+
+  req.body.houselist = req.body.houselist.filter(Boolean);
+
+  if(req.body.houselist.length){
+    models.sequelize.transaction(function (t) {
+      return models.Program.findById(req.params.id, {transaction: t})
+            .then(program => {
+              return program.setHouses(req.body.houselist)
+            })
+    })
+    .then(() => res.redirect('/work/program/' + req.params.id))
+    .catch((err) => next(new Error('Ошибки при добавлении в базу данных')))
+  } else {
+    next(new Error('Пустой список данных или неверные входные данные'))
+  }
+
+})
+
+router.post('/program', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Program.findOne({
+      where: {
+        title: req.body.titleprogram,
+        year: new Date(req.body.yearprogram)
+      }
+    }, {transaction: t})
+    .then(program => {
+
+      if (program === null) {
+        return models.Program.create({
+                title: req.body.titleprogram,
+                year: req.body.yearprogram
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
+
+router.get('/program/:id', function(req, res, next) {
+
+  const id = parseInt(req.params.id, 10)
+
+  Promise.all([
+    models.Program.findById(id, { include: [{
+      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
+    }]
+    }),
+    models.User.findOne({
+      where: {
+        AuthorizationId: req.user.id
+      },
+      include: [models.Rule]
+    })
+    ])
+  .then(([program, user]) => {
+    res.render('work/program', {
+      program,
+      user
+    })
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+//================== addoptions   ======================
 
 router.post('/addoptions', function(req, res){
 

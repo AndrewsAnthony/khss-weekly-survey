@@ -15,6 +15,13 @@ mixin createprogram()
                   i.fa.fa-font
                 input(type="text" class="form-control" id="titleProgram" placeholder="" name='titleprogram')
 
+            .form-group
+              label(for="yearProgram") Год программы
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-line-chart
+                input(type="text" class="form-control" id="yearProgram" placeholder="" name='yearprogram')
+
             button.btn.btn-primary(type="submit" id='sendProgram') Создать
 
         .modal-footer

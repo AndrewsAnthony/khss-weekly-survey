@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
-    // Schedule -> File
+    // Schedule -> House
     Schedule.belongsToMany(models.House, {
       through: {
         model: models.TableHouse,

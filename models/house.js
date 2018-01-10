@@ -104,21 +104,55 @@ module.exports = function(sequelize, DataTypes) {
     House.belongsToMany(models.Authority, {
       through: {
         model: models.TableHouse,
-        unique: false
+        unique: false,
+        scope: {
+          houseable: 'authority'
+        }
       },
       foreignKey: 'house_id',
       constraints: false
     });
 
-    // Authority -> House
+    // Schedule -> House
     House.belongsToMany(models.Schedule, {
       through: {
         model: models.TableHouse,
-        unique: false
+        unique: false,
+        scope: {
+          houseable: 'schedule'
+        }
       },
       foreignKey: 'house_id',
       constraints: false
     });
+
+
+    // Protocol -> House
+    House.belongsToMany(models.Protocol, {
+      through: {
+        model: models.TableHouse,
+        unique: false,
+        scope: {
+          houseable: 'protocol'
+        }
+      },
+      foreignKey: 'house_id',
+      constraints: false
+    });
+
+    // Program -> House
+    House.belongsToMany(models.Program, {
+      through: {
+        model: models.TableHouse,
+        unique: false,
+        scope: {
+          houseable: 'program'
+        }
+      },
+      foreignKey: 'house_id',
+      constraints: false
+    });
+
   }
 
   return House;

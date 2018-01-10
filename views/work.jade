@@ -9,6 +9,9 @@ include ./mixins/header
 
 include ./work/authoritylist
 include ./work/schedulelist
+include ./work/protocollist
+include ./work/programlist
+
 include ./work/createauthority
 include ./work/createschedule
 include ./work/createprotocol
@@ -97,13 +100,8 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProtocol") Добавить протокол
                     ul.list-group
                       each protocol in protocols
-                        li.list-group-item
-                          | #{protocol.title}
-                          br
-                          | #{protocol.location}
-                          br
-                          | #{moment(protocol.date).format("DD-MM-YYYY")}
-
+                        +protocollist(protocol)
+                        
               div(role="tabpanel",class="tab-pane fade",id="tabProgram")
                 .row
                   .col-sm-12
@@ -111,8 +109,7 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProgram") Добавить программу
                     ul.list-group
                       each program in programs
-                        li.list-group-item
-                          | #{program.title}
+                        +programlist(program)
 
               div(role="tabpanel",class="tab-pane fade",id="tabRepair")
                 .row

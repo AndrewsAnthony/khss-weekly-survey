@@ -111,11 +111,11 @@ block content
                   if (house.Authorities && house.Authorities.length && viewHelper.checkUserRule('showWork', user.Rules))
                     .col-md-6
                       h3
-                        i Программы городской власти
+                        i Личные приемы городской власти
                       ul.list-group
                         each authority in house.Authorities
                           li.list-group-item
-                            a(href='../work/authority/' + authority.id) #{authority.name} #{moment(authority.date).format('DD-MM-YYYY')} #{authority.location}
+                            a(href='../work/authority/' + authority.id) [ #{moment(authority.date).format('DD-MM-YYYY')} # <b>#{moment(authority.date).fromNow()}</b>] #{authority.name} - #{authority.location}
 
                   if (house.Schedules && house.Schedules.length && viewHelper.checkUserRule('showWork', user.Rules))
                     .col-md-6
@@ -124,7 +124,25 @@ block content
                       ul.list-group
                         each schedule in house.Schedules
                           li.list-group-item
-                            a(href='../work/schedule/' + schedule.id) #{schedule.title} #{moment(schedule.year).format('YYYY')}
+                            a(href='../work/schedule/' + schedule.id) #{schedule.title} [ #{moment(schedule.year).format('YYYY')} ]
+
+                  if (house.Protocols && house.Protocols.length && viewHelper.checkUserRule('showWork', user.Rules))
+                    .col-md-6
+                      h3
+                        i Протокольные поручения
+                      ul.list-group
+                        each protocol in house.Protocols
+                          li.list-group-item
+                            a(href='../work/protocol/' + protocol.id) [ #{moment(protocol.date).format('DD-MM-YYYY')} # <b>#{moment(protocol.date).fromNow()}</b>] #{protocol.title} - #{protocol.location}
+
+                  if (house.Programs && house.Programs.length && viewHelper.checkUserRule('showWork', user.Rules))
+                    .col-md-6
+                      h3
+                        i Программы городской власти
+                      ul.list-group
+                        each program in house.Programs
+                          li.list-group-item
+                            a(href='../work/program/' + program.id) #{program.title} [ #{moment(program.year).format('YYYY')} ]
 
                 div Карта Google отключена
                 //- a.btn.btn-default(href=)

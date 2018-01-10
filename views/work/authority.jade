@@ -8,7 +8,6 @@ block scripts
 include ../mixins/header
 include ../mixins/history
 
-include ./authoritylist
 include ./changelist
 
 include ../mixins/createnote
@@ -46,12 +45,7 @@ block content
                     href="#house" + house.id)
                       span.badge.pull-right #{house.ItemTasks.length}
                       span
-                        if (house.street_new_rus)
-                          | #{house.street_new_rus} #{house.name_new_rus}, #{house.building}
-                          | #{' '}
-                          span.text-muted #{house.street_rus} #{house.name_rus}, #{house.building}
-                        else
-                          | #{house.street_rus} #{house.name_rus}, #{house.building}
+                        | #{viewHelper.createNameHouse(house)}
 
                 .panel-collapse.collapse(id="house" + house.id)
                   .panel-body

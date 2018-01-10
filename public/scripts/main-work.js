@@ -227,6 +227,23 @@ $('input.search').keyup(function() {
   inboxList.search(searchString, inboxList.currentSearchColumns);
 });
 
+$('button.startLoadFile').click(function() {
+    $(this).addClass('hide')
+    $(this).parent().find('.hidden-files').removeClass('hide').find('.lazy').lazy({
+      bind: "event"
+    });
+  });
+
+$('.photogallery').each(function() {
+  $(this).magnificPopup({
+    delegate: 'a',
+    type: 'image',
+    gallery: {
+      enabled:true
+    }
+  });
+});
+
 document.getElementById("loading_layer").style.display="none";
 
 $('#houseListOptions').multiSelect({

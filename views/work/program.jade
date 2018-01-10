@@ -27,13 +27,13 @@ block content
             h4.text-center
               b
                 i.text-uppercase
-                  | #{schedule.title}
+                  | #{program.title}
                   br
-                  | #{moment(schedule.year).format('YYYY')}
+                  | #{moment(program.year).format('YYYY')}
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
-          each house in schedule.Houses
+          each house in program.Houses
             .panel-group
               div(class= "panel panel-default")
                 .panel-heading
@@ -54,4 +54,4 @@ block content
                       +history(task, '')
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
-            +changelist(schedule)
+            +changelist(program)
