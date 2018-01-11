@@ -133,7 +133,6 @@ button[data-target^='#create'], button[data-target^='#change'] {
   .no-more-tables td:before { content: attr(data-title); }
 }
 
-
 /*.collapsing {
   -webkit-transition: none;
   transition: none;

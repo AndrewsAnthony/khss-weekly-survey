@@ -1,0 +1,100 @@
+extends ../layout
+
+block style
+  include ../style/edit
+block scripts
+  include ../script/edit
+
+include ../mixins/header
+
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+        if (R.any(R.whereEq({name: 'changeInbox'}), user.Rules))
+          .well.well-sm
+            h4.text-center
+              b 
+                | Редактирование входящего письма
+                br
+                | #{inbox.number} от #{moment(inbox.inboxdate).format('YYYY-MM-DD')}
+          
+          hr
+
+          form(role="form" action='/house/inbox/' + inbox.id + '/edit' method='post' id="formInbox")
+            .form-group
+              label() Статус письма
+              .btn-group.btn-group-sm.btn-group-justified#changeStatusGroup(data-toggle="buttons")
+                label.btn.btn-default(class= ((inbox.status=='active')?'btn-primary active':''))
+                  input(type="radio" name='status' value='active' checked= (inbox.status=='active'))
+                  | В работу
+                label.btn.btn-default(class= ((inbox.status=='add')?'btn-danger active':''))
+                  input(type="radio" name='status' value='add' checked= (inbox.status=='add'))
+                  | Контроль
+                label.btn.btn-default(class= ((inbox.status=='close')?'btn-success  active':''))
+                  input(type="radio" name='status' value='close' checked= (inbox.status=='close'))
+                  | Закрыть 
+                label.btn.btn-default(class= ((inbox.status=='close')?'btn-default  active':''))
+                  input(type="radio" name='status' value='deleted' checked= (inbox.status=='delete'))
+                  | Удаленное
+
+            .form-group
+              label(for="numberInbox") Номер и дата входящего письма
+              .input-group
+                i.input-group-addon №
+                input(type="text" class="form-control" id="numberInbox" placeholder="Введите номер письма" name='numberinbox' value= inbox.number)
+              br
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-calendar
+                input(type="date" class="form-control" id="dateInbox" placeholder="Введите дату письма" name='dateinbox' value= moment(inbox.inboxdate).format('YYYY-MM-DD'))
+
+            .form-group
+              label(for="depatmentInbox") Закреплен за отделом
+              select.multiSelect(class="form-control" multiple="multiple" name='depatments' style="width:100%")
+                - var currentDepatments = R.map(R.prop('id'), inbox.Depatments)
+                each depatment in depatments
+                  option(value= depatment.id
+                  selected= R.contains(depatment.id,currentDepatments)) #{depatment.name}
+
+            .form-group
+              label(for="problemInbox") Вопросы в письме
+              select.multiSelect(class="form-control" name='problems' multiple="multiple" style="width:100%")
+                - var currentProblems = R.map(R.prop('id'), inbox.Problems)
+                each problem in problems
+                  option(value= problem.id
+                  selected= R.contains(problem.id,currentProblems)) #{problem.name}
+
+            .form-group
+              label(for="bindingInbox") Привязка к заявителю
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-building-o
+                input(type="text" class="form-control" id="bindingInbox" placeholder="Привязка к месту" name='binding' value= inbox.binding)
+
+            .form-group
+              label(for="termInbox") Дата срока исполнения
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-calendar
+                input(type="date" class="form-control" id="termInbox" placeholder="Введите срок исполнения" name='term' value= moment(inbox.term).format('YYYY-MM-DD'))
+            
+            #editInboxModal.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Вы согласны с изменениями?
+
+                  .modal-body
+                    button.btn.btn-primary(type="submit" id='sendInbox') Сохранить
+                    button.pull-right(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            button.btn.btn-primary(type="button" data-toggle="modal" data-target="#editInboxModal") Сохранить изменения

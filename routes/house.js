@@ -93,12 +93,14 @@ router.get('/check/inbox', function(req, res) {
   } else {
     res.redirect('/')
   }
+
 })
 
 router.get('/:id', function(req, res) {
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
     res.status(404).send('Неверный запрос на сервер')
+    return;
   }
   const promiseArr = []
 
@@ -404,6 +406,82 @@ router.post('/:id/task/', function(req, res, next) {
   .catch( err => {
     console.log("err", err);
     res.status('500').next('ошибка при обработке данных')
+  })
+
+});
+
+router.get('/inbox/:id/edit/', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, '10')
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  const promiseArr = []
+
+  promiseArr.push( models.Inbox.findById(req.params.id, { include: [models.Problem, models.Depatment] }) );
+  promiseArr.push( models.Depatment.findAll({ attributes: ['id','name'] }) );
+  promiseArr.push( models.Problem.findAll() );
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
+
+  Promise.all(promiseArr)
+  .then(function([inbox, depatments, problems, user]){
+    inbox
+      ? res.render('edit/inbox', { inbox, depatments, problems, user })
+      : res.status(500).send('Отсутствует данное письмо')
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+router.post('/inbox/:id/edit/', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, '10')
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  models.sequelize.transaction(t => {
+    return models.Inbox.update({
+      number: req.body.numberinbox,
+      inboxdate: req.body.dateinbox,
+      term: req.body.term,
+      binding: req.body.binding,
+      status: req.body.status,
+    }, {
+      where: {
+        id: req.params.id
+      },
+      limit: 1,
+      returning: true,
+      transaction: t
+    })
+    .then(([counts]) => {
+      return models.Inbox.findById(req.params.id, { transaction: t })
+        .then(inbox => {
+          return Promise.all([
+            inbox.setProblems(req.body.problems, { transaction: t }),
+            inbox.setDepatments(req.body.depatments, { transaction: t })
+          ])
+        })    
+    })
+  })
+  .then(function(){
+    res.redirect('/')
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки при записи')
   })
 
 });

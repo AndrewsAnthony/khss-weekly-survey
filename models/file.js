@@ -14,32 +14,32 @@ module.exports = function(sequelize, DataTypes) {
 
     File.belongsTo(models.ItemTask, {
       foreignKey: 'fileable_id',
-      constraints: false,
-      as: 'Task'
+      as: 'Task',
+      constraints: false
     });
 
     File.belongsTo(models.Inbox, {
       foreignKey: 'fileable_id',
-      constraints: false,
-      as: 'Inbox'
+      as: 'Inbox',
+      constraints: false
     });
 
     File.belongsTo(models.Program, {
       foreignKey: 'fileable_id',
-      constraints: false,
-      as: 'Program'
+      as: 'Program',
+      constraints: false
     });
 
     File.belongsTo(models.Protocol, {
       foreignKey: 'fileable_id',
-      constraints: false,
-      as: 'Protocol'
+      as: 'Protocol',
+      constraints: false
     });
 
     File.belongsTo(models.Schedule, {
       foreignKey: 'fileable_id',
-      constraints: false,
-      as: 'Schedule'
+      as: 'Schedule',
+      constraints: false
     });
 
   }

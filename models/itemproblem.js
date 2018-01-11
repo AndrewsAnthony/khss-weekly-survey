@@ -1,5 +1,6 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
+  
   var ItemProblem = sequelize.define('ItemProblem', {
     problem_id: {
       type: DataTypes.INTEGER
@@ -15,7 +16,6 @@ module.exports = function(sequelize, DataTypes) {
       // references: null
     }
   });
-
 
   return ItemProblem;
 };
