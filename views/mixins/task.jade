@@ -1,20 +1,20 @@
 mixin tasklist(itemtasktype, house, rules)
   tr.img-thumbnail(style='border-right-color:' + ((itemtasktype.status == 'add')?'#ec9f13':(itemtasktype.status == 'close')?'green':'red'))
     -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", information: "Предоставить информацию"}
-    td(data-title='Исполнитель')
+    td(data-title='Исполнитель').taskimplementer
       b #{  viewHelper.inicialName(itemtasktype.Implementer.name)}
       br
       mark #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}
 
     if (itemtasktype.TaskType.model == 'inbox')
-      td(data-title='Вид задания')
+      td(data-title='Вид задания').tasktype
         b #{itemtasktype.TaskType.description}
         br
         a(href='#inboxNumber' + itemtasktype.Inbox.id) #{itemtasktype.Inbox.number}
 
 
     else if (itemtasktype.TaskType.model == 'authority')
-      td(data-title='Вид задания')
+      td(data-title='Вид задания').tasktype
         b #{itemtasktype.TaskType.description}
         br
         i #{itemtasktype.Authority.name}
@@ -24,25 +24,25 @@ mixin tasklist(itemtasktype, house, rules)
         i #{itemtasktype.Authority.location}
 
     else if (itemtasktype.TaskType.model == 'information')
-      td(data-title='Вид задания')
+      td(data-title='Вид задания').tasktype
         b #{itemtasktype.TaskType.description}
         br
         i #{itemtasktype.Information.description}
 
     else if (itemtasktype.TaskType.model == 'schedule')
-      td(data-title='Вид задания')
+      td(data-title='Вид задания').tasktype
         b #{itemtasktype.TaskType.description}
         br
         i #{itemtasktype.Schedule.title} - #{itemtasktype.Schedule.type}
 
     else if (itemtasktype.TaskType.model == 'program')
-      td(data-title='Вид задания')
+      td(data-title='Вид задания').tasktype
         b #{itemtasktype.TaskType.description}
         br
         i #{itemtasktype.Program.title}
 
     else if (itemtasktype.TaskType.model == 'protocol')
-      td(data-title='Вид задания')
+      td(data-title='Вид задания').tasktype
         b #{itemtasktype.TaskType.description}
         br
         i #{itemtasktype.Protocol.title}
@@ -52,10 +52,10 @@ mixin tasklist(itemtasktype, house, rules)
         i #{itemtasktype.Protocol.location}
 
 
-    td(data-title='Привязка к местности')
+    td(data-title='Привязка к местности').taskbinding
       | #{itemtasktype.binding || " "}
 
-    td(data-title='Проблемы в задании')
+    td(data-title='Проблемы в задании').taskproblem
       if (itemtasktype.Problems.length)
         each problem in itemtasktype.Problems
           i #{"- " + problem.name}
@@ -63,7 +63,7 @@ mixin tasklist(itemtasktype, house, rules)
       else
         | #{' '}
 
-    td(data-title='Срок исполнения')
+    td(data-title='Срок исполнения').taskterm
       | #{moment(itemtasktype.term).calendar()}
       br
       if (moment.duration(moment(itemtasktype.term).diff(moment())).days() < 3)

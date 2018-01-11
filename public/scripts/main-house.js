@@ -231,10 +231,13 @@ $('document').ready(function(){
     $(this).removeClass("btn-default").addClass("btn-primary");
   });
 
-  $('a[href^="#inboxNumber"]').on('click', function(event) {
-    $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
-    $('[href="#tabInbox"]').tab('show').addClass("btn-primary")
-  });
+  document.querySelector('#tabTask .list').addEventListener('click', function(event) {
+    var eventElement = $(event.target)
+    if(eventElement.attr('href') && eventElement.attr('href').indexOf('#inboxNumber') == 0) {
+      $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+      $('[href="#tabInbox"]').tab('show').addClass("btn-primary") 
+    }
+  }, true);
 
 
   var extradata = {};
@@ -394,31 +397,61 @@ $('#changeList').on('keyup keypress', "input", function(e) {
   }
 });
 
-var listSearchColumns = [ 'inboxletter', 'inboximplementer', 'inboxbinding', 'inboxproblem', 'inboxterm' ]
+// -- search in inbox ===============
+
+var listSearchColumnsInbox = [ 'inboxletter', 'inboximplementer', 'inboxbinding', 'inboxproblem', 'inboxterm' ]
 var inboxList = new List('tabInbox', {
-  valueNames: listSearchColumns
+  valueNames: listSearchColumnsInbox
 });
 
-$('.search-panel .dropdown-menu a').click(function(e) {
+$('#searchInbox .search-panel .dropdown-menu a').click(function(e) {
   e.preventDefault();
   var text = $(this).text() + ' ';
   var searchdata = $(this).data('search')
-  console.log("searchdata", searchdata);
-  $('.search-panel .replacetext').text(text);
+  $('#searchInbox .search-panel .replacetext').text(text);
   isNaN(searchdata = parseInt(searchdata, 10))
-    ? inboxList.currentSearchColumns = listSearchColumns
-    : inboxList.currentSearchColumns = listSearchColumns.slice(searchdata, searchdata + 1)
+    ? inboxList.currentSearchColumns = listSearchColumnsInbox
+    : inboxList.currentSearchColumns = listSearchColumnsInbox.slice(searchdata, searchdata + 1)
 });
 
-$('input.search').parent().find('button').on('click', function(event){
-  $('input.search').val('')
+$('#searchInbox input.search').parent().find('button').on('click', function(event){
+  $('#searchInbox input.search').val('')
   inboxList.search()
 })
 
-$('input.search').keyup(function() {
+$('#searchInbox input.search').keyup(function() {
   var searchString = $(this).val();
   inboxList.search(searchString, inboxList.currentSearchColumns);
 });
+
+// -- search in task ===========================
+
+var listSearchColumnsTask = [ 'taskimplementer', 'tasktype', 'taskbinding', 'taskproblem', 'taskterm' ]
+var taskList = new List('tabTask', {
+  valueNames: listSearchColumnsTask
+});
+
+$('#searchTask .search-panel .dropdown-menu a').click(function(e) {
+  e.preventDefault();
+  var text = $(this).text() + ' ';
+  var searchdata = $(this).data('search')
+  $('#searchTask .search-panel .replacetext').text(text);
+  isNaN(searchdata = parseInt(searchdata, 10))
+    ? taskList.currentSearchColumns = listSearchColumnsTask
+    : taskList.currentSearchColumns = listSearchColumnsTask.slice(searchdata, searchdata + 1)
+});
+
+$('#searchTask input.search').parent().find('button').on('click', function(event){
+  $('#searchTask input.search').val('')
+  taskList.search()
+})
+
+$('#searchTask input.search').keyup(function() {
+  var searchString = $(this).val();
+  taskList.search(searchString, taskList.currentSearchColumns);
+});
+
+// -- close preview ===========================
 
 document.getElementById("loading_layer").style.display="none";
 

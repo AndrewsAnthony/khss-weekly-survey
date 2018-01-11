@@ -150,13 +150,13 @@ block content
                 //- button.btn.btn-default(data-address='' + house.street + ', ' + house.number + ', Харьков')#uploadMap Загрузить Карту Google
                 //- #map(style="width: 320px; height: 480px;")
 
-              div(role="tabpanel",class="tab-pane fade",id="tabInbox")
+              div(role="tabpanel", class="tab-pane fade", id="tabInbox")
                 .row
                   .col-sm-12
                     if (viewHelper.checkUserRule('createInbox', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createInboxModal") Создать входящие
 
-                    form(role="form")
+                    form(role="form")#searchInbox
                       .input-group
                         .input-group-btn.search-panel
                           button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown")
@@ -199,11 +199,38 @@ block content
                     if (viewHelper.checkUserRule('createInbox', user.Rules))
                       +createinbox(house, depatments, problems)
 
-              div(role="tabpanel",class="tab-pane fade",id="tabTask")
+              div(role="tabpanel", class="tab-pane fade", id="tabTask")
                 .row
                   .col-sm-12
                     if (viewHelper.checkUserRule('createTask', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createTaskModal") Создать задачу
+
+                    form(role="form")#searchTask
+                      .input-group
+                        .input-group-btn.search-panel
+                          button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown")
+                            span.replacetext Поиск по #{" "}
+                            span.caret
+                          ul.dropdown-menu
+                            li
+                              a(href="#" data-search='all') По всем
+                            li
+                              a(href="#" data-search='0') Исполнитель
+                            li
+                              a(href="#" data-search='1') Вид задания
+                            li
+                              a(href="#" data-search='2') Привязка
+                            li
+                              a(href="#" data-search='3') Проблемы
+                            li
+                              a(href="#" data-search='4') Срок
+
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
                     .no-more-tables
                       table.table.table-striped.text-center
                         thead
@@ -214,7 +241,7 @@ block content
                             th Проблемы в задании
                             th Срок исполнения
                             th
-                        tbody
+                        tbody.list
                           each itemtask in itemtasks
                             +tasklist(itemtask, house, user.Rules)
 
