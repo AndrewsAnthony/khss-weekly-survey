@@ -59,10 +59,11 @@ mixin protocollist(protocol, rules)
           data-file='photo'
           data-objecthouse= 0
           data-objectid= protocol.id) Фотографию
-
-    | #{protocol.title}
-    br
-    | #{protocol.location}
-    br
-    | #{moment(protocol.date).format("DD-MM-YYYY")}
+    
+    span.searchtext
+      | #{protocol.title}
+      br
+      | #{protocol.location}
+      br
+      | #{moment(protocol.date).format("DD-MM-YYYY")}
 

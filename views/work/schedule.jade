@@ -21,7 +21,7 @@ block content
 
   .container(role="main")
     .row
-      .col-sm-12.well
+      .col-sm-12.well#tabSchedule
         if (viewHelper.checkUserRule('showWork', user.Rules))
           .well.well-sm
             h4.text-center
@@ -33,25 +33,35 @@ block content
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
-          each house in schedule.Houses
-            .panel-group
-              div(class= "panel panel-default")
-                .panel-heading
-                  h4.panel-title
-                    a(
-                    data-toggle="collapse"
-                    href="#house" + house.id)
-                      span.badge.pull-right #{house.ItemTasks.length}
-                      span
-                        | #{viewHelper.createNameHouse(house)}
 
-                .panel-collapse.collapse(id="house" + house.id)
-                  .panel-body
-                    p
-                      i
-                        a(href='/house/' + house.id) Подробная информация по адресу
-                    each task in house.ItemTasks
-                      +history(task, '')
+          form(role="form")#searchSchedule
+            .input-group
+              input.search(type="text" class="form-control" placeholder="Поиск в списке")
+              .input-group-btn
+                button.btn.btn-primary(type="button")
+                  i.fa.fa-times
+          hr
+
+          .list
+            each house in schedule.Houses
+              .panel-group
+                div(class= "panel panel-default")
+                  .panel-heading
+                    h4.panel-title
+                      a(
+                      data-toggle="collapse"
+                      href="#house" + house.id)
+                        span.badge.pull-right #{house.ItemTasks.length}
+                        span.searchtext
+                          | #{viewHelper.createNameHouse(house)}
+
+                  .panel-collapse.collapse(id="house" + house.id)
+                    .panel-body
+                      p
+                        i
+                          a(href='/house/' + house.id) Подробная информация по адресу
+                      each task in house.ItemTasks
+                        +history(task, '')
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             +changelist(schedule)

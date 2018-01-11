@@ -59,7 +59,7 @@ mixin programlist(program, rules)
           data-file='photo'
           data-objecthouse= 0
           data-objectid= program.id) Фотографию
-
-    | #{program.title}
-    br
-    | #{moment(program.year).format('YYYY')}
+    span.searchtext
+      | #{program.title}
+      br
+      | #{moment(program.year).format('YYYY')}

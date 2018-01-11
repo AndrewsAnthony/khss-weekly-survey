@@ -60,6 +60,7 @@ mixin schedulelist(schedule, rules)
           data-objecthouse= 0
           data-objectid= schedule.id) Фотографию
 
-    | #{schedule.title}
-    br
-    | #{moment(schedule.year).format('YYYY')}
+    span.searchtext
+      | #{schedule.title}
+      br
+      | #{moment(schedule.year).format('YYYY')}

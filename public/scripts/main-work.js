@@ -201,32 +201,6 @@ $('#changeList').on('keyup keypress', "input", function(e) {
   }
 });
 
-var listSearchColumns = [ 'inboxletter', 'inboximplementer', 'inboxbinding', 'inboxproblem', 'inboxterm' ]
-var inboxList = new List('tabInbox', {
-  valueNames: listSearchColumns
-});
-
-$('.search-panel .dropdown-menu a').click(function(e) {
-  e.preventDefault();
-  var text = $(this).text() + ' ';
-  var searchdata = $(this).data('search')
-  console.log("searchdata", searchdata);
-  $('.search-panel .replacetext').text(text);
-  isNaN(searchdata = parseInt(searchdata, 10))
-    ? inboxList.currentSearchColumns = listSearchColumns
-    : inboxList.currentSearchColumns = listSearchColumns.slice(searchdata, searchdata + 1)
-});
-
-$('input.search').parent().find('button').on('click', function(event){
-  $('input.search').val('')
-  inboxList.search()
-})
-
-$('input.search').keyup(function() {
-  var searchString = $(this).val();
-  inboxList.search(searchString, inboxList.currentSearchColumns);
-});
-
 $('button.startLoadFile').click(function() {
     $(this).addClass('hide')
     $(this).parent().find('.hidden-files').removeClass('hide').find('.lazy').lazy({
@@ -243,8 +217,6 @@ $('.photogallery').each(function() {
     }
   });
 });
-
-document.getElementById("loading_layer").style.display="none";
 
 $('#houseListOptions').multiSelect({
   selectableHeader: "<h5 class='text-center bg-info'>Кандидаты</h5>",
@@ -307,5 +279,61 @@ $('#changeList').on('keyup keypress', "input", function(e) {
     return false;
   }
 });
+
+// -- search in Authority ===========================
+
+var authorityList = new List('tabAuthority', {
+  valueNames: ['searchtext']
+});
+
+$('#tabAuthority input.search').parent().find('button').on('click', function(event){
+  $('input.search').val('')
+  authorityList.search('')
+})
+
+$('#searchAuthority').submit(function(e){ return e.preventDefault() })
+
+// -- search in Schedule ===========================
+
+var scheduleList = new List('tabSchedule', {
+  valueNames: ['searchtext']
+});
+
+$('#tabSchedule input.search').parent().find('button').on('click', function(event){
+  $('input.search').val('')
+  scheduleList.search('')
+})
+
+$('#searchSchedule').submit(function(e){ return e.preventDefault() })
+
+// -- search in Protocol ===========================
+
+var protocolList = new List('tabProtocol', {
+  valueNames: ['searchtext']
+});
+
+$('#tabProtocol input.search').parent().find('button').on('click', function(event){
+  $('input.search').val('')
+  protocolList.search('')
+})
+
+$('#searchProtocol').submit(function(e){ return e.preventDefault() })
+
+// -- search in Program ===========================
+
+var programList = new List('tabProgram', {
+  valueNames: ['searchtext']
+});
+
+$('#tabProgram input.search').parent().find('button').on('click', function(event){
+  $('input.search').val('')
+  programList.search('')
+})
+
+$('#searchProgram').submit(function(e){ return e.preventDefault() })
+
+// -- close preview ===========================
+
+document.getElementById("loading_layer").style.display="none";
 
 })

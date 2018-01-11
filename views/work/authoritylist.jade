@@ -60,8 +60,9 @@ mixin authoritylist(authority, rules)
           data-file='photo'
           data-objecthouse= 0
           data-objectid= authority.id) Фотографию
-    | #{authority.name}
-    br
-    | #{moment(authority.date).format('DD-MM-YYYY')}
-    br
-    | #{authority.location}
+    span.searchtext
+      | #{authority.name}
+      br
+      | #{moment(authority.date).format('DD-MM-YYYY')}
+      br
+      | #{authority.location}

@@ -80,7 +80,16 @@ block content
                   .col-sm-12
                     if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createAuthority") Добавить прием
-                    ul.list-group
+
+                    form(role="form")#searchAuthority
+                      .input-group
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
+                    ul.list-group.list
                       each authority in authorities
                         +authoritylist(authority, user.Rules)
 
@@ -89,7 +98,16 @@ block content
                   .col-sm-12
                     if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createSchedule") Добавить титульный список
-                    ul.list-group
+                    
+                    form(role="form")#searchSchedule
+                      .input-group
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
+                    ul.list-group.list
                       each schedule in schedules
                         +schedulelist(schedule, user.Rules) 
 
@@ -98,7 +116,16 @@ block content
                   .col-sm-12
                     if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProtocol") Добавить протокол
-                    ul.list-group
+
+                    form(role="form")#searchProtocol
+                      .input-group
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
+                    ul.list-group.list
                       each protocol in protocols
                         +protocollist(protocol, user.Rules)
                         
@@ -107,7 +134,16 @@ block content
                   .col-sm-12
                     if (viewHelper.checkUserRule('createWork', user.Rules))
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProgram") Добавить программу
-                    ul.list-group
+
+                    form(role="form")#searchProgram
+                      .input-group
+                        input.search(type="text" class="form-control" placeholder="Поиск в списке")
+                        .input-group-btn
+                          button.btn.btn-primary(type="button")
+                            i.fa.fa-times
+                    hr
+
+                    ul.list-group.list
                       each program in programs
                         +programlist(program, user.Rules)
 
