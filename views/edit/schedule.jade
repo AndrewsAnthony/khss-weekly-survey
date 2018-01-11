@@ -1,0 +1,77 @@
+extends ../layout
+
+block style
+  include ../style/edit
+block scripts
+  include ../script/edit
+
+include ../mixins/header
+
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+        if (viewHelper.checkUserRule('changeWork', user.Rules))
+          .well.well-sm
+            h4.text-center
+              i
+                | Редактирование данных титульного списка
+              br
+              b 
+                br
+                | #{schedule.title}
+                br
+                | [ #{moment(schedule.year).format('YYYY')} ]
+
+          hr
+
+          form(role="form" action='/work/schedule/' + schedule.id + '/edit' method='post' id="formSchedule")
+            .form-group
+              label() Статус приема
+              .btn-group.btn-group-sm.btn-group-justified#changeStatusGroup(data-toggle="buttons")
+                label.btn.btn-default(class= ((schedule.status=='active')?'btn-primary active':''))
+                  input(type="radio" name='status' value='active' checked= (schedule.status=='active'))
+                  | В работу
+                label.btn.btn-default(class= ((schedule.status=='add')?'btn-danger active':''))
+                  input(type="radio" name='status' value='add' checked= (schedule.status=='add'))
+                  | Контроль
+                label.btn.btn-default(class= ((schedule.status=='close')?'btn-success  active':''))
+                  input(type="radio" name='status' value='close' checked= (schedule.status=='close'))
+                  | Завершенный 
+                label.btn.btn-default(class= ((schedule.status=='close')?'btn-default  active':''))
+                  input(type="radio" name='status' value='deleted' checked= (schedule.status=='delete'))
+                  | Удаленное
+
+            .form-group
+              label(for="titleSchedule") Название титула
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-font
+                input(type="text" class="form-control" id="titleSchedule" placeholder="" name='titleschedule' value= schedule.title)
+
+            .form-group
+              label(for="yearSchedule") Год титула
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-line-chart
+                input(type="text" class="form-control" id="yearSchedule" placeholder="" name='yearschedule' value= moment(schedule.year).format('YYYY'))
+            
+            #editModelModal.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Вы согласны с изменениями?
+
+                  .modal-body
+                    button.btn.btn-primary(type="submit" id='sendModel') Сохранить
+                    button.pull-right(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            button.btn.btn-primary(type="button" data-toggle="modal" data-target="#editModelModal") Сохранить изменения

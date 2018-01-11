@@ -1,9 +1,13 @@
-mixin programlist(program)
+mixin programlist(program, rules)
   li.list-group-item
     .dropdown.pull-right
       button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
         span.caret
       ul.dropdown-menu
+        if ( viewHelper.checkUserRule('changeWork', rules) )
+          li.dropdown-header Администрирование
+            li
+              a(href='/work/program/' + program.id + '/edit') Редактировать
         //- li.dropdown-header Просмотр
         //- - var programdocs = program.Files.filter(function(file){return file.type == 'document'})
         //- if programdocs.length
@@ -33,6 +37,7 @@ mixin programlist(program)
         //-   li
         //-     a
         //-       s.small Фотографии
+        li.dropdown-header Подробно
         li
           a(href='work/program/' + program.id) Список домов
         li.dropdown-header Загрузить на сервер

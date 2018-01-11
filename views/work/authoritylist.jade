@@ -1,9 +1,14 @@
-mixin authoritylist(authority)
+mixin authoritylist(authority, rules)
   li.list-group-item
     .dropdown.pull-right
       button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
         span.caret
       ul.dropdown-menu
+        if ( viewHelper.checkUserRule('changeWork', rules) )
+          li.dropdown-header Администрирование
+          li
+            a(href='/work/authority/' + authority.id + '/edit') Редактировать
+
         //- li.dropdown-header Просмотр
         //- - var authoritydocs = authority.Files.filter(function(file){return file.type == 'document'})
         //- if authoritydocs.length
@@ -33,6 +38,7 @@ mixin authoritylist(authority)
         //-   li
         //-     a
         //-       s.small Фотографии
+        li.dropdown-header Подробно
         li
           a(href='work/authority/' + authority.id) Список домов
         li.dropdown-header Загрузить на сервер

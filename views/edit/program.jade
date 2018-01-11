@@ -1,0 +1,78 @@
+extends ../layout
+
+block style
+  include ../style/edit
+block scripts
+  include ../script/edit
+
+include ../mixins/header
+
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+        if (viewHelper.checkUserRule('changeWork', user.Rules))
+          .well.well-sm
+            h4.text-center
+              i
+                | Редактирование данных программы городской власти
+              br
+              b 
+                br
+                | #{program.title}
+                br
+                | #{moment(program.year).format('YYYY')}
+
+          hr
+
+          form(role="form" action='/work/program/' + program.id + '/edit' method='post' id="formProgram")
+            .form-group
+              label() Статус приема
+              .btn-group.btn-group-sm.btn-group-justified#changeStatusGroup(data-toggle="buttons")
+                label.btn.btn-default(class= ((program.status=='active')?'btn-primary active':''))
+                  input(type="radio" name='status' value='active' checked= (program.status=='active'))
+                  | В работу
+                label.btn.btn-default(class= ((program.status=='add')?'btn-danger active':''))
+                  input(type="radio" name='status' value='add' checked= (program.status=='add'))
+                  | Контроль
+                label.btn.btn-default(class= ((program.status=='close')?'btn-success  active':''))
+                  input(type="radio" name='status' value='close' checked= (program.status=='close'))
+                  | Завершенный 
+                label.btn.btn-default(class= ((program.status=='close')?'btn-default  active':''))
+                  input(type="radio" name='status' value='deleted' checked= (program.status=='delete'))
+                  | Удаленное
+
+            .form-group
+              label(for="titleProgram") Название программы
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-font
+                input(type="text" class="form-control" id="titleProgram" placeholder="" name='titleprogram' value= program.title)
+
+            .form-group
+              label(for="yearProgram") Год программы
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-line-chart
+                input(type="text" class="form-control" id="yearProgram" placeholder="" name='yearprogram' value= moment(program.year).format('YYYY'))
+
+            
+            #editModelModal.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Вы согласны с изменениями?
+
+                  .modal-body
+                    button.btn.btn-primary(type="submit" id='sendModel') Сохранить
+                    button.pull-right(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            button.btn.btn-primary(type="button" data-toggle="modal" data-target="#editModelModal") Сохранить изменения

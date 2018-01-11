@@ -412,7 +412,7 @@ router.post('/:id/task/', function(req, res, next) {
 
 router.get('/inbox/:id/edit/', function(req, res, next) {
 
-  req.params.id = parseInt(req.params.id, '10')
+  req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
     res.status(404).send('Неверный запрос на сервер')
     return;
@@ -445,7 +445,7 @@ router.get('/inbox/:id/edit/', function(req, res, next) {
 
 router.post('/inbox/:id/edit/', function(req, res, next) {
 
-  req.params.id = parseInt(req.params.id, '10')
+  req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
     res.status(404).send('Неверный запрос на сервер')
     return;
@@ -457,7 +457,7 @@ router.post('/inbox/:id/edit/', function(req, res, next) {
       inboxdate: req.body.dateinbox,
       term: req.body.term,
       binding: req.body.binding,
-      status: req.body.status,
+      status: req.body.status
     }, {
       where: {
         id: req.params.id

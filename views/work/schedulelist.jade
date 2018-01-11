@@ -1,9 +1,13 @@
-mixin schedulelist(schedule)
+mixin schedulelist(schedule, rules)
   li.list-group-item
     .dropdown.pull-right
       button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
         span.caret
       ul.dropdown-menu
+        if ( viewHelper.checkUserRule('changeWork', rules) )
+          li.dropdown-header Администрирование
+            li
+              a(href='/work/schedule/' + schedule.id + '/edit') Редактировать
         //- li.dropdown-header Просмотр
         //- - var scheduledocs = schedule.Files.filter(function(file){return file.type == 'document'})
         //- if scheduledocs.length
@@ -33,6 +37,7 @@ mixin schedulelist(schedule)
         //-   li
         //-     a
         //-       s.small Фотографии
+        li.dropdown-header Подробно
         li
           a(href='work/schedule/' + schedule.id) Список домов
         li.dropdown-header Загрузить на сервер

@@ -82,7 +82,7 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createAuthority") Добавить прием
                     ul.list-group
                       each authority in authorities
-                        +authoritylist(authority)
+                        +authoritylist(authority, user.Rules)
 
               div(role="tabpanel",class="tab-pane fade",id="tabSchedule")
                 .row
@@ -91,7 +91,7 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createSchedule") Добавить титульный список
                     ul.list-group
                       each schedule in schedules
-                        +schedulelist(schedule)
+                        +schedulelist(schedule, user.Rules) 
 
               div(role="tabpanel",class="tab-pane fade",id="tabProtocol")
                 .row
@@ -100,7 +100,7 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProtocol") Добавить протокол
                     ul.list-group
                       each protocol in protocols
-                        +protocollist(protocol)
+                        +protocollist(protocol, user.Rules)
                         
               div(role="tabpanel",class="tab-pane fade",id="tabProgram")
                 .row
@@ -109,7 +109,7 @@ block content
                       button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#createProgram") Добавить программу
                     ul.list-group
                       each program in programs
-                        +programlist(program)
+                        +programlist(program, user.Rules)
 
               div(role="tabpanel",class="tab-pane fade",id="tabRepair")
                 .row

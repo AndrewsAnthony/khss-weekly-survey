@@ -33,7 +33,7 @@ mixin header(user, showSearch, showHistory, showWork)
                 if (showWork && viewHelper.checkUserRule('showWork', user.Rules))
                   li.divider
                   li
-                    a(href="../work") Список работ
+                    a(href="/work") Список работ
                 if (showHistory && viewHelper.checkUserRule('showHouse', user.Rules))
                   li.divider
                   li

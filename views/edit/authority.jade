@@ -1,0 +1,87 @@
+extends ../layout
+
+block style
+  include ../style/edit
+block scripts
+  include ../script/edit
+
+include ../mixins/header
+
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well
+
+        if (viewHelper.checkUserRule('changeWork', user.Rules))
+          .well.well-sm
+            h4.text-center
+              i
+                | Редактирование данных по личному приему
+              br
+              b 
+                br
+                | [ #{moment(authority.date).format('DD-MM-YYYY')} # #{moment(authority.date).fromNow()} ] 
+                br
+                br
+                | #{authority.name}
+                br 
+                | #{authority.location}
+          
+          hr
+
+          form(role="form" action='/work/authority/' + authority.id + '/edit' method='post' id="formAuthority")
+            .form-group
+              label() Статус приема
+              .btn-group.btn-group-sm.btn-group-justified#changeStatusGroup(data-toggle="buttons")
+                label.btn.btn-default(class= ((authority.status=='active')?'btn-primary active':''))
+                  input(type="radio" name='status' value='active' checked= (authority.status=='active'))
+                  | В работу
+                label.btn.btn-default(class= ((authority.status=='add')?'btn-danger active':''))
+                  input(type="radio" name='status' value='add' checked= (authority.status=='add'))
+                  | Контроль
+                label.btn.btn-default(class= ((authority.status=='close')?'btn-success  active':''))
+                  input(type="radio" name='status' value='close' checked= (authority.status=='close'))
+                  | Завершенный 
+                label.btn.btn-default(class= ((authority.status=='close')?'btn-default  active':''))
+                  input(type="radio" name='status' value='deleted' checked= (authority.status=='delete'))
+                  | Удаленное
+
+            .form-group
+              label(for="nameAuthority") Кем был организован прием
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-university
+                input(type="text" class="form-control" id="nameAuthority" placeholder="название приема" name='nameauthority' value= authority.name)
+
+            .form-group
+              label(for="dateAuthority") Дата приема
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-calendar
+                input(type="date" class="form-control" id="dateAuthority" placeholder="" name='dateauthority' value= moment(authority.date).format('YYYY-MM-DD'))
+
+            .form-group
+              label(for="locationAuthority") Где проводиться
+              .input-group
+                span.input-group-addon
+                  i.fa.fa-map-marker
+                input(type="text" class="form-control" id="locationAuthority" placeholder="локация" name='locationauthority' value= authority.location)
+            
+            #editModelModal.modal.fade(role="dialog")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase Вы согласны с изменениями?
+
+                  .modal-body
+                    button.btn.btn-primary(type="submit" id='sendModel') Сохранить
+                    button.pull-right(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
+
+            button.btn.btn-primary(type="button" data-toggle="modal" data-target="#editModelModal") Сохранить изменения

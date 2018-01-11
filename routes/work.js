@@ -81,31 +81,67 @@ router.post('/authority/:id/house', function(req, res, next) {
 
 })
 
-router.post('/authority', function(req, res, next) {
+router.get('/authority/:id/edit', function(req, res, next) {
 
-  models.sequelize.transaction(function (t) {
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
 
-    return models.Authority.findOne({
-      where: {
-        name: req.body.nameauthority,
-        date: new Date(req.body.dateauthority)
-      }
-    }, {transaction: t})
-    .then(authority => {
+  const promiseArr = []
 
-      if (authority === null) {
-        return models.Authority.create({
-                name: req.body.nameauthority,
-                date: req.body.dateauthority,
-                location: req.body.locationauthority
-              }, {transaction: t})
-      }
-      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
-    })
+  promiseArr.push( models.Authority.findById(req.params.id) )
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
 
+  Promise.all(promiseArr)
+  .then(function([authority, user]){
+    authority
+      ? res.render('edit/authority', { authority, user })
+      : res.status(500).send('Отсутствует данный прием')
   })
-  .then(() => res.redirect('/work'))
-  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+router.post('/authority/:id/edit', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  models.sequelize.transaction(t => {
+    return models.Authority.update({
+      name: req.body.nameauthority,
+      date: req.body.dateauthority,
+      location: req.body.locationauthority,
+      status: req.body.status
+    }, {
+      where: {
+        id: req.params.id
+      },
+      limit: 1,
+      returning: true,
+      transaction: t
+    })
+  })
+  .then(function(){
+    res.redirect('/work/authority/' + req.params.id)
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки при записи')
+  })
 
 });
 
@@ -138,6 +174,34 @@ router.get('/authority/:id', function(req, res, next) {
 
 });
 
+router.post('/authority', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Authority.findOne({
+      where: {
+        name: req.body.nameauthority,
+        date: new Date(req.body.dateauthority)
+      }
+    }, {transaction: t})
+    .then(authority => {
+
+      if (authority === null) {
+        return models.Authority.create({
+                name: req.body.nameauthority,
+                date: req.body.dateauthority,
+                location: req.body.locationauthority
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
+
 //================== schedule    ======================
 
 router.post('/schedule/:id/house', function(req, res, next) {
@@ -167,29 +231,66 @@ router.post('/schedule/:id/house', function(req, res, next) {
 
 })
 
-router.post('/schedule', function(req, res, next) {
+router.get('/schedule/:id/edit', function(req, res, next) {
 
-  models.sequelize.transaction(function (t) {
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
 
-    return models.Schedule.findOne({
-      where: {
-        title: req.body.titleschedule
-      }
-    }, {transaction: t})
-    .then(schedule => {
+  const promiseArr = []
 
-      if (schedule === null) {
-        return models.Schedule.create({
-                title: req.body.titleschedule,
-                year: req.body.yearschedule
-              }, {transaction: t})
-      }
-      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
-    })
+  promiseArr.push( models.Schedule.findById(req.params.id) )
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
 
+  Promise.all(promiseArr)
+  .then(function([schedule, user]){
+    schedule
+      ? res.render('edit/schedule', { schedule, user })
+      : res.status(500).send('Отсутствует данный прием')
   })
-  .then(() => res.redirect('/work'))
-  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+router.post('/schedule/:id/edit', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  models.sequelize.transaction(t => {
+    return models.Schedule.update({
+      title: req.body.titleschedule,
+      year: req.body.yearschedule,
+      status: req.body.status
+    }, {
+      where: {
+        id: req.params.id
+      },
+      limit: 1,
+      returning: true,
+      transaction: t
+    })
+  })
+  .then(function(){
+    res.redirect('/work/schedule/' + req.params.id)
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки при записи')
+  })
 
 });
 
@@ -222,6 +323,33 @@ router.get('/schedule/:id', function(req, res, next) {
 
 });
 
+router.post('/schedule', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Schedule.findOne({
+      where: {
+        title: req.body.titleschedule
+      }
+    }, {transaction: t})
+    .then(schedule => {
+
+      if (schedule === null) {
+        return models.Schedule.create({
+                title: req.body.titleschedule,
+                year: req.body.yearschedule
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
+
+
 //================== protocol    ======================
 
 router.post('/protocol/:id/house', function(req, res, next) {
@@ -251,31 +379,67 @@ router.post('/protocol/:id/house', function(req, res, next) {
 
 })
 
-router.post('/protocol', function(req, res, next) {
+router.get('/protocol/:id/edit', function(req, res, next) {
 
-  models.sequelize.transaction(function (t) {
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
 
-    return models.Protocol.findOne({
-      where: {
-        title: req.body.titleprotocol,
-        date: new Date(req.body.dateprotocol)
-      }
-    }, {transaction: t})
-    .then(protocol => {
+  const promiseArr = []
 
-      if (protocol === null) {
-        return models.Protocol.create({
-                title: req.body.titleprotocol,
-                date: req.body.dateprotocol,
-                location: req.body.locationprotocol
-              }, {transaction: t})
-      }
-      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
-    })
+  promiseArr.push( models.Protocol.findById(req.params.id) )
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
 
+  Promise.all(promiseArr)
+  .then(function([protocol, user]){
+    protocol
+      ? res.render('edit/protocol', { protocol, user })
+      : res.status(500).send('Отсутствует данный прием')
   })
-  .then(() => res.redirect('/work'))
-  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+router.post('/protocol/:id/edit', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  models.sequelize.transaction(t => {
+    return models.Protocol.update({
+      title: req.body.titleprotocol,
+      date: req.body.dateprotocol,
+      location: req.body.locationprotocol,
+      status: req.body.status
+    }, {
+      where: {
+        id: req.params.id
+      },
+      limit: 1,
+      returning: true,
+      transaction: t
+    })
+  })
+  .then(function(){
+    res.redirect('/work/protocol/' + req.params.id)
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки при записи')
+  })
 
 });
 
@@ -308,6 +472,35 @@ router.get('/protocol/:id', function(req, res, next) {
 
 });
 
+router.post('/protocol', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Protocol.findOne({
+      where: {
+        title: req.body.titleprotocol,
+        date: new Date(req.body.dateprotocol)
+      }
+    }, {transaction: t})
+    .then(protocol => {
+
+      if (protocol === null) {
+        return models.Protocol.create({
+                title: req.body.titleprotocol,
+                date: req.body.dateprotocol,
+                location: req.body.locationprotocol
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
+
+
 //================== program      ======================
 
 router.post('/program/:id/house', function(req, res, next) {
@@ -337,30 +530,66 @@ router.post('/program/:id/house', function(req, res, next) {
 
 })
 
-router.post('/program', function(req, res, next) {
+router.get('/program/:id/edit', function(req, res, next) {
 
-  models.sequelize.transaction(function (t) {
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
 
-    return models.Program.findOne({
-      where: {
-        title: req.body.titleprogram,
-        year: new Date(req.body.yearprogram)
-      }
-    }, {transaction: t})
-    .then(program => {
+  const promiseArr = []
 
-      if (program === null) {
-        return models.Program.create({
-                title: req.body.titleprogram,
-                year: req.body.yearprogram
-              }, {transaction: t})
-      }
-      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
-    })
+  promiseArr.push( models.Program.findById(req.params.id) )
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
 
+  Promise.all(promiseArr)
+  .then(function([program, user]){
+    program
+      ? res.render('edit/program', { program, user })
+      : res.status(500).send('Отсутствует данный прием')
   })
-  .then(() => res.redirect('/work'))
-  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+router.post('/program/:id/edit', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  models.sequelize.transaction(t => {
+    return models.Program.update({
+      title: req.body.titleprogram,
+      year: req.body.yearprogram,
+      status: req.body.status
+    }, {
+      where: {
+        id: req.params.id
+      },
+      limit: 1,
+      returning: true,
+      transaction: t
+    })
+  })
+  .then(function(){
+    res.redirect('/work/program/' + req.params.id)
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки при записи')
+  })
 
 });
 
@@ -390,6 +619,33 @@ router.get('/program/:id', function(req, res, next) {
     console.log(err)
     res.status(500).send('Ошибки на сервере')
   })
+
+});
+
+router.post('/program', function(req, res, next) {
+
+  models.sequelize.transaction(function (t) {
+
+    return models.Program.findOne({
+      where: {
+        title: req.body.titleprogram,
+        year: new Date(req.body.yearprogram)
+      }
+    }, {transaction: t})
+    .then(program => {
+
+      if (program === null) {
+        return models.Program.create({
+                title: req.body.titleprogram,
+                year: req.body.yearprogram
+              }, {transaction: t})
+      }
+      return Promise.reject(new Error('Данный запрос создан или неверные входные данные'))
+    })
+
+  })
+  .then(() => res.redirect('/work'))
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
 
 });
 
