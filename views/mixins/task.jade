@@ -51,6 +51,13 @@ mixin tasklist(itemtasktype, house, rules)
         br
         i #{itemtasktype.Protocol.location}
 
+    else if (itemtasktype.TaskType.model == 'problem')
+      td(data-title='Вид задания').tasktype
+        b #{itemtasktype.TaskType.description}
+        br
+        i #{itemtasktype.Repair.name}
+
+
 
     td(data-title='Привязка к местности').taskbinding
       | #{itemtasktype.binding || " "}
@@ -79,7 +86,10 @@ mixin tasklist(itemtasktype, house, rules)
         button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
           span.caret
         ul.dropdown-menu
-          li.dropdown-header Другие действия
+          if ( viewHelper.checkUserRule('changeTask', rules) )
+            li.dropdown-header Администрирование
+            li
+              a(href='/house/task/' + itemtasktype.id + '/edit') Редактировать
           if (viewHelper.checkUserRule('addFile', user.Rules))
             li.dropdown-header Загрузить на сервер
             li

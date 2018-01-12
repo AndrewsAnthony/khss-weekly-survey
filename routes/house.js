@@ -486,4 +486,216 @@ router.post('/inbox/:id/edit/', function(req, res, next) {
 
 });
 
+router.get('/task/:id/edit/', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  const promiseArr = []
+
+  promiseArr.push( models.ItemTask.findById(req.params.id, { include: [models.Problem, 'Implementer', 'TaskType', 'Inbox','Protocol', 'Information', 'Authority',  'Schedule', 'Program', 'Repair'] }) );
+  promiseArr.push( models.Problem.findAll() );
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }));
+  promiseArr.push( models.User.findAll({ include: [models.Depatment]}) );
+  promiseArr.push( 
+    models.ItemTask.findById(req.params.id)
+    .then(itemtask => {
+      return models.Inbox.findAll({where: { HouseId: itemtask.HouseId }})
+    })
+  )
+  promiseArr.push( models.Schedule.findAll() );
+  promiseArr.push( models.Program.findAll() );
+  promiseArr.push( models.Authority.findAll() );
+  promiseArr.push( models.Information.findAll() );
+  promiseArr.push( models.Protocol.findAll() );
+
+  Promise.all(promiseArr)
+  .then(function([task, problems, user, users, currentInboxes, currentSchedules, currentPrograms, currentAuthorities, currentInformations, currentProtocols]){ 
+    task
+      ? res.render('edit/task', { task, problems, user, users, currentInboxes, currentSchedules, currentPrograms, currentAuthorities, currentInformations, currentProtocols })
+      : res.status(500).send('Отсутствует задание')
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+});
+
+router.post('/task/:id/edit/', function(req, res, next) {
+
+  req.params.id = parseInt(req.params.id, 10)
+  if (isNaN(req.params.id)) {
+    res.status(404).send('Неверный запрос на сервер')
+    return;
+  }
+
+  // models.sequelize.transaction(t => {
+  //   return models.Inbox.update({
+  //     number: req.body.numberinbox,
+  //     inboxdate: req.body.dateinbox,
+  //     term: req.body.term,
+  //     binding: req.body.binding,
+  //     status: req.body.status
+  //   }, {
+  //     where: {
+  //       id: req.params.id
+  //     },
+  //     limit: 1,
+  //     returning: true,
+  //     transaction: t
+  //   })
+  //   .then(([counts]) => {
+  //     return models.Inbox.findById(req.params.id, { transaction: t })
+  //       .then(inbox => {
+  //         return Promise.all([
+  //           inbox.setProblems(req.body.problems, { transaction: t }),
+  //           inbox.setDepatments(req.body.depatments, { transaction: t })
+  //         ])
+  //       })    
+  //   })
+  // })
+  // .then(function(){
+  //   res.redirect('/')
+  // })
+  // .catch(function(err){
+  //   console.log(err)
+  //   res.status(500).send('Ошибки при записи')
+  // })
+
+  const chainObj = {};
+
+  models.sequelize.transaction(t => {
+    return models.Task.findOne({
+      where: {
+        name: req.body.maintask,
+        type: (req.body.maintask.split('-')[0] == 'information') ? 'info-information' : req.body[req.body.maintask.replace('-','')]
+      },
+      transaction: t
+    })
+    .then(posttasktype => {
+      chainObj.posttasktype = posttasktype;
+      return models.ItemTask.findById(req.params.id, { transaction: t} )
+    })
+    .then(currentItemTask => {
+      chainObj.currentItemTask = currentItemTask;
+      
+      if (chainObj.posttasktype.model == 'information' && currentItemTask.taskable == chainObj.posttasktype.model) {
+        return models.Information.update({
+          description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
+          source: chainObj.posttasktype.name.split('-')[0] },
+          {
+            where: {
+              id: currentItemTask.taskable_id
+            },
+            limit: 1,
+            returning: true,
+            transaction: t
+          })
+      }
+
+      if (chainObj.posttasktype.model == 'information' && currentItemTask.taskable !== chainObj.posttasktype.model) {
+        return models.Information.create({
+          description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
+          source: chainObj.posttasktype.name.split('-')[0] },
+              {
+                transaction: t
+              })
+      }
+
+      return models.Information.findById(null, {transaction: t});
+
+    })
+    .then(info => {
+      chainObj.info = info
+      return models.ItemTask.update({
+        taskable: chainObj.posttasktype.model,
+        taskable_id: chainObj.info 
+                      ? Array.isArray(chainObj.info)
+                        ? chainObj.currentItemTask.taskable_id
+                        : chainObj.info.id
+                      : req.body[chainObj.posttasktype.type.replace('-','')],
+        term: req.body.termtask,
+        binding: req.body.bindingtask,
+        TaskTypeId: chainObj.posttasktype.id,
+        ImplementerId: req.body.usertask,
+        status: req.body.status
+      }, {
+          where: {
+            id: req.params.id
+          },
+          limit: 1,
+          returning: true,
+          transaction: t
+      })
+    })
+    .then(([counts]) => {
+      return models.ItemTask.findById(req.params.id, { transaction: t })
+        .then(itemtask => {
+          return Promise.all([
+            itemtask.setProblems(req.body.problemtask, { transaction: t })
+          ])
+        })    
+    })
+  })
+  .then(function(){
+    res.redirect('/')
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки при записи')
+  })
+
+     
+})
+  
+  // .then(tasktype => {
+  //   chainObj.tasktype = tasktype;
+  //   if (chainObj.tasktype.model == 'information') {
+  //     return models.Information.create({
+  //       description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.tasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
+  //       source: chainObj.tasktype.name.split('-')[0]
+  //     })
+  //   }
+  //   return Promise.resolve(null);
+  // })
+  // .then(info => {
+  //   chainObj.info = info
+  //   return  models.ItemTask.create({
+  //     taskable: chainObj.tasktype.model,
+  //     taskable_id: chainObj.info ? chainObj.info.id : req.body[chainObj.tasktype.type.replace('-','')],
+  //     term: req.body.termtask,
+  //     binding: req.body.bindingtask,
+  //     HouseId: req.params.id,
+  //     TaskTypeId: chainObj.tasktype.id,
+  //     ImplementerId: req.body.usertask
+  //   })
+  // })
+  // .then(itemtask => {
+  //   chainObj.itemtask = itemtask
+  //   if (req.body.problemtask) {
+  //     return chainObj.itemtask.setProblems(req.body.problemtask)
+  //   }
+  //   return Promise.resolve(null);
+  // })
+  // .then(problem =>{
+  //   chainObj.problem = problem
+  //   console.log("chainObj", chainObj);
+  //   res.json(chainObj)
+  // })
+  // .catch( err => {
+  //   console.log("err", err);
+  //   res.status('500').next('ошибка при обработке данных')
+  // })
+
+// });
+
 module.exports = router;

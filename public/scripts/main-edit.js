@@ -53,6 +53,10 @@ $('document').ready(function(){
     }),
   });
 
+  $('.conditional').conditionize({
+    hideJS: false
+  });
+
   var addressFetcher = new Bloodhound({
     datumTokenizer: function(datum){
       console.log("datum", datum);

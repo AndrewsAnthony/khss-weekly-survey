@@ -49,7 +49,7 @@ mixin history(itemtask, pathToFile)
               span.pull-left
                 b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
                 br
-                i [ #{itemtask.Problem.name} ]
+                i [ Выполнение ремонтных работ - #{itemtask.Repair.name} ]
 
             else if (itemtask.TaskType.model == 'information')
               span.pull-left

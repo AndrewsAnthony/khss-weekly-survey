@@ -113,8 +113,8 @@ $('document').ready(function(){
       inboxphotoreport: {
         required: "select[name='maintask'] option[value='photoreport-type']:selected, select[name='photoreporttype'] option[value='inbox-photoreport']:selected"
       },
-      titlephotoreport: {
-        required: "select[name='maintask'] option[value='photoreport-type']:selected, select[name='photoreporttype'] option[value='title-photoreport']:selected"
+      schedulephotoreport: {
+        required: "select[name='maintask'] option[value='photoreport-type']:selected, select[name='photoreporttype'] option[value='schedule-photoreport']:selected"
       },
       protocolphotoreport: {
         required: "select[name='maintask'] option[value='photoreport-type']:selected, select[name='photoreporttype'] option[value='protocol-photoreport']:selected"

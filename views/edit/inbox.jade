@@ -18,7 +18,7 @@ block content
     .row
       .col-sm-12.well
 
-        if (R.any(R.whereEq({name: 'changeInbox'}), user.Rules))
+        if ( viewHelper.checkUserRule('changeInbox' , user.Rules) )
           .well.well-sm
             h4.text-center
               b 
@@ -86,7 +86,7 @@ block content
                   i.fa.fa-calendar
                 input(type="date" class="form-control" id="termInbox" placeholder="Введите срок исполнения" name='term' value= moment(inbox.term).format('YYYY-MM-DD'))
             
-            #editInboxModal.modal.fade(role="dialog")
+            #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content
                   .modal-header
@@ -94,7 +94,7 @@ block content
                     h4.modal-title.text-uppercase Вы согласны с изменениями?
 
                   .modal-body
-                    button.btn.btn-primary(type="submit" id='sendInbox') Сохранить
+                    button.btn.btn-primary(type="submit" id='sendModel') Сохранить
                     button.pull-right(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
 
-            button.btn.btn-primary(type="button" data-toggle="modal" data-target="#editInboxModal") Сохранить изменения
+            button.btn.btn-primary(type="button" data-toggle="modal" data-target="#editModelModal") Сохранить изменения

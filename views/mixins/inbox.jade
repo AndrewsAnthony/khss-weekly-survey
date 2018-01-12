@@ -20,7 +20,7 @@ mixin inboxlist(inbox, house, rules)
         button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
           span.caret
         ul.dropdown-menu
-          if (R.any(R.whereEq({name: 'changeInbox'}), rules))
+          if ( viewHelper.checkUserRule('changeInbox', rules) )
             li.dropdown-header Администрирование
             li
               a(href='/house/inbox/' + inbox.id + '/edit') Редактировать
