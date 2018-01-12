@@ -538,39 +538,6 @@ router.post('/task/:id/edit/', function(req, res, next) {
     return;
   }
 
-  // models.sequelize.transaction(t => {
-  //   return models.Inbox.update({
-  //     number: req.body.numberinbox,
-  //     inboxdate: req.body.dateinbox,
-  //     term: req.body.term,
-  //     binding: req.body.binding,
-  //     status: req.body.status
-  //   }, {
-  //     where: {
-  //       id: req.params.id
-  //     },
-  //     limit: 1,
-  //     returning: true,
-  //     transaction: t
-  //   })
-  //   .then(([counts]) => {
-  //     return models.Inbox.findById(req.params.id, { transaction: t })
-  //       .then(inbox => {
-  //         return Promise.all([
-  //           inbox.setProblems(req.body.problems, { transaction: t }),
-  //           inbox.setDepatments(req.body.depatments, { transaction: t })
-  //         ])
-  //       })    
-  //   })
-  // })
-  // .then(function(){
-  //   res.redirect('/')
-  // })
-  // .catch(function(err){
-  //   console.log(err)
-  //   res.status(500).send('Ошибки при записи')
-  // })
-
   const chainObj = {};
 
   models.sequelize.transaction(t => {
@@ -656,46 +623,5 @@ router.post('/task/:id/edit/', function(req, res, next) {
 
      
 })
-  
-  // .then(tasktype => {
-  //   chainObj.tasktype = tasktype;
-  //   if (chainObj.tasktype.model == 'information') {
-  //     return models.Information.create({
-  //       description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.tasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
-  //       source: chainObj.tasktype.name.split('-')[0]
-  //     })
-  //   }
-  //   return Promise.resolve(null);
-  // })
-  // .then(info => {
-  //   chainObj.info = info
-  //   return  models.ItemTask.create({
-  //     taskable: chainObj.tasktype.model,
-  //     taskable_id: chainObj.info ? chainObj.info.id : req.body[chainObj.tasktype.type.replace('-','')],
-  //     term: req.body.termtask,
-  //     binding: req.body.bindingtask,
-  //     HouseId: req.params.id,
-  //     TaskTypeId: chainObj.tasktype.id,
-  //     ImplementerId: req.body.usertask
-  //   })
-  // })
-  // .then(itemtask => {
-  //   chainObj.itemtask = itemtask
-  //   if (req.body.problemtask) {
-  //     return chainObj.itemtask.setProblems(req.body.problemtask)
-  //   }
-  //   return Promise.resolve(null);
-  // })
-  // .then(problem =>{
-  //   chainObj.problem = problem
-  //   console.log("chainObj", chainObj);
-  //   res.json(chainObj)
-  // })
-  // .catch( err => {
-  //   console.log("err", err);
-  //   res.status('500').next('ошибка при обработке данных')
-  // })
-
-// });
 
 module.exports = router;
