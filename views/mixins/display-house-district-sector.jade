@@ -1,0 +1,34 @@
+mixin display-house-district-sector(modelhouse)
+  .list
+    - var groupHouses = viewHelper.groupHouseByDistrictAndSector(modelhouse)
+    | #{console.log(groupHouses)}
+    each district in R.keys(groupHouses)
+      h3
+
+        i
+          | #{district} район
+          | #{" "}
+          span.label.label-primary #{R.reduce(R.add, 0, R.map(R.length, R.values(groupHouses[district])))} адресов
+      hr
+      each sector in R.keys(groupHouses[district])
+        each house in R.keys(groupHouses[district][sector])
+          .panel-group
+            div(class= "panel panel-default")
+              .panel-heading
+                h4.panel-title
+                  a(
+                  data-toggle="collapse"
+                  href="#house" + groupHouses[district][sector][house].id)
+                    span.badge.pull-right #{groupHouses[district][sector][house].ItemTasks.length}
+                    span.searchtext
+                      | #{viewHelper.createNameHouse(groupHouses[district][sector][house])}
+                      br
+                      | #{sector} участок
+
+              .panel-collapse.collapse(id="house" + groupHouses[district][sector][house].id)
+                .panel-body
+                  p
+                    i
+                      a(href='/house/' + groupHouses[district][sector][house].id) Подробная информация по адресу
+                  each task in groupHouses[district][sector][house].ItemTasks
+                    +history(task, '../../..')

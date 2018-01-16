@@ -12,6 +12,7 @@ include ./changelist
 
 include ../mixins/createnote
 include ../mixins/createfile
+include ../mixins/display-house-district-sector
 
 block content
   #loading_layer
@@ -42,26 +43,7 @@ block content
                   i.fa.fa-times
           hr
 
-          .list
-            each house in program.Houses
-              .panel-group
-                div(class= "panel panel-default")
-                  .panel-heading
-                    h4.panel-title
-                      a(
-                      data-toggle="collapse"
-                      href="#house" + house.id)
-                        span.badge.pull-right #{house.ItemTasks.length}
-                        span.searchtext
-                          | #{viewHelper.createNameHouse(house)}
-
-                  .panel-collapse.collapse(id="house" + house.id)
-                    .panel-body
-                      p
-                        i
-                          a(href='/house/' + house.id) Подробная информация по адресу
-                      each task in house.ItemTasks
-                        +history(task, '')
+          +display-house-district-sector(program.Houses)
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             +changelist(program)
