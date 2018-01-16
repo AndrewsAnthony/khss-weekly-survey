@@ -86,7 +86,7 @@ $('#createFile').modalSteps({
       $("#inputFile").fileinput({
         language: 'ru',
         theme: "explorer",
-        uploadUrl: "/house/file/upload",
+        uploadUrl: "/work/file/upload",
         maxFileCount: (extradata.file == 'document') ? 1 : 15,
         overwriteInitial: false,
         previewFileIcon: '<i class="fa fa-file"></i>',
@@ -153,14 +153,11 @@ $('#createFile').modalSteps({
   var object = button.data('object')
   var file = button.data('file')
   var objectid = button.data('objectid')
-  var objecthouse = button.data('objecthouse')
   var modal = $(this)
 
   extradata['object'] = object
   extradata['file'] = file
   extradata['objectid'] = objectid
-  extradata['objecthouse'] = objecthouse
-
 
   if (file == 'photo') {
     modal.find('.modal-title').text('описание для файлов')
@@ -171,26 +168,25 @@ $('#createFile').modalSteps({
     modal.find('#fileNameBlock').show();
   }
 
-
 }).on('hidden.bs.modal', function(event){
   document.getElementById('formFile').reset();
   $("#inputFile").fileinput('destroy')
   extradata = {}
 })
 
-$('#createNoteTask')
-.on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget)
-  var taskid = button.data('taskid')
-  var houseid = button.data('houseid')
-  var modal = $(this)
-  $('#hiddenTaskId').val(taskid);
-  $('#hiddenHouseId').val(houseid);
-})
-.on('hidden.bs.modal', function(event){
-  $('#hiddenTaskId').val('');
-  $('#hiddenHouseId').val('');
-})
+// $('#createNoteTask')
+// .on('show.bs.modal', function (event) {
+//   var button = $(event.relatedTarget)
+//   var taskid = button.data('taskid')
+//   var houseid = button.data('houseid')
+//   var modal = $(this)
+//   $('#hiddenTaskId').val(taskid);
+//   $('#hiddenHouseId').val(houseid);
+// })
+// .on('hidden.bs.modal', function(event){
+//   $('#hiddenTaskId').val('');
+//   $('#hiddenHouseId').val('');
+// })
 
 
 $('#changeList').on('keyup keypress', "input", function(e) {

@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
     Protocol.hasMany(models.File, {
       foreignKey: 'fileable_id',
       scope: {
-        taskable: 'protocol'
+        fileable: 'protocol'
       },
       constraints: false
     });

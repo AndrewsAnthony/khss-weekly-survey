@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
     Authority.hasMany(models.File, {
       foreignKey: 'fileable_id',
       scope: {
-        taskable: 'authority'
+        fileable: 'authority'
       },
       constraints: false
     });

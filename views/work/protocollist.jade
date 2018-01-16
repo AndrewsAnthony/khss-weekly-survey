@@ -1,65 +1,9 @@
+include ../mixins/modeldetailbutton
+
 mixin protocollist(protocol, rules)
   li.list-group-item
     .dropdown.pull-right
-      button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '
-        span.caret
-      ul.dropdown-menu
-        if ( viewHelper.checkUserRule('changeWork', rules) )
-          li.dropdown-header Администрирование
-          li
-            a(href='/work/protocol/' + protocol.id + '/edit') Редактировать
-        //- li.dropdown-header Просмотр
-        //- - var protocoldocs = protocol.Files.filter(function(file){return file.type == 'document'})
-        //- if protocoldocs.length
-        //-   li
-        //-     each doc in protocoldocs
-        //-       a(href= '../upload/' + doc.path)
-        //-         i.fa.fa-paperclip
-        //-         | &nbsp;
-        //-         if doc.FileDescription.name
-        //-           | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
-        //-         else
-        //-           | #{moment(doc.createAt).format(DD/MM/YYYY)}
-        //- else
-        //-   li
-        //-     a
-        //-       s.small Документ
-
-        //- - var protocolphotos = protocol.Files.filter(function(file){return file.type == 'photo'})
-        //- if protocolphotos.length
-        //-   li.inboxgallery
-        //-     a(href= '../upload/' + protocolphotos[0].path) Фотографии
-        //-     each photo in protocolphotos.slice(1)
-        //-       a.mfp-hide(
-        //-       href= '../upload/' + photo.path
-        //-       title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
-        //- else
-        //-   li
-        //-     a
-        //-       s.small Фотографии
-        li.dropdown-header Подробно
-        li
-          a(href='work/protocol/' + protocol.id) Список домов
-        li.dropdown-header Загрузить на сервер
-        li
-          a(
-          href='#'
-          data-toggle='modal'
-          data-target='#createFile'
-          data-object='protocol'
-          data-file='document'
-          data-objecthouse= 0
-          data-objectid= protocol.id) Документ
-        li
-          a(
-          href='#'
-          data-toggle='modal'
-          data-target='#createFile'
-          data-object='protocol'
-          data-file='photo'
-          data-objecthouse= 0
-          data-objectid= protocol.id) Фотографию
-    
+      +modeldetailbutton(protocol, 'protocol', rules)
     span.searchtext
       | #{protocol.title}
       br

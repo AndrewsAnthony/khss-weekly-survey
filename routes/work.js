@@ -1,9 +1,9 @@
 const models     = require('../models');
-const Op         = models.sequelize.Op
-
+const Op         = models.sequelize.Op;
 const express    = require('express');
+const path       = require('path');
 const formidable = require('formidable');
-const fse        = require('fs-extra')
+const fse        = require('fs-extra');
 const mkdirp     = require('mkdirp-promise');
 const Jimp       = require("jimp");
 const getSlug    = require('speakingurl');
@@ -19,10 +19,26 @@ router.get('/', function(req, res) {
   const promiseArr = []
 
   promiseArr.push( models.Problem.findAll() );
-  promiseArr.push( models.Schedule.findAll() );
-  promiseArr.push( models.Authority.findAll() );
-  promiseArr.push( models.Program.findAll() );
-  promiseArr.push( models.Protocol.findAll() );
+  promiseArr.push( models.Schedule.findAll({ include: [{
+        model: models.File,
+        order: ['createdAt','DESC'],
+        include: [models.FileDescription]
+    }] }) );
+  promiseArr.push( models.Authority.findAll({ include: [{
+        model: models.File,
+        order: ['createdAt','DESC'],
+        include: [models.FileDescription]
+    }] }) );
+  promiseArr.push( models.Program.findAll({ include: [{
+        model: models.File,
+        order: ['createdAt','DESC'],
+        include: [models.FileDescription]
+    }] }) );
+  promiseArr.push( models.Protocol.findAll({ include: [{
+        model: models.File,
+        order: ['createdAt','DESC'],
+        include: [models.FileDescription]
+    }] }) );
   promiseArr.push( models.User.findOne({
     where: {
       AuthorizationId: req.user.id
@@ -690,6 +706,137 @@ router.post('/addoptions', function(req, res){
   }
 
 });
+
+//================== uploadfiles   ======================
+
+router.post('/file/upload', function(req, res) {
+
+  var form = new formidable.IncomingForm();
+
+  form.multiples = false;
+  form.uploadDir = path.join(__dirname, '../uploadfiles');
+
+  form.parse(req, function(err, fields, files){
+
+    if( err ){
+      console.log(err);
+      res.json({error: `Файл не загрузился. Проблемы при загрузки файла,
+       обратитесь к администратору`})
+      return;
+    }
+
+    if ( fields && files.inputfile ) {
+
+      var dbUploadDir = path.join(
+          fields.object
+        , fields.file
+      );
+      var fileUploadDir = path.join(__dirname, '../public', 'upload-official', dbUploadDir)
+      var filePath = files.inputfile.path;
+      var nameFile = moment().format('YYYY-MM-DD') + '_' + files.inputfile.path.substr(-32) + path.extname(files.inputfile.name)
+      var newFilePath = path.join(fileUploadDir, nameFile);
+
+      if (fields.file == 'photo') {
+
+        fse.ensureDir(fileUploadDir)
+        .then(() => fse.move(filePath, newFilePath))
+        .then(() => fse.ensureDir(path.join(fileUploadDir,'thumbnails')))
+        .then(() => Jimp.read(newFilePath))
+        .then((currentFile) => {
+            return currentFile
+                  .resize(420, Jimp.AUTO)
+                  .write(path.join(fileUploadDir,'thumbnails', nameFile));
+        })
+        .then(() => {
+
+          return models.FileDescription.findOrCreate({
+            where: {
+              description: fields.filedescription,
+              note: fields.filenote,
+              name: fields.filename
+            }
+          })
+          .spread((filedescription, created) => {
+            return filedescription.createFile({
+              path: slash(path.join(dbUploadDir, nameFile)),
+              thumbnail: slash(path.join(dbUploadDir,'thumbnails', nameFile)),
+              type: fields.file,
+              fileable: fields.object,
+              fileable_id: fields.objectid
+            })
+            .then(() => {
+              if (fields.object == 'task'){
+                return models.ItemTask
+                      .update({status: 'add'}, {where: {id: fields.objectid}})
+                      .catch(err => {
+                        console.log(err)
+                        res.json({error: `Проблемы при загрузки файла,
+                         обратитесь к администратору`})
+                      })
+              }
+              else {
+                return Promise.resolve()
+              }
+            })
+            .catch(err => {
+              console.log(err)
+              res.json({error: `Проблемы при загрузки файла,
+               обратитесь к администратору`})
+            })
+          })
+          .then(() => res.json({}))
+          .catch(err => {
+            console.log(err)
+            res.json({error: `Проблемы при загрузки файла,
+             обратитесь к администратору`})
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          res.json({error: `Проблемы при загрузки файла,
+           обратитесь к администратору`})
+        })
+
+      } else if (fields.file == 'document') {
+
+        fse.ensureDir(fileUploadDir)
+        .then(() => fse.move(filePath, newFilePath))
+        .then(() => {
+
+          return models.FileDescription.findOrCreate({
+            where: {
+              description: fields.filedescription,
+              note: fields.filenote,
+              name: fields.filename
+            }
+          })
+          .spread((filedescription, created) => {
+            return filedescription.createFile({
+              path: slash(path.join(dbUploadDir, nameFile)),
+              thumbnail: '',
+              type: fields.file,
+              fileable: fields.object,
+              fileable_id: fields.objectid
+            })
+          })
+          .then(() => res.json({}))
+          .catch(err => {
+            console.log(err)
+            res.json({error: `Проблемы при загрузки файла,
+             обратитесь к администратору`})
+          })
+
+        })
+      }
+
+    } else {
+      res.json({error: `Файл при загрузки не содержит дополнительных полей,
+       обратитесь к администратору`})
+    }
+
+  })
+
+})
 
 
 

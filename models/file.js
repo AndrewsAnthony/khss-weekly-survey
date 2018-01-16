@@ -24,6 +24,12 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    File.belongsTo(models.Authority, {
+      foreignKey: 'fileable_id',
+      as: 'Authority',
+      constraints: false
+    });
+
     File.belongsTo(models.Program, {
       foreignKey: 'fileable_id',
       as: 'Program',

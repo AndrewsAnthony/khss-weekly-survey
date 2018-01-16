@@ -17,6 +17,7 @@ config
 # Uploaded files
 public/upload
 public/userprofile
+public/upload-official
 uploadfiles
 exportdata
 
