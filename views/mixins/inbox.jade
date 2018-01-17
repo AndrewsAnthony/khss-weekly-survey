@@ -1,6 +1,11 @@
 mixin inboxlist(inbox, house, rules)
-  tr.img-thumbnail(id= viewHelper.addBorderStyle(inbox.status))
-    td(data-title='# Письмо').inboxletter
+  tr.img-thumbnail(
+  id= viewHelper.addBorderStyle(inbox.status)
+  data-toggle="tooltip"
+  data-placement="top"
+  title= viewHelper.tooltipTitle(inbox.status) )
+    td(
+    data-title='# Письмо').inboxletter
       b(id= 'inboxNumber' + inbox.id) #{inbox.number}
       br
       | От #{moment(inbox.inboxdate).format("DD-MM-YYYY")}

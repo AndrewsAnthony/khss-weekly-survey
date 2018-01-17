@@ -206,7 +206,7 @@ router.post('/:id/inbox/', function(req, res) {
     })
   })
   .then((inbox) => {
-    res.json(newInbox)
+    res.redirect('/house/' + req.params.id)
   })
   .catch(function(msg){
     res.status(404).send("Проблемы при добавлении в базу данных")
@@ -401,7 +401,7 @@ router.post('/:id/task/', function(req, res, next) {
   .then(problem =>{
     chainObj.problem = problem
     console.log("chainObj", chainObj);
-    res.json(chainObj)
+    res.redirect('/house/' + req.params.id)
   })
   .catch( err => {
     console.log("err", err);
@@ -473,7 +473,7 @@ router.post('/inbox/:id/edit/', function(req, res, next) {
             inbox.setProblems(req.body.problems, { transaction: t }),
             inbox.setDepatments(req.body.depatments, { transaction: t })
           ])
-        })    
+        })
     })
   })
   .then(function(){
@@ -505,7 +505,7 @@ router.get('/task/:id/edit/', function(req, res, next) {
     include: [models.Rule]
   }));
   promiseArr.push( models.User.findAll({ include: [models.Depatment]}) );
-  promiseArr.push( 
+  promiseArr.push(
     models.ItemTask.findById(req.params.id)
     .then(itemtask => {
       return models.Inbox.findAll({where: { HouseId: itemtask.HouseId }})
@@ -518,7 +518,7 @@ router.get('/task/:id/edit/', function(req, res, next) {
   promiseArr.push( models.Protocol.findAll() );
 
   Promise.all(promiseArr)
-  .then(function([task, problems, user, users, currentInboxes, currentSchedules, currentPrograms, currentAuthorities, currentInformations, currentProtocols]){ 
+  .then(function([task, problems, user, users, currentInboxes, currentSchedules, currentPrograms, currentAuthorities, currentInformations, currentProtocols]){
     task
       ? res.render('edit/task', { task, problems, user, users, currentInboxes, currentSchedules, currentPrograms, currentAuthorities, currentInformations, currentProtocols })
       : res.status(500).send('Отсутствует задание')
@@ -554,7 +554,7 @@ router.post('/task/:id/edit/', function(req, res, next) {
     })
     .then(currentItemTask => {
       chainObj.currentItemTask = currentItemTask;
-      
+
       if (chainObj.posttasktype.model == 'information' && currentItemTask.taskable == chainObj.posttasktype.model) {
         return models.Information.update({
           description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
@@ -585,7 +585,7 @@ router.post('/task/:id/edit/', function(req, res, next) {
       chainObj.info = info
       return models.ItemTask.update({
         taskable: chainObj.posttasktype.model,
-        taskable_id: chainObj.info 
+        taskable_id: chainObj.info
                       ? Array.isArray(chainObj.info)
                         ? chainObj.currentItemTask.taskable_id
                         : chainObj.info.id
@@ -610,7 +610,7 @@ router.post('/task/:id/edit/', function(req, res, next) {
           return Promise.all([
             itemtask.setProblems(req.body.problemtask, { transaction: t })
           ])
-        })    
+        })
     })
   })
   .then(function(){
@@ -621,7 +621,7 @@ router.post('/task/:id/edit/', function(req, res, next) {
     res.status(500).send('Ошибки при записи')
   })
 
-     
+
 })
 
 module.exports = router;

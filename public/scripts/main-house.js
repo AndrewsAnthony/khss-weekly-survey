@@ -42,20 +42,8 @@ $('document').ready(function(){
       }
     },
     submitHandler: function(form, e){
-
-      var url  = $(form).attr('action');
-      var data = $(form).serialize();
-
       $('#createInboxModal').modal('hide')
-      form.reset()
-
-      $.post(url, data)
-      .done(function(responseText) {
-        console.log("responseText", responseText);
-      })
-      .fail(function() {
-      })
-
+      form.submit()
     },
     onkeyup: $.debounce(1000, function(element, event) {
       $.validator.defaults.onkeyup.call(this, element, event);
@@ -65,26 +53,8 @@ $('document').ready(function(){
   $("#taskForm").validate({
     debug: true,
     submitHandler: function(form, ev){
-
-      var url = $(form).attr('action')
-      var data = $(form).serialize();
-
       $('#createTaskModal').modal('hide')
-      form.reset()
-
-      console.log("data", data);
-
-      $.ajax(url, {
-        data : data,
-        type : 'POST',
-        url: url
-      })
-      .done(function(response){
-        console.log(response)
-      })
-      .fail(function(err){
-        console.log(err)
-      })
+      form.submit()
     },
     rules: {
 

@@ -220,9 +220,10 @@ blockquote {
 }
 .tooltipborder {
   position: absolute;
-  top: -0;
-  right: 0;
-  width: 5px;
+  top: 0;
+  right: -5px;
+  bottom: 0;
+  width: 10px;
   height: 60px;
   z-index: 1000;
 }
