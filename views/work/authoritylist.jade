@@ -1,7 +1,9 @@
 include ../mixins/modeldetailbutton
+include ../mixins/tooltipborder
 
 mixin authoritylist(authority, rules)
-  li.list-group-item
+  +tooltipborder("Статус - " + viewHelper.tooltipTitle(authority.status))
+  li.list-group-item(id= viewHelper.addBorderStyle(authority.status))
     .dropdown.pull-right
       +modeldetailbutton(authority, 'authority', rules)
     span.searchtext

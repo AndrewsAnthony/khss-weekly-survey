@@ -107,6 +107,12 @@ $('document').ready(function(){
 
   $('.multiSelect').multiSelect()
 
+  // -- activate tooltip ===========================
+
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
   document.getElementById("loading_layer").style.display="none";
 
 })

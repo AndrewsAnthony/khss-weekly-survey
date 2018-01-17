@@ -43,7 +43,7 @@ block content
                   i.fa.fa-times
           hr
 
-          +display-house-district-sector(schedule.Houses)
+          +display-house-district-sector(schedule.Houses, 'schedule', schedule.id)
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             +changelist(schedule)

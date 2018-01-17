@@ -208,3 +208,21 @@ blockquote {
 .list-group-item .glyphicon {
   margin-right: 5px;
 }
+
+#border-add     { border-right: 5px solid #ec9f13 }
+#border-close   { border-right: 5px solid green }
+#border-active  { border-right: 5px solid red }
+#border-deleted { border-right: 5px solid black }
+#border-default { border-right: 5px solid white }
+
+.tooltipborder-parent {
+  position: relative;
+}
+.tooltipborder {
+  position: absolute;
+  top: -0;
+  right: 0;
+  width: 5px;
+  height: 60px;
+  z-index: 1000;
+}

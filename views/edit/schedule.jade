@@ -24,7 +24,7 @@ block content
               i
                 | Редактирование данных титульного списка
               br
-              b 
+              b
                 br
                 | #{schedule.title}
                 br
@@ -44,8 +44,8 @@ block content
                   | Контроль
                 label.btn.btn-default(class= ((schedule.status=='close')?'btn-success  active':''))
                   input(type="radio" name='status' value='close' checked= (schedule.status=='close'))
-                  | Завершенный 
-                label.btn.btn-default(class= ((schedule.status=='close')?'btn-default  active':''))
+                  | Завершенный
+                label.btn.btn-default(class= ((schedule.status=='deleted')?'btn-default  active':''))
                   input(type="radio" name='status' value='deleted' checked= (schedule.status=='delete'))
                   | Удаленное
 
@@ -62,7 +62,7 @@ block content
                 span.input-group-addon
                   i.fa.fa-line-chart
                 input(type="text" class="form-control" id="yearSchedule" placeholder="" name='yearschedule' value= moment(schedule.year).format('YYYY'))
-            
+
             #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content

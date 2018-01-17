@@ -45,7 +45,7 @@ block content
                   i.fa.fa-times
           hr
 
-          +display-house-district-sector(authority.Houses)
+          +display-house-district-sector(authority.Houses, 'authority', authority.id)
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             +changelist(authority)

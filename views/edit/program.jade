@@ -24,7 +24,7 @@ block content
               i
                 | Редактирование данных программы городской власти
               br
-              b 
+              b
                 br
                 | #{program.title}
                 br
@@ -44,8 +44,8 @@ block content
                   | Контроль
                 label.btn.btn-default(class= ((program.status=='close')?'btn-success  active':''))
                   input(type="radio" name='status' value='close' checked= (program.status=='close'))
-                  | Завершенный 
-                label.btn.btn-default(class= ((program.status=='close')?'btn-default  active':''))
+                  | Завершенный
+                label.btn.btn-default(class= ((program.status=='deleted')?'btn-default  active':''))
                   input(type="radio" name='status' value='deleted' checked= (program.status=='delete'))
                   | Удаленное
 
@@ -63,7 +63,7 @@ block content
                   i.fa.fa-line-chart
                 input(type="text" class="form-control" id="yearProgram" placeholder="" name='yearprogram' value= moment(program.year).format('YYYY'))
 
-            
+
             #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content

@@ -276,6 +276,12 @@ $('#changeList').on('keyup keypress', "input", function(e) {
   }
 });
 
+// -- activate tooltip ===========================
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+});
+
 // -- search in Authority ===========================
 
 var authorityList = new List('tabAuthority', {

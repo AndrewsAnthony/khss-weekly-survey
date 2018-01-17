@@ -1,7 +1,9 @@
 include ../mixins/modeldetailbutton
+include ../mixins/tooltipborder
 
 mixin schedulelist(schedule, rules)
-  li.list-group-item
+  +tooltipborder("Статус - " + viewHelper.tooltipTitle(schedule.status))
+  li.list-group-item(id= viewHelper.addBorderStyle(schedule.status))
     .dropdown.pull-right
       +modeldetailbutton(schedule, 'schedule', rules)
     span.searchtext

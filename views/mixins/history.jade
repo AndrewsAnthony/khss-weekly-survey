@@ -1,15 +1,16 @@
 include ./displayfile
 include ./notetask
+include ./tooltipborder
 
 mixin history(itemtask, pathToFile)
   - var uniquekey = Math.random().toString().slice(2)
-  
+
   - var itemTaskState = {active: { letter: "Написать письмо", photoreport: "Сделать фотоотчет", information: "Предоставить информацию"}, add: { letter: "Письмо добавлено", photoreport: "Фотоотчет загружен", information: "Информация добавлена"}, close: { letter: "Письмо закрыто", photoreport: "Фотоотчет", information: "Информация"}}
 
   .panel-group
+    +tooltipborder("Статус - " + viewHelper.tooltipTitle(itemtask.status))
     div(class= "panel panel-default")
-      .panel-heading(
-          style='border-right: 5px solid ' + ((itemtask.status == 'add')?'#ec9f13':(itemtask.status == 'close')?'green':'red'))
+      .panel-heading(id= viewHelper.addBorderStyle(itemtask.status))
         h4.panel-title
           a.arrow-toggle.collapsed(
           data-toggle="collapse"

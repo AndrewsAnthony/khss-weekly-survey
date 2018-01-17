@@ -158,6 +158,14 @@ $('document').ready(function(){
     });
   });
 
+// -- activate tooltip ===========================
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+});
+
+// -- close preview ===========================
+
   document.getElementById("loading_layer").style.display="none";
 
 })

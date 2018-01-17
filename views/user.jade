@@ -6,6 +6,7 @@ block scripts
   include ./script/user
 
 include ./mixins/header
+include ./mixins/tooltipborder
 
 include ./mixins/inbox
 include ./mixins/task
@@ -60,7 +61,8 @@ block content
                     span.badge #{groupInboxes[key].length}
                   .list-group.collapse(id="house-" + key)
                     each inbox, ind in groupInboxes[key]
-                      a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse")
+                      +tooltipborder("Статус - " + viewHelper.tooltipTitle(inbox.status))
+                      a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse" id= viewHelper.addBorderStyle(inbox.status))
                         i.glyphicon.glyphicon-chevron-right
                         span
                           | #{' '}

@@ -1,10 +1,11 @@
-mixin display-house-district-sector(modelhouse)
+include ./tooltipborder
+
+mixin display-house-district-sector(modelhouse, modeltype, modelid)
   .list
     - var groupHouses = viewHelper.groupHouseByDistrictAndSector(modelhouse)
     | #{console.log(groupHouses)}
     each district in R.keys(groupHouses)
-      h3
-
+      h4
         i
           | #{district} район
           | #{" "}
@@ -12,9 +13,12 @@ mixin display-house-district-sector(modelhouse)
       hr
       each sector in R.keys(groupHouses[district])
         each house in R.keys(groupHouses[district][sector])
+          - var groupTask = R.groupBy(task => {return ((task.taskable == modeltype) && (task.taskable_id == modelid)) ? 'current' : 'parallel' })( groupHouses[district][sector][house].ItemTasks)
           .panel-group
+            if (groupTask.current)
+              +tooltipborder("Статус - " + viewHelper.tooltipTitle(R.head(groupTask.current).status))
             div(class= "panel panel-default")
-              .panel-heading
+              .panel-heading(id= ((groupTask.current) ? viewHelper.addBorderStyle(R.head(groupTask.current).status) : ''))
                 h4.panel-title
                   a(
                   data-toggle="collapse"
@@ -30,5 +34,15 @@ mixin display-house-district-sector(modelhouse)
                   p
                     i
                       a(href='/house/' + groupHouses[district][sector][house].id) Подробная информация по адресу
-                  each task in groupHouses[district][sector][house].ItemTasks
-                    +history(task, '../../..')
+                  if (groupTask.current)
+                    p
+                      i
+                        u Текущие задачи
+                    each task in groupTask.current
+                      +history(task, '../../..')
+                  if (groupTask.parallel)
+                    p
+                      i
+                        u Параллельные задачи
+                    each task in groupTask.parallel
+                      +history(task, '../../..')

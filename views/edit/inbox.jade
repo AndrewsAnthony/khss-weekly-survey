@@ -21,11 +21,11 @@ block content
         if ( viewHelper.checkUserRule('changeInbox' , user.Rules) )
           .well.well-sm
             h4.text-center
-              b 
+              b
                 | Редактирование входящего письма
                 br
                 | #{inbox.number} от #{moment(inbox.inboxdate).format('YYYY-MM-DD')}
-          
+
           hr
 
           form(role="form" action='/house/inbox/' + inbox.id + '/edit' method='post' id="formInbox")
@@ -40,8 +40,8 @@ block content
                   | Контроль
                 label.btn.btn-default(class= ((inbox.status=='close')?'btn-success  active':''))
                   input(type="radio" name='status' value='close' checked= (inbox.status=='close'))
-                  | Закрыть 
-                label.btn.btn-default(class= ((inbox.status=='close')?'btn-default  active':''))
+                  | Закрыть
+                label.btn.btn-default(class= ((inbox.status=='deleted')?'btn-default  active':''))
                   input(type="radio" name='status' value='deleted' checked= (inbox.status=='delete'))
                   | Удаленное
 
@@ -85,7 +85,7 @@ block content
                 span.input-group-addon
                   i.fa.fa-calendar
                 input(type="date" class="form-control" id="termInbox" placeholder="Введите срок исполнения" name='term' value= moment(inbox.term).format('YYYY-MM-DD'))
-            
+
             #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content

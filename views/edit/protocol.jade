@@ -24,7 +24,7 @@ block content
               i
                 | Редактирование данных по протокольному поручению
               br
-              b 
+              b
                 br
                 | [ #{moment(protocol.date).format("DD-MM-YYYY")} # #{moment(protocol.date).fromNow()} ]
                 br
@@ -32,7 +32,7 @@ block content
                 | #{protocol.title}
                 br
                 | #{protocol.location}
-      
+
           hr
 
           form(role="form" action='/work/protocol/' + protocol.id + '/edit' method='post' id="formProtocol")
@@ -47,8 +47,8 @@ block content
                   | Контроль
                 label.btn.btn-default(class= ((protocol.status=='close')?'btn-success  active':''))
                   input(type="radio" name='status' value='close' checked= (protocol.status=='close'))
-                  | Завершенный 
-                label.btn.btn-default(class= ((protocol.status=='close')?'btn-default  active':''))
+                  | Завершенный
+                label.btn.btn-default(class= ((protocol.status=='deleted')?'btn-default  active':''))
                   input(type="radio" name='status' value='deleted' checked= (protocol.status=='delete'))
                   | Удаленное
 
@@ -72,7 +72,7 @@ block content
                 span.input-group-addon
                   i.fa.fa-map-marker
                 input(type="text" class="form-control" id="locationProtocol" placeholder="локация" name='locationprotocol' value= protocol.location)
-            
+
             #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content

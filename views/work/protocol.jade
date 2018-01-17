@@ -45,7 +45,7 @@ block content
                   i.fa.fa-times
           hr
 
-          +display-house-district-sector(protocol.Houses)
+          +display-house-district-sector(protocol.Houses, 'protocol', protocol.id)
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             +changelist(protocol)

@@ -24,15 +24,15 @@ block content
               i
                 | Редактирование данных по личному приему
               br
-              b 
+              b
                 br
-                | [ #{moment(authority.date).format('DD-MM-YYYY')} # #{moment(authority.date).fromNow()} ] 
+                | [ #{moment(authority.date).format('DD-MM-YYYY')} # #{moment(authority.date).fromNow()} ]
                 br
                 br
                 | #{authority.name}
-                br 
+                br
                 | #{authority.location}
-          
+
           hr
 
           form(role="form" action='/work/authority/' + authority.id + '/edit' method='post' id="formAuthority")
@@ -47,8 +47,8 @@ block content
                   | Контроль
                 label.btn.btn-default(class= ((authority.status=='close')?'btn-success  active':''))
                   input(type="radio" name='status' value='close' checked= (authority.status=='close'))
-                  | Завершенный 
-                label.btn.btn-default(class= ((authority.status=='close')?'btn-default  active':''))
+                  | Завершенный
+                label.btn.btn-default(class= ((authority.status=='deleted')?'btn-default  active':''))
                   input(type="radio" name='status' value='deleted' checked= (authority.status=='delete'))
                   | Удаленное
 
@@ -72,7 +72,7 @@ block content
                 span.input-group-addon
                   i.fa.fa-map-marker
                 input(type="text" class="form-control" id="locationAuthority" placeholder="локация" name='locationauthority' value= authority.location)
-            
+
             #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content

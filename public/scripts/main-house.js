@@ -235,7 +235,7 @@ $('document').ready(function(){
     var eventElement = $(event.target)
     if(eventElement.attr('href') && eventElement.attr('href').indexOf('#inboxNumber') == 0) {
       $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
-      $('[href="#tabInbox"]').tab('show').addClass("btn-primary") 
+      $('[href="#tabInbox"]').tab('show').addClass("btn-primary")
     }
   }, true);
 
@@ -449,6 +449,12 @@ $('#searchTask input.search').parent().find('button').on('click', function(event
 $('#searchTask input.search').keyup(function() {
   var searchString = $(this).val();
   taskList.search(searchString, taskList.currentSearchColumns);
+});
+
+// -- activate tooltip ===========================
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
 });
 
 // -- close preview ===========================

@@ -1,5 +1,5 @@
 mixin inboxlist(inbox, house, rules)
-  tr.img-thumbnail(style='border-right-color:' + ((inbox.status == 'add')?'#ec9f13':(inbox.status == 'close')?'green':'red'))
+  tr.img-thumbnail(id= viewHelper.addBorderStyle(inbox.status))
     td(data-title='# Письмо').inboxletter
       b(id= 'inboxNumber' + inbox.id) #{inbox.number}
       br

@@ -21,9 +21,9 @@ block content
         if ( viewHelper.checkUserRule('changeTask' , user.Rules) )
           .well.well-sm
             h4.text-center
-              b 
+              b
                 | Редактирование задания
-          
+
           hr
 
           form(role="form" action='/house/task/' + task.id + '/edit' method='post' id="formTask")
@@ -38,8 +38,8 @@ block content
                   | Контроль
                 label.btn.btn-default(class= ((task.status=='close')?'btn-success  active':''))
                   input(type="radio" name='status' value='close' checked= (task.status=='close'))
-                  | Закрыть 
-                label.btn.btn-default(class= ((task.status=='close')?'btn-default  active':''))
+                  | Закрыть
+                label.btn.btn-default(class= ((task.status=='deleted')?'btn-default  active':''))
                   input(type="radio" name='status' value='deleted' checked= (task.status=='delete'))
                   | Удаленное
 
@@ -222,7 +222,7 @@ block content
                 placeholder="Введите срок исполнения"
                 name='termtask'
                 value=  moment(task.term).format('YYYY-MM-DD'))
-            
+
             #editModelModal.modal.fade(role="dialog")
               .modal-dialog
                 .modal-content

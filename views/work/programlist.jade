@@ -1,7 +1,9 @@
 include ../mixins/modeldetailbutton
+include ../mixins/tooltipborder
 
 mixin programlist(program, rules)
-  li.list-group-item
+  +tooltipborder("Статус - " + viewHelper.tooltipTitle(program.status))
+  li.list-group-item(id= viewHelper.addBorderStyle(program.status))
     .dropdown.pull-right
       +modeldetailbutton(program, 'program', rules)
     span.searchtext

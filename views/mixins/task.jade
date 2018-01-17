@@ -1,5 +1,5 @@
 mixin tasklist(itemtasktype, house, rules)
-  tr.img-thumbnail(style='border-right-color:' + ((itemtasktype.status == 'add')?'#ec9f13':(itemtasktype.status == 'close')?'green':'red'))
+  tr.img-thumbnail(id= viewHelper.addBorderStyle(itemtasktype.status))
     -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", information: "Предоставить информацию"}
     td(data-title='Исполнитель').taskimplementer
       b #{  viewHelper.inicialName(itemtasktype.Implementer.name)}

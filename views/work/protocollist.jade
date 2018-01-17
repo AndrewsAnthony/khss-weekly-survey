@@ -1,7 +1,9 @@
 include ../mixins/modeldetailbutton
+include ../mixins/tooltipborder
 
 mixin protocollist(protocol, rules)
-  li.list-group-item
+  +tooltipborder("Статус - " + viewHelper.tooltipTitle(protocol.status))
+  li.list-group-item(id= viewHelper.addBorderStyle(protocol.status))
     .dropdown.pull-right
       +modeldetailbutton(protocol, 'protocol', rules)
     span.searchtext

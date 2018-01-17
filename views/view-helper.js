@@ -60,4 +60,20 @@ module.exports = {
                                 , R.groupBy(R.prop('district'))
                                 )
 
+, addBorderStyle: R.cond([
+                    [R.equals('add'),     R.always('border-add')],
+                    [R.equals('close'),   R.always('border-close')],
+                    [R.equals('active'),  R.always('border-active')],
+                    [R.equals('deleted'), R.always('border-deleted')],
+                    [R.T,                 R.always('border-default')]
+                  ])
+
+, tooltipTitle: R.cond([
+                  [R.equals('add'),     R.always('Контроль / Проверить')],
+                  [R.equals('active'),  R.always('В работу')],
+                  [R.equals('close'),   R.always('Завершенный')],
+                  [R.equals('deleted'), R.always('Удаленый / Отсутствует')],
+                  [R.T,                 R.always('Отсутствует')]
+                ])
+
 }
