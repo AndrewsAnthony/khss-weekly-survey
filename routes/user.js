@@ -34,10 +34,13 @@ router.get('/:id', function(req, res, next) {
                 , 'Protocol', 'Information', 'Authority'
                 , 'Schedule', 'Program', 'Repair'
                 , { model: models.File
-                  , include: [models.FileDescription] }
+                  , include: [models.FileDescription]
+                  , separate: true }
                 , { model: models.NoteTask
-                  , include: [models.User] }
-                ] }
+                  , include: [models.User]
+                  , separate: true }
+                ]
+            , separate: true }
             ]
         }
       )
@@ -55,7 +58,8 @@ router.get('/:id', function(req, res, next) {
                       [ models.House
                       , models.Problem
                       , { model: models.File
-                        , include: [models.FileDescription] }
+                        , include: [models.FileDescription]
+                        , separate: true }
                       ] }
                   ] }
             ]
@@ -133,9 +137,11 @@ router.get('/:id', function(req, res, next) {
                 , 'Protocol' , 'Information' , 'Authority'
                 , 'Schedule' , 'Program' , 'Repair'
                 , { model: models.File
-                  , include: [ models.FileDescription ] }
-                , { model: models.NoteTask , include: [models.User] }
-                ] }
+                  , include: [ models.FileDescription ]
+                  , separate: true }
+                , { model: models.NoteTask , include: [models.User], separate: true }
+                ]
+              , separate: true }
             , { model: models.Depatment
               , include:
                   [ { model: models.Inbox
@@ -143,7 +149,8 @@ router.get('/:id', function(req, res, next) {
                         [ models.House
                         , models.Problem
                         , { model: models.File
-                          , include: [models.FileDescription] }
+                          , include: [models.FileDescription]
+                          , separate: true }
                         ] }
                   ] }
             ]
