@@ -4,40 +4,44 @@ mixin modeldetailbutton(model, type, rules)
   ul.dropdown-menu
     li.dropdown-header Подробно
     li
-      a(href='work/'+ type +'/' + model.id) Список домов
+      a(href='/work/'+ type +'/' + model.id) Список домов
+
     if ( viewHelper.checkUserRule('changeWork', rules) )
       li.dropdown-header Администрирование
       li
         a(href='/work/' + type +'/' + model.id + '/edit') Редактировать
-    li.dropdown-header Просмотр
-    - var modeldocs = model.Files.filter(function(file){return file.type == 'document'})
-    if modeldocs.length
-      li
-        each doc in modeldocs
-          a(href= '/upload-official/' + doc.path)
-            i.fa.fa-paperclip
-            | &nbsp;
-            if doc.FileDescription.name
-              | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
-            else
-              | #{moment(doc.createAt).format(DD/MM/YYYY)}
-    else
-      li
-        a
-          s.small Документ
 
-    - var modelphotos = model.Files.filter(function(file){return file.type == 'photo'})
-    if modelphotos.length
-      li.inboxgallery
-        a(href= '/upload-official/' + modelphotos[0].path) Фотографии
-        each photo in modelphotos.slice(1)
-          a.mfp-hide(
-          href= '/upload-official/' + photo.path
-          title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
-    else
-      li
-        a
-          s.small Фотографии
+    if ( model.Files )
+      li.dropdown-header Просмотр
+      - var modeldocs = model.Files.filter(function(file){return file.type == 'document'})
+      if ( modeldocs.length )
+        li
+          each doc in modeldocs
+            a(href= '/upload-official/' + doc.path)
+              i.fa.fa-paperclip
+              | &nbsp;
+              if doc.FileDescription.name
+                | #{doc.FileDescription.name} [#{moment(doc.createAt).format("DD/MM/YYYY")}]
+              else
+                | #{moment(doc.createAt).format(DD/MM/YYYY)}
+      else
+        li
+          a
+            s.small Документ
+
+      - var modelphotos = model.Files.filter(function(file){return file.type == 'photo'})
+      if ( modelphotos.length )
+        li.inboxgallery
+          a(href= '/upload-official/' + modelphotos[0].path) Фотографии
+          each photo in modelphotos.slice(1)
+            a.mfp-hide(
+            href= '/upload-official/' + photo.path
+            title= photo.FileDescription.note + '<br>Дата добавления: ' + moment(photo.createAt).format("DD-MM-YYYY"))
+      else
+        li
+          a
+            s.small Фотографии
+
     li.dropdown-header Загрузить на сервер
     li
       a(

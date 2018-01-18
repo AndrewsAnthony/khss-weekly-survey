@@ -16,6 +16,9 @@ include ./mixins/changeprofile
 
 include ./mixins/createnote
 
+include ./work/authoritylist
+include ./work/protocollist
+
 block content
 
   #loading_layer
@@ -87,6 +90,22 @@ block content
                                     | #{', '}
                           hr
                           +uploadfilesbutton(inbox.Files, '')
+
+          .well.well-sm
+            h3.text-center.bg-danger
+              i Ближайшие личные приемы городской власти
+
+            ul.list-group.list
+              each authority in authorities
+                +authoritylist(authority, user.Rules)
+
+          .well.well-sm
+            h3.text-center.bg-danger
+              i Ближайшие протокольные поручения
+
+            ul.list-group.list
+              each protocol in protocols
+                +protocollist(protocol, user.Rules)
 
           - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(viewHelper.createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
 

@@ -1,11 +1,11 @@
 mixin tasklist(itemtasktype, house, rules)
-  tr.img-thumbnail(id= viewHelper.addBorderStyle(itemtasktype.status))
+  tr.img-thumbnail(
+  id= viewHelper.addBorderStyle(itemtasktype.status)
+  data-toggle="tooltip"
+  data-placement="top"
+  title= viewHelper.tooltipTitle(itemtasktype.status) )
     -var itemtaskobj = { letter: "Написать письмо", photoreport: "Фотоотчет", information: "Предоставить информацию"}
-    td(
-    data-title='Исполнитель'
-    data-toggle="tooltip"
-    data-placement="right"
-    title= viewHelper.tooltipTitle(itemtasktype.status) ).taskimplementer
+    td(data-title='Исполнитель').taskimplementer
       b #{  viewHelper.inicialName(itemtasktype.Implementer.name)}
       br
       mark #{itemtaskobj[itemtasktype.TaskType.name.split('-')[0]]}

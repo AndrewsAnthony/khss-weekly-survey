@@ -1,4 +1,5 @@
 const models     = require('../models');
+const Op         = models.sequelize.Op;
 const express    = require('express');
 const path       = require('path');
 const formidable = require('formidable');
@@ -21,46 +22,93 @@ router.get('/:id', function(req, res, next) {
 
   function displayChief(chief){
 
-    promiseArr.push( models.User.findAll({
-      where: {
-        ChiefId: chief.id
-      },
-      include: [{
-        model: models.ItemTask,
-        include: [
-          models.House, models.Problem, 'Implementer', 'TaskType', 'Inbox',
-          'Protocol', 'Information', 'Authority', 'Schedule', 'Program', 'Repair', {
-          model: models.File,
-          include: [models.FileDescription]
-        },
-        {
-          model: models.NoteTask,
-          include: [models.User]
-        }]
-      }]
-    }) )
-
-    promiseArr.push( models.User.findOne({
-      where: {
-        id: chief.id
-      },
-      include: [
-        models.Rule,
-        {
-          model: models.Depatment,
-          include: [{
-            model: models.Inbox,
-            include: [models.House, models.Problem, {model: models.File, include: [models.FileDescription]}]
-          }]
+    promiseArr.push(
+      models.User.findAll(
+        { where: { ChiefId: chief.id }
+        , include:
+            [ { model: models.ItemTask
+            , include:
+                [ models.House
+                , models.Problem
+                , 'Implementer', 'TaskType', 'Inbox'
+                , 'Protocol', 'Information', 'Authority'
+                , 'Schedule', 'Program', 'Repair'
+                , { model: models.File
+                  , include: [models.FileDescription] }
+                , { model: models.NoteTask
+                  , include: [models.User] }
+                ] }
+            ]
         }
-      ]}
-    ) )
+      )
+    )
+
+    promiseArr.push(
+      models.User.findOne(
+        { where: { id: chief.id }
+        , include:
+            [ models.Rule
+            , { model: models.Depatment
+              , include:
+                  [ { model: models.Inbox
+                  , include:
+                      [ models.House
+                      , models.Problem
+                      , { model: models.File
+                        , include: [models.FileDescription] }
+                      ] }
+                  ] }
+            ]
+        }
+      )
+    )
+
+    promiseArr.push(
+      models.Protocol.findAll(
+        { where:
+          { [Op.and]: [
+              { date:
+                { [Op.between]:
+                    [ moment().subtract(1, 'd').format()
+                    , moment().add(2, 'w').format()
+                    ] }
+              , status:
+                { [Op.or]: [ 'add' , 'active' ] }
+              } ]
+          }
+        , include:
+            [ { model: models.File
+              , include: [models.FileDescription] }
+            ]
+        }
+      )
+    );
+
+    promiseArr.push(
+      models.Authority.findAll(
+        { where:
+          { [Op.and]: [
+              { date:
+                { [Op.between]:
+                    [ moment().subtract(1, 'd').format()
+                    , moment().add(2, 'w').format()
+                    ] }
+              , status:
+                { [Op.or]: [ 'add' , 'active' ] }
+              } ]
+          }
+        , include:
+            [ { model: models.File
+              , include: [models.FileDescription] }
+            ]
+        }
+      )
+    );
 
     Promise.all(promiseArr)
-    .then(([userTasks, user]) => {
+    .then(([userTasks, user, protocols, authorities]) => {
       res.render('user', {
-        user,
-        userTasks
+        user, userTasks, authorities, protocols
       });
     })
     .catch(err => {
@@ -72,35 +120,82 @@ router.get('/:id', function(req, res, next) {
 
   function displayUser(user){
 
-    models.User.findOne({
-      where: {
-        AuthorizationId: user.id
-      },
-      include: [
-        models.Rule,
-        {
-          model: models.ItemTask,
-          include: [models.House, models.Problem, 'Implementer', 'TaskType', 'Inbox',
-      'Protocol', 'Information', 'Authority', 'Schedule', 'Program', 'Repair', {
-          model: models.File,
-          include: [models.FileDescription]
-      }, {
-        model: models.NoteTask,
-        include: [models.User]
-      }]
-        },
-        {
-          model: models.Depatment,
-          include: [{
-            model: models.Inbox,
-            include: [models.House, models.Problem, {model: models.File, include: [models.FileDescription]}]
-          }]
+    promiseArr.push(
+      models.User.findOne({
+          where: { AuthorizationId: user.id }
+        , include:
+            [ models.Rule,
+              { model: models.ItemTask
+              , include:
+                [ models.House
+                , models.Problem
+                , 'Implementer' , 'TaskType' , 'Inbox'
+                , 'Protocol' , 'Information' , 'Authority'
+                , 'Schedule' , 'Program' , 'Repair'
+                , { model: models.File
+                  , include: [ models.FileDescription ] }
+                , { model: models.NoteTask , include: [models.User] }
+                ] }
+            , { model: models.Depatment
+              , include:
+                  [ { model: models.Inbox
+                    , include:
+                        [ models.House
+                        , models.Problem
+                        , { model: models.File
+                          , include: [models.FileDescription] }
+                        ] }
+                  ] }
+            ]
+      })
+    );
+
+    promiseArr.push(
+      models.Protocol.findAll(
+        { where:
+          { [Op.and]: [
+              { date:
+                { [Op.between]:
+                    [ moment().subtract(1, 'd').format()
+                    , moment().add(2, 'w').format()
+                    ] }
+              , status:
+                { [Op.or]: [ 'add' , 'active' ] }
+              } ]
+          }
+        , include:
+            [ { model: models.File
+              , include: [models.FileDescription] }
+            ]
         }
-      ]}
-    )
-    .then(user => {
+      )
+    );
+
+    promiseArr.push(
+      models.Authority.findAll(
+        { where:
+          { [Op.and]: [
+              { date:
+                { [Op.between]:
+                    [ moment().subtract(1, 'd').format()
+                    , moment().add(2, 'w').format()
+                    ] }
+              , status:
+                { [Op.or]: [ 'add' , 'active' ] }
+              } ]
+          }
+        , include:
+            [ { model: models.File
+              , include: [models.FileDescription] }
+            ]
+        }
+      )
+    );
+
+    Promise.all(promiseArr)
+    .then(([user, protocols, authorities]) => {
       res.render('user', {
-        user
+        user, authorities, protocols
       });
     })
     .catch(err => {
