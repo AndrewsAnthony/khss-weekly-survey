@@ -1,6 +1,7 @@
 include ./displayfile
 include ./notetask
 include ./tooltipborder
+include ./tooltip-date
 
 mixin history(itemtask, pathToFile)
   - var uniquekey = Math.random().toString().slice(2)
@@ -26,7 +27,10 @@ mixin history(itemtask, pathToFile)
               span.pull-left
                 b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
                 br
-                i [ #{itemtask.TaskType.description} #{itemtask.Authority.name} #{moment(itemtask.Authority.date).format("DD-MM-YYYY")} #{itemtask.Authority.location} ]
+                i [ #{itemtask.TaskType.description} #{itemtask.Authority.name}
+                | #{" "}
+                +tooltipdatenow(itemtask.Authority.date)
+                | #{" " + itemtask.Authority.location} ]
 
             else if (itemtask.TaskType.model == 'program')
               span.pull-left
@@ -44,7 +48,10 @@ mixin history(itemtask, pathToFile)
               span.pull-left
                 b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
                 br
-                i [ #{itemtask.Protocol.title} #{moment(itemtask.Protocol.date).format("DD-MM-YYYY")} #{itemtask.Protocol.location} ]
+                i [ #{itemtask.Protocol.title}
+                | #{" "}
+                +tooltipdatenow(itemtask.Protocol.date)
+                | #{" " + itemtask.Protocol.location} ]
 
             else if (itemtask.TaskType.model == 'problem')
               span.pull-left
@@ -58,9 +65,11 @@ mixin history(itemtask, pathToFile)
                 br
                 i [ #{itemtask.Information.description} ]
 
-            span.pull-right
+            span.small.pull-right
               i.fa.fa-calendar
-              | #{' ' + moment(itemtask.TaskType.createAt).format('DD-MM-YYYY')}
+              | создан
+              | #{" "}
+              +tooltipdatenow(itemtask.createdAt)
             .clearfix
 
       .panel-collapse.collapse(id="collapse-task-" + itemtask.id + '-' + uniquekey)

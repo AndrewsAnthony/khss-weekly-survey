@@ -1,0 +1,5 @@
+mixin tooltipdatenow(date)
+  span(
+  data-toggle="tooltip"
+  data-placement="top"
+  title= moment(date).format('DD-MM-YYYY') ) #{moment(date).fromNow()}

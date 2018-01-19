@@ -227,3 +227,11 @@ blockquote {
   height: 60px;
   z-index: 1000;
 }
+
+.tooltipdate {
+  position: absolute;
+  bottom: 0;
+  width: 50px;
+  height: 10px;
+  z-index: 1000;
+}

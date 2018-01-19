@@ -1,3 +1,5 @@
+include ./tooltip-date
+
 mixin createnotetask(itemtask)
   - var uniquekey = Math.random().toString().slice(2);
   .noteTask
@@ -8,4 +10,7 @@ mixin createnotetask(itemtask)
       each note, ind in itemtask.NoteTasks
         blockquote(class= ((ind%2) ?'blockquote-reverse':''))
           p #{note.text}
-          footer #{moment(note.createAt).format("DD/MM/YYYY")}
+          footer
+            | создана
+            | #{' '}
+            +tooltipdatenow(note.createdAt)

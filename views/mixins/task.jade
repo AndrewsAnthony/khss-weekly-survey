@@ -1,3 +1,5 @@
+include ./tooltip-date
+
 mixin tasklist(itemtasktype, house, rules)
   tr.img-thumbnail(
   id= viewHelper.addBorderStyle(itemtasktype.status)
@@ -22,7 +24,8 @@ mixin tasklist(itemtasktype, house, rules)
         br
         i #{itemtasktype.Authority.name}
         br
-        i #{moment(itemtasktype.Authority.date).format("DD-MM-YYYY")}
+        i
+          +tooltipdatenow(itemtasktype.Authority.date)
         br
         i #{itemtasktype.Authority.location}
 
@@ -50,7 +53,8 @@ mixin tasklist(itemtasktype, house, rules)
         br
         i #{itemtasktype.Protocol.title}
         br
-        i #{moment(itemtasktype.Protocol.date).format("DD-MM-YYYY")}
+        i
+          +tooltipdatenow(itemtasktype.Protocol.date)
         br
         i #{itemtasktype.Protocol.location}
 
@@ -73,14 +77,13 @@ mixin tasklist(itemtasktype, house, rules)
         | #{' '}
 
     td(data-title='Срок исполнения').taskterm
-      | #{moment(itemtasktype.term).calendar()}
-      br
       if (moment.duration(moment(itemtasktype.term).diff(moment())).days() < 3)
         i.label.label-danger
-          |#{moment(itemtasktype.term).fromNow()}
+          +tooltipdatenow(itemtasktype.term)
       else
         i.label.label-success
-          |#{moment(itemtasktype.term).fromNow()}
+          +tooltipdatenow(itemtasktype.term)
+
 
 
     td(data-title=' ')

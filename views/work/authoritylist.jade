@@ -1,5 +1,6 @@
 include ../mixins/modeldetailbutton
 include ../mixins/tooltipborder
+include ../mixins/tooltip-date
 
 mixin authoritylist(authority, rules)
   +tooltipborder("Статус - " + viewHelper.tooltipTitle(authority.status))
@@ -9,6 +10,9 @@ mixin authoritylist(authority, rules)
     span.searchtext
       | #{authority.name}
       br
-      | #{moment(authority.date).format('DD-MM-YYYY')}
-      br
       | #{authority.location}
+      br
+      | [ #
+      | #{' '}
+      +tooltipdatenow(authority.date)
+      | #{' ]'}

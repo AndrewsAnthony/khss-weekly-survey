@@ -7,6 +7,7 @@ block scripts
 
 include ./mixins/header
 include ./mixins/history
+include ./mixins/tooltip-date
 
 include ./mixins/inbox
 include ./mixins/task
@@ -115,7 +116,11 @@ block content
                       ul.list-group
                         each authority in house.Authorities
                           li.list-group-item
-                            a(href='../work/authority/' + authority.id) [ #{moment(authority.date).format('DD-MM-YYYY')} # <b>#{moment(authority.date).fromNow()}</b>] #{authority.name} - #{authority.location}
+                            a(href='/work/authority/' + authority.id)
+                              | [ #
+                              | #{' '}
+                              +tooltipdatenow(authority.date)
+                              | ] #{authority.name} - #{authority.location}
 
                   if (house.Schedules && house.Schedules.length && viewHelper.checkUserRule('showWork', user.Rules))
                     .col-md-6
@@ -133,7 +138,11 @@ block content
                       ul.list-group
                         each protocol in house.Protocols
                           li.list-group-item
-                            a(href='../work/protocol/' + protocol.id) [ #{moment(protocol.date).format('DD-MM-YYYY')} # <b>#{moment(protocol.date).fromNow()}</b>] #{protocol.title} - #{protocol.location}
+                            a(href='../work/protocol/' + protocol.id)
+                              | [ #
+                              | #{' '}
+                              +tooltipdatenow(protocol.date)
+                              | ] #{protocol.title} - #{protocol.location}
 
                   if (house.Programs && house.Programs.length && viewHelper.checkUserRule('showWork', user.Rules))
                     .col-md-6

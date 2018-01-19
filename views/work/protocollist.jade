@@ -1,5 +1,6 @@
 include ../mixins/modeldetailbutton
 include ../mixins/tooltipborder
+include ../mixins/tooltip-date
 
 mixin protocollist(protocol, rules)
   +tooltipborder("Статус - " + viewHelper.tooltipTitle(protocol.status))
@@ -11,5 +12,8 @@ mixin protocollist(protocol, rules)
       br
       | #{protocol.location}
       br
-      | #{moment(protocol.date).format("DD-MM-YYYY")}
+      | [ #
+      | #{' '}
+      +tooltipdatenow(protocol.date)
+      | #{' ]'}
 

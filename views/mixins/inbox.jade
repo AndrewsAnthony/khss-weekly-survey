@@ -1,3 +1,5 @@
+include ./tooltip-date
+
 mixin inboxlist(inbox, house, rules)
   tr.img-thumbnail(
   id= viewHelper.addBorderStyle(inbox.status)
@@ -19,7 +21,8 @@ mixin inboxlist(inbox, house, rules)
       each problem in inbox.Problems
         i #{"- " + problem.name}
         br
-    td(data-title='Срок').inboxterm #{moment(inbox.term).fromNow()}
+    td(data-title='Срок').inboxterm
+      +tooltipdatenow(inbox.term)
     td
       .dropup
         button.btn.btn-primary.btn-xs.dropdown-toggle(type="button" data-toggle="dropdown")= 'Действие '

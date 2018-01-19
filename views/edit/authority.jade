@@ -6,6 +6,7 @@ block scripts
   include ../script/edit
 
 include ../mixins/header
+include ../mixins/tooltip-date
 
 
 block content
@@ -26,12 +27,14 @@ block content
               br
               b
                 br
-                | [ #{moment(authority.date).format('DD-MM-YYYY')} # #{moment(authority.date).fromNow()} ]
-                br
-                br
                 | #{authority.name}
                 br
                 | #{authority.location}
+                br
+                | [ #
+                | #{" "}
+                +tooltipdatenow(authority.date)
+                | #{" ]"}
 
           hr
 

@@ -13,6 +13,7 @@ include ./changelist
 include ../mixins/createnote
 include ../mixins/createfile
 include ../mixins/display-house-district-sector
+include ../mixins/tooltip-date
 
 block content
   #loading_layer
@@ -32,7 +33,10 @@ block content
                   br
                   | #{protocol.location}
                   br
-                  | #{moment(protocol.date).format("DD-MM-YYYY")}
+                  | [ #
+                  | #{' '}
+                  +tooltipdatenow(protocol.date)
+                  | #{' ]'}
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов

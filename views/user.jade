@@ -7,6 +7,7 @@ block scripts
 
 include ./mixins/header
 include ./mixins/tooltipborder
+include ./mixins/tooltip-date
 
 include ./mixins/inbox
 include ./mixins/task
@@ -71,7 +72,8 @@ block content
                           | #{' '}
                           | Входящие #{"# " + inbox.number} от #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
                          br
-                        span.label.label-primary #{moment(inbox.term).fromNow()}
+                        span.label.label-primary
+                          +tooltipdatenow(inbox.term)
                       .list-group.collapse(id="inbox-" + (key + '-' + ind))
                         .list-group-item
                           dl.dl-horizontal

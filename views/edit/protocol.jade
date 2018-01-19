@@ -6,7 +6,7 @@ block scripts
   include ../script/edit
 
 include ../mixins/header
-
+include ../mixins/tooltip-date
 
 block content
   #loading_layer
@@ -26,12 +26,14 @@ block content
               br
               b
                 br
-                | [ #{moment(protocol.date).format("DD-MM-YYYY")} # #{moment(protocol.date).fromNow()} ]
-                br
-                br
                 | #{protocol.title}
                 br
                 | #{protocol.location}
+                br
+                | [ #
+                | #{" "}
+                +tooltipdatenow(protocol.date)
+                | #{" ]"}
 
           hr
 
