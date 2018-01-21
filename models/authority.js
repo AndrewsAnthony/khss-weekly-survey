@@ -43,6 +43,15 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // Authority -> FieldTable
+    Authority.hasMany(models.FieldTable, {
+      foreignKey: 'fieldable_id',
+      scope: {
+        fieldable: 'authority'
+      },
+      constraints: false
+    });
+
   }
 
   return Authority;

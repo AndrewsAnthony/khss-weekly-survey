@@ -37,6 +37,8 @@ block content
                   | #{' '}
                   +tooltipdatenow(authority.date)
                   | #{' ]'}
+            if (viewHelper.checkUserRule('showTable', user.Rules) && authority.Houses.length)
+              a(href='/table/authority/' + authority.id).btn.btn-primary.btn-xs электронный отчет
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов

@@ -235,3 +235,8 @@ blockquote {
   height: 10px;
   z-index: 1000;
 }
+
+tbody tbody {
+  border: 1px solid #ddd;
+  border-left: 3px solid #ddd;
+}

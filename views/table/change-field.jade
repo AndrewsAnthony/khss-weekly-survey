@@ -1,0 +1,39 @@
+mixin change-field(model, model_id)
+  #fieldListModal.modal.fade(role="dialog")
+    .modal-dialog
+      form.modal-content#formListField
+        .modal-header
+          button(type="button" class="close" data-dismiss="modal") &times;
+          h4.modal-title.text-uppercase#headerListField Создание колонки
+        .modal-body
+          //- form(role="form" action= '/table/authority/' + authorityFiels.id + '/field/'  method='post' id="formCreateField")
+          .hidden-inputs
+            input(type='hidden' name='id' id='idField' value='add')
+            input(type='hidden' name='model' id='modelField' value= model)
+            input(type='hidden' name='modelid' id='modelIdField' value= model_id)
+
+          .form-group
+            label(for="titleField") Название Колонки
+            .input-group
+              span.input-group-addon
+                i.fa.fa-font
+              input(type="text" class="form-control" id="titleField" placeholder="" name='title')
+
+          .form-group
+            label(for="typeField") Тип Колонки
+            select(class="form-control" id="typeField" name='type' style="width:100%")
+              option(value='text') Текст
+              option(value='number') Число
+              option(value='date') Дата
+
+          .form-group
+            label(for="descriptionField") Описание Колонки
+            .input-group
+              span.input-group-addon
+                i.fa.fa-font
+              input(type="text" class="form-control" id="descriptionField" placeholder="" name='description')
+              
+
+        .modal-footer
+          button.btn.btn-primary(type="submit" id='sendField') Создать
+          button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть

@@ -42,6 +42,15 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // Program -> FieldTable
+    Program.hasMany(models.FieldTable, {
+      foreignKey: 'fieldable_id',
+      scope: {
+        fieldable: 'program'
+      },
+      constraints: false
+    });
+
   }
 
   return Program;

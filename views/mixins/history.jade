@@ -17,6 +17,12 @@ mixin history(itemtask, pathToFile)
           data-toggle="collapse"
           href="#collapse-task-" + itemtask.id + '-' + uniquekey)
 
+            span.small.pull-right
+              i.fa.fa-calendar
+              | #{" создан"}
+              | #{" "}
+              +tooltipdatenow(itemtask.createdAt)
+
             if (itemtask.TaskType.model == 'inbox')
               span.pull-left
                 b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
@@ -65,11 +71,6 @@ mixin history(itemtask, pathToFile)
                 br
                 i [ #{itemtask.Information.description} ]
 
-            span.small.pull-right
-              i.fa.fa-calendar
-              | создан
-              | #{" "}
-              +tooltipdatenow(itemtask.createdAt)
             .clearfix
 
       .panel-collapse.collapse(id="collapse-task-" + itemtask.id + '-' + uniquekey)

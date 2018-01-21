@@ -100,6 +100,8 @@ module.exports = function(sequelize, DataTypes) {
 
     House.hasMany(models.ItemTask);
 
+    House.hasMany(models.ValueTable);
+
     // Authority -> House
     House.belongsToMany(models.Authority, {
       through: {

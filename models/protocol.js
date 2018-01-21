@@ -43,6 +43,15 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // Protocol -> FieldTable
+    Protocol.hasMany(models.FieldTable, {
+      foreignKey: 'fieldable_id',
+      scope: {
+        fieldable: 'protocol'
+      },
+      constraints: false
+    });
+
   }
 
   return Protocol;

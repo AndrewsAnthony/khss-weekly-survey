@@ -1,0 +1,115 @@
+extends ../layout
+
+block style
+  include ../style/table
+block scripts
+  include ../script/table
+
+include ../mixins/header
+include ../mixins/tooltip-date
+
+include ./change-field
+
+block content
+  #loading_layer
+    .loader
+
+  +header(user, true, true, true)
+
+  .container(role="main")
+    .row
+      .col-sm-12.well#tabAuthority
+        if (viewHelper.checkUserRule('showTable', user.Rules))
+          .well.well-sm
+            h4.text-center
+              b
+                i.text-uppercase
+                  | #{authorityFiels.name}
+                  br
+                  | #{authorityFiels.location}
+                  br
+                  | [ #
+                  | #{' '}
+                  +tooltipdatenow(authorityFiels.date)
+                  | #{' ]'}
+
+          if (viewHelper.checkUserRule('changeTable', user.Rules))
+            button(type="button" class="btn btn-success btn-block" data-target="#fieldList" data-toggle="collapse")
+              | Добавить / Изменить столбцы таблицы
+            .collapse#fieldList
+              table#collapseFieldTable.table
+                thead
+                  tr
+                    th(data-visible='false' data-name="id") Id
+                    th(data-name="title") Название
+                    th(data-breakpoints="xs sm" data-name="type") Тип
+                    th(data-breakpoints="xs sm" data-name="description") Описание
+                    th(data-breakpoints="xs sm" data-name="status") Статус
+                tbody
+                  each field in authorityFiels.FieldTables
+                    tr
+                      td #{field.id}
+                      td #{field.title}
+                      td #{field.type}
+                      td #{field.description}
+                      td #{field.status}
+
+          - var filterFieldDeleted = R.filter(R.compose(R.not, R.whereEq({status: 'delete'})), authorityFiels.FieldTables)
+          | #{ console.log("filterFieldDeleted", filterFieldDeleted) }
+          if ( filterFieldDeleted.length && authorityValueHouse.Houses.length && viewHelper.checkUserRule('showTable', user.Rules))
+            hr
+            .container
+              .row.text-center
+                .btn-group
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size="1") 1
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size="10") 10
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size="20") 20
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size="50") 50
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size="100") 100
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size="200") 200
+            
+            table#modelHouseTable.table(data-paging="true" data-filtering="true" data-sorting="true" data-editing="true" data-state="true")
+                thead
+                  tr
+                    th(data-visible='false' data-name="houseid") Id
+                    th(data-name="housename") Наименование жилой инфраструктуры
+                    each housefield in filterFieldDeleted
+                      th(data-breakpoints="xs sm" data-name= housefield.name title= housefield.description) #{housefield.title}
+                tbody
+                  each house in authorityValueHouse.Houses
+                    tr
+                      td #{house.id}
+                      td #{viewHelper.createNameHouse(house)}
+                      - var currentvalueHouse = R.reduce((acc, value) => { acc[value.FieldTable.name] = value.value; return acc }, {}, house.ValueTables)
+                      | #{console.log("currentvalueHouse", currentvalueHouse)}
+                      each housefield in filterFieldDeleted
+                        if (housefield.type == 'date')
+                          td #{moment(currentvalueHouse[housefield.name]) ? moment(currentvalueHouse[housefield.name]).format('YYYY-MM-DD') : 'нету даты'}
+                        if (housefield.type == 'number')
+                          td #{currentvalueHouse[housefield.name] || '0'}
+                        if (housefield.type == 'text')
+                          td #{currentvalueHouse[housefield.name] || 'пусто'}
+
+
+          if (viewHelper.checkUserRule('changeTable', user.Rules))
+            +change-field('authority', authorityFiels.id)
+
+            #valueListModal.modal.fade(role="dialog")
+              .modal-dialog
+                form.modal-content#formListValue
+                  .modal-header
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                    h4.modal-title.text-uppercase#headerListValue Создание колонки
+                  .modal-body
+                    .hidden-inputs
+                      input(type='hidden' name='houseid' id='houseId' value='')
+                    .field-inputs
+                      each housefield in filterFieldDeleted
+                        .form-group
+                          label(for="titleField") #{housefield.title}
+                          input(type= housefield.type class="form-control" placeholder="пусто" name= 'field-id-' + housefield.id step="any" id= 'field-name-' + housefield.name)
+
+                        
+                  .modal-footer
+                    button.btn.btn-primary(type="submit" id='sendField') Создать
+                    button(type="button" class="btn btn-default" data-dismiss="modal") Закрыть
