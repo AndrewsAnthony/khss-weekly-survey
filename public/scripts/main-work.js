@@ -276,6 +276,65 @@ $('#changeList').on('keyup keypress', "input", function(e) {
   }
 });
 
+
+// -- create-task-list =============================
+var currentHouseListForTask = null;
+
+$('#houseListForTaskOptions').multiSelect({
+  selectableHeader: "<h5 class='text-center bg-info'>Кандидаты</h5>",
+  selectionHeader: "<h5 class='text-center bg-info'>Выбранный список</h5>"
+})
+
+$('#createTask')
+.on('show.bs.modal', function (e) {
+
+  var button = $(e.relatedTarget)
+  var count = button.data('task')
+
+  if( count == 'all' ){
+    currentHouseListForTask = JSON.parse($(this).find('#allHouseList').val());
+  }
+  if( count == 'filter' ){
+    currentHouseListForTask = JSON.parse($(this).find('#noTaskHouseList').val());
+  }
+  var options = currentHouseListForTask.map(function(house){
+    return { value: house[0], text: house[2]}
+  })
+  $('#houseListForTaskOptions').multiSelect('addOption', options)
+})
+.on('hide.bs.modal', function (e) {
+  currentHouseListForTask = null;
+  $('#houseListForTaskOptions').html('').multiSelect('refresh');
+})
+
+
+$('.filterDistrictOptions').click(function(e){
+
+  var sector = $(this).data('sector')
+  var options = [];
+  if (sector !== 'all') {
+    options = currentHouseListForTask
+                  .filter(function(house){
+                    return house[1] == sector
+                  })
+                  .map(function(house){
+                    return { value: house[0], text: house[2]}
+                  })
+  }
+
+  else {
+    options = currentHouseListForTask
+                  .map(function(house){
+                    return { value: house[0], text: house[2]}
+                  })
+  }
+
+  console.log("options", options);
+
+  $('#houseListForTaskOptions').html('').multiSelect('refresh').multiSelect('addOption', options)
+
+})
+
 // -- activate tooltip ===========================
 
 $(document).ready(function(){

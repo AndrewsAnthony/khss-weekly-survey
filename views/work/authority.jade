@@ -9,6 +9,7 @@ include ../mixins/header
 include ../mixins/history
 
 include ./changelist
+include ./create-tasks-list
 
 include ../mixins/createnote
 include ../mixins/createfile
@@ -43,6 +44,13 @@ block content
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeList") Добавить / Изменить список домов
 
+          if (viewHelper.checkUserRule('createTask', user.Rules) && authority.Houses.length)
+            .btn-group.btn-group-justified
+              a.btn.btn-success(type="button" data-toggle="modal" data-target="#createTask" data-task='all') Задания для всех домов
+              a.btn.btn-success(type="button" data-toggle="modal" data-target="#createTask" data-task='filter') Дома без задания
+
+            hr
+
           form(role="form")#searchAuthority
             .input-group
               input.search(type="text" class="form-control" placeholder="Поиск в списке")
@@ -55,3 +63,6 @@ block content
 
           if (viewHelper.checkUserRule('changeWork', user.Rules))
             +changelist(authority)
+
+          if (viewHelper.checkUserRule('createTask', user.Rules))
+            +create-tasks-list(authority, 'authority', authority.id, users)

@@ -3,13 +3,12 @@ include ./tooltipborder
 mixin display-house-district-sector(modelhouse, modeltype, modelid)
   .list
     - var groupHouses = viewHelper.groupHouseByDistrictAndSector(modelhouse)
-    | #{console.log(groupHouses)}
     each district in R.keys(groupHouses)
       h4
         i
-          | #{district} район
+          | #{district} р-н
           | #{" "}
-          span.label.label-primary #{R.reduce(R.add, 0, R.map(R.length, R.values(groupHouses[district])))} адресов
+          span.label.label-primary #{R.reduce(R.add, 0, R.map(R.length, R.values(groupHouses[district])))} адр.
       hr
       each sector in R.keys(groupHouses[district])
         each house in R.keys(groupHouses[district][sector])

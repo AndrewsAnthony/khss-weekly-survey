@@ -168,7 +168,6 @@ router.post('/value', function(req, res, next) {
     return models.sequelize.transaction(function (t) {
   
             return models.sequelize.Promise.map(pairs, function(field) {    
-                console.log("field - value", field[1]);
 
                     return models.ValueTable.findOrCreate({ where: {
                             FieldTableId: field[0],

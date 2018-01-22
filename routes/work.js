@@ -175,12 +175,14 @@ router.get('/authority/:id', function(req, res, next) {
         AuthorizationId: req.user.id
       },
       include: [models.Rule]
-    })
+    }),
+    models.User.findAll({include: [models.Depatment] })
     ])
-  .then(([authority, user]) => {
+  .then(([authority, user, users]) => {
     res.render('work/authority', {
       authority,
-      user
+      user,
+      users
     })
   })
   .catch(function(err){
@@ -837,6 +839,54 @@ router.post('/file/upload', function(req, res) {
   })
 
 })
+
+router.post('/task/list', function(req, res, next) {
+
+  if (!(req.body.houselist && req.body.houselist.length) || isNaN(parseInt(req.body.usertask, 10)) || !req.body.termtask) {
+    var err = new Error('Пустые входные данные')
+    err.status = 404
+    next( err )
+    return;
+  }
+
+  if (typeof req.body.houselist == 'string') {
+    req.body.houselist = [req.body.houselist]
+  }
+
+  models.Task.findOne({
+    where: {
+      name: 'photoreport-type',
+      type: req.body.modeltype + '-photoreport'
+    },
+    attributes: ['id']
+  })
+  .then(tasktype => {
+    if(tasktype) {
+      return models.sequelize.transaction(function (t) {
+    
+            return models.sequelize.Promise.map(req.body.houselist, function(house) {    
+
+                    return  models.ItemTask.create({
+                              taskable: req.body.modeltype,
+                              taskable_id: req.body.modelid,
+                              term: req.body.termtask,
+                              HouseId: house,
+                              TaskTypeId: tasktype.id,
+                              ImplementerId: req.body.usertask
+                            }, { transaction: t })
+
+                  })
+
+      })
+      .then(() => res.redirect(`/work/${req.body.modeltype}/${req.body.modelid}`))
+      .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+    }
+
+  })
+  .catch(err => { console.log(err.message); err.status = 404; next(err) })
+
+});
 
 
 
