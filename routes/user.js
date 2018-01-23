@@ -40,6 +40,7 @@ router.get('/:id', function(req, res, next) {
                   , include: [models.User]
                   , separate: true }
                 ]
+            , where: { status: { [Op.or]: ['active', 'add'] } }
             , separate: true }
             ]
         }
@@ -60,7 +61,8 @@ router.get('/:id', function(req, res, next) {
                       , { model: models.File
                         , include: [models.FileDescription]
                         , separate: true }
-                      ] }
+                      ]
+                  , where: { status: { [Op.or]: ['active', 'add'] } } }
                   ] }
             ]
         }
@@ -141,6 +143,7 @@ router.get('/:id', function(req, res, next) {
                   , separate: true }
                 , { model: models.NoteTask , include: [models.User], separate: true }
                 ]
+              , where: { status: { [Op.or]: ['active', 'add'] } }
               , separate: true }
             , { model: models.Depatment
               , include:
@@ -151,7 +154,8 @@ router.get('/:id', function(req, res, next) {
                         , { model: models.File
                           , include: [models.FileDescription]
                           , separate: true }
-                        ] }
+                        ]
+                    , where: { status: { [Op.or]: ['active', 'add'] } } }
                   ] }
             ]
       })

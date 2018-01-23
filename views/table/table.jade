@@ -55,18 +55,23 @@ block content
                       td #{field.status}
 
           - var filterFieldDeleted = R.filter(R.compose(R.not, R.whereEq({status: 'delete'})), authorityFiels.FieldTables)
-          | #{ console.log("filterFieldDeleted", filterFieldDeleted) }
           if ( filterFieldDeleted.length && authorityValueHouse.Houses.length && viewHelper.checkUserRule('showTable', user.Rules))
             hr
             .container
-              .row.text-center
+              .row.pull-left
                 .btn-group
+                  button.btn.btn-primary.btn-sm(type="button" data-page-size= authorityValueHouse.Houses.length) Все записи
                   button.btn.btn-primary.btn-sm(type="button" data-page-size="1") 1
-                  button.btn.btn-primary.btn-sm(type="button" data-page-size="10") 10
-                  button.btn.btn-primary.btn-sm(type="button" data-page-size="20") 20
-                  button.btn.btn-primary.btn-sm(type="button" data-page-size="50") 50
-                  button.btn.btn-primary.btn-sm(type="button" data-page-size="100") 100
-                  button.btn.btn-primary.btn-sm(type="button" data-page-size="200") 200
+                  if (authorityValueHouse.Houses.length > 15)
+                    button.btn.btn-primary.btn-sm(type="button" data-page-size="10") 10
+                  if (authorityValueHouse.Houses.length > 25)
+                    button.btn.btn-primary.btn-sm(type="button" data-page-size="20") 20
+                  if (authorityValueHouse.Houses.length > 55)
+                    button.btn.btn-primary.btn-sm(type="button" data-page-size="50") 50
+                  if (authorityValueHouse.Houses.length > 105)
+                    button.btn.btn-primary.btn-sm(type="button" data-page-size="100") 100
+                    if (authorityValueHouse.Houses.length > 205)
+                    button.btn.btn-primary.btn-sm(type="button" data-page-size="200") 200
             
             table#modelHouseTable.table(data-paging="true" data-filtering="true" data-sorting="true" data-editing="true" data-state="true")
                 thead
@@ -81,7 +86,6 @@ block content
                       td #{house.id}
                       td #{viewHelper.createNameHouse(house)}
                       - var currentvalueHouse = R.reduce((acc, value) => { acc[value.FieldTable.name] = value.value; return acc }, {}, house.ValueTables)
-                      | #{console.log("currentvalueHouse", currentvalueHouse)}
                       each housefield in filterFieldDeleted
                         if (housefield.type == 'date')
                           td #{moment(currentvalueHouse[housefield.name]) ? moment(currentvalueHouse[housefield.name]).format('YYYY-MM-DD') : 'нету даты'}

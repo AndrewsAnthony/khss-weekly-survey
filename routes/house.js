@@ -97,15 +97,35 @@ router.get('/check/inbox', function(req, res) {
 
 })
 
-router.get('/:id', function(req, res) {
+router.get('/:id', function(req, res, next) {
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
-    res.status(404).send('Неверный запрос на сервер')
+    var err = new Error('Неверный запрос на сервер');
+    err.status = 404;
+    next(err)
     return;
   }
   const promiseArr = []
 
-  promiseArr.push( models.House.findById(req.params.id, { include: [models.Authority, models.Schedule, models.Protocol, models.Program] }) );
+  promiseArr.push(
+    models.House.findById(
+      req.params.id
+      , { include: 
+          [ { model: models.Program
+          , where: { [Op.or]: [{ status: 'active' }, { status: 'add' }] }
+          , required: false }
+          , { model: models.Schedule
+          , where: { [Op.or]: [{ status: 'active' }, { status: 'add' }] }
+          , required: false }
+          , { model: models.Authority
+          , where: { [Op.or]: [{ status: 'active' }, { status: 'add' }] }
+          , required: false }
+          , { model: models.Protocol
+          , where: { [Op.or]: [{ status: 'active' }, { status: 'add' }] }
+          , required: false } ] }
+    )
+  );
+
   promiseArr.push( models.Depatment.findAll({ attributes: ['id','name'] }) );
   promiseArr.push( models.User.findAll({include: [models.Depatment] }) );
   promiseArr.push( models.Problem.findAll() );
@@ -126,11 +146,11 @@ router.get('/:id', function(req, res) {
       order: [['createdAt','ASC']],
       include: [models.User]
     }] }) );
-  promiseArr.push( models.Schedule.findAll() );
-  promiseArr.push( models.Program.findAll() );
-  promiseArr.push( models.Authority.findAll() );
+  promiseArr.push( models.Schedule.findAll({ where: { [Op.or]: [{status: 'active'}, {status: 'add'}] } }) );
+  promiseArr.push( models.Program.findAll({ where: { [Op.or]: [{status: 'active'}, {status: 'add'}] } }) );
+  promiseArr.push( models.Authority.findAll({ where: { [Op.or]: [{status: 'active'}, {status: 'add'}] } }) );
   promiseArr.push( models.Information.findAll() );
-  promiseArr.push( models.Protocol.findAll() );
+  promiseArr.push( models.Protocol.findAll({ where: { [Op.or]: [{status: 'active'}, {status: 'add'}] } }) );
   promiseArr.push( models.User.findOne({
     where: {
       AuthorizationId: req.user.id
@@ -141,6 +161,9 @@ router.get('/:id', function(req, res) {
 
   Promise.all(promiseArr)
   .then(function([house, depatments, users, problems, inboxs, itemtasks, schedule, program, authority, information, protocol, user]){
+    if (!house) {
+      throw Error('Отсутствует адрес в базе данных')
+    }
     res.render('house', {
       user,
       house,
@@ -154,8 +177,8 @@ router.get('/:id', function(req, res) {
 
   })
   .catch(function(err){
-    console.log(err)
-    res.status(500).send('Ошибки на сервере')
+    err.status = 404
+    next(err)
   })
 
 });
@@ -817,7 +840,7 @@ router.post('/inbox/:id/edit/', function(req, res, next) {
                                       .then(inbox => {
 
                                             return Promise.all([
-                                                    inbox.setProblems(req.body.problems, { transaction: t }),
+                                                    inbox.setProblems((req.body.problems ? req.body.problems : null), { transaction: t }),
                                                     inbox.setDepatments(req.body.depatments, { transaction: t })
                                                   ])
                                                   .then(() => {
@@ -825,7 +848,7 @@ router.post('/inbox/:id/edit/', function(req, res, next) {
                                                     const differences = diff(editableinbox, inbox);
 
                                                     if (differences.length == 2) {
-                                                      return Promise.reject(new Error('Никакие параметры не изменялись'))
+                                                      throw new Error('Никакие параметры не изменялись')
                                                     }
 
                                                     if (R.find(diff => {return (R.equals('E', diff.kind) && (R.equals(['dataValues', 'status'], diff.path)))} , differences))
@@ -895,7 +918,9 @@ router.get('/task/:id/edit/', function(req, res, next) {
 
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
-    res.status(404).send('Неверный запрос на сервер')
+    var err = new Error('Неверный запрос на сервер');
+    err.status = 404;
+    next(err)
     return;
   }
 
@@ -939,84 +964,170 @@ router.post('/task/:id/edit/', function(req, res, next) {
 
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
-    res.status(404).send('Неверный запрос на сервер')
+    var err = new Error('Неверный запрос на сервер');
+    err.status = 404;
+    next(err)
     return;
   }
 
-  const chainObj = {};
-
   models.sequelize.transaction(t => {
-    return models.Task.findOne({
-      where: {
-        name: req.body.maintask,
-        type: (req.body.maintask.split('-')[0] == 'information') ? 'info-information' : req.body[req.body.maintask.replace('-','')]
-      },
-      transaction: t
-    })
-    .then(posttasktype => {
-      chainObj.posttasktype = posttasktype;
-      return models.ItemTask.findById(req.params.id, { transaction: t} )
-    })
-    .then(currentItemTask => {
-      chainObj.currentItemTask = currentItemTask;
 
-      if (chainObj.posttasktype.model == 'information' && currentItemTask.taskable == chainObj.posttasktype.model) {
-        return models.Information.update({
-          description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
-          source: chainObj.posttasktype.name.split('-')[0] },
-          {
+    return models.User.findOne({
             where: {
-              id: currentItemTask.taskable_id
+              AuthorizationId: req.user.id
             },
-            limit: 1,
-            returning: true,
+            attributes: ['id'],
             transaction: t
           })
-      }
+          .then(user => {
 
-      if (chainObj.posttasktype.model == 'information' && currentItemTask.taskable !== chainObj.posttasktype.model) {
-        return models.Information.create({
-          description: (req.body.maintask.split('-')[0] == 'information') ? req.body[chainObj.posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
-          source: chainObj.posttasktype.name.split('-')[0] },
-              {
-                transaction: t
-              })
-      }
+              return models.Task.findOne({
+                      where: {
+                        name: req.body.maintask,
+                        type: (req.body.maintask.split('-')[0] == 'information') ? 'info-information' : req.body[req.body.maintask.replace('-','')]
+                      },
+                      transaction: t
+                    })
+                    .then(posttasktype => {
 
-      return models.Information.findById(null, {transaction: t});
+                      return models.ItemTask.findById(req.params.id, { transaction: t} )
+                            .then(currentItemTask => {
 
-    })
-    .then(info => {
-      chainObj.info = info
-      return models.ItemTask.update({
-        taskable: chainObj.posttasktype.model,
-        taskable_id: chainObj.info
-                      ? Array.isArray(chainObj.info)
-                        ? chainObj.currentItemTask.taskable_id
-                        : chainObj.info.id
-                      : req.body[chainObj.posttasktype.type.replace('-','')],
-        term: req.body.termtask,
-        binding: req.body.bindingtask,
-        TaskTypeId: chainObj.posttasktype.id,
-        ImplementerId: req.body.usertask,
-        status: req.body.status
-      }, {
-          where: {
-            id: req.params.id
-          },
-          limit: 1,
-          returning: true,
-          transaction: t
-      })
-    })
-    .then(([counts]) => {
-      return models.ItemTask.findById(req.params.id, { transaction: t })
-        .then(itemtask => {
-          return Promise.all([
-            itemtask.setProblems(req.body.problemtask, { transaction: t })
-          ])
-        })
-    })
+                              if (posttasktype.model == 'information' && currentItemTask.taskable == posttasktype.model) {
+                                
+                                    return models.Information.update({
+                                      description: (req.body.maintask.split('-')[0] == 'information') ? req.body[posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
+                                      source: posttasktype.name.split('-')[0] },
+                                      {
+                                        where: {
+                                          id: currentItemTask.taskable_id
+                                        },
+                                        limit: 1,
+                                        returning: true,
+                                        transaction: t
+                                      })
+                                      .then(info => {
+
+                                            return models.ItemTask.update({
+                                                  taskable: posttasktype.model,
+                                                  taskable_id: currentItemTask.taskable_id,
+                                                  term: req.body.termtask,
+                                                  binding: req.body.bindingtask,
+                                                  TaskTypeId: posttasktype.id,
+                                                  ImplementerId: req.body.usertask,
+                                                  status: req.body.status
+                                                }, {
+                                                    where: {
+                                                      id: req.params.id
+                                                    },
+                                                    limit: 1,
+                                                    returning: true,
+                                                    transaction: t
+                                                })
+                                                .then(() => {
+
+                                                    console.log("req.body.problemtask 1", req.body.problemtask);
+                                                    if (Array.isArray(req.body.problemtask) || req.body.problemtask) {
+                                                  
+                                                      return models.ItemTask.findById(req.params.id, { transaction: t })
+                                                            .then(itemtask => {
+                                                              
+                                                                  return itemtask.setProblems(req.body.problemtask, { transaction: t })
+
+                                                            })
+
+                                                    }
+
+                                                })
+
+                                      })
+
+                              }
+
+                              if (posttasktype.model == 'information' && currentItemTask.taskable !== posttasktype.model) {
+
+                                      return models.Information.create({
+                                        description: (req.body.maintask.split('-')[0] == 'information') ? req.body[posttasktype.type.replace('-','')] : req.body[req.body[req.body.maintask.replace('-','')].replace('-','')],
+                                        source: posttasktype.name.split('-')[0] },
+                                            {
+                                              transaction: t
+                                            })
+                                            .then(info => {
+
+                                                  return models.ItemTask.update({
+                                                        taskable: posttasktype.model,
+                                                        taskable_id: info.id,
+                                                        term: req.body.termtask,
+                                                        binding: req.body.bindingtask,
+                                                        TaskTypeId: posttasktype.id,
+                                                        ImplementerId: req.body.usertask,
+                                                        status: req.body.status
+                                                      }, {
+                                                          where: {
+                                                            id: req.params.id
+                                                          },
+                                                          limit: 1,
+                                                          returning: true,
+                                                          transaction: t
+                                                      })
+                                                      .then(() => {
+
+                                                          console.log("req.body.problemtask 2", req.body.problemtask);
+                                                          if (Array.isArray(req.body.problemtask) || req.body.problemtask) {
+                                                  
+                                                            return models.ItemTask.findById(req.params.id, { transaction: t })
+                                                                  .then(itemtask => {
+                                                                    
+                                                                        return itemtask.setProblems(req.body.problemtask, { transaction: t })
+                                                                    
+                                                                  })
+
+                                                          }
+
+                                                      })
+
+                                            })
+
+                              }
+
+                              return models.ItemTask.update({
+                                      taskable: posttasktype.model,
+                                      taskable_id: req.body[posttasktype.type.replace('-','')],
+                                      term: req.body.termtask,
+                                      binding: req.body.bindingtask,
+                                      TaskTypeId: posttasktype.id,
+                                      ImplementerId: req.body.usertask,
+                                      status: req.body.status
+                                    }, {
+                                        where: {
+                                          id: req.params.id
+                                        },
+                                        limit: 1,
+                                        returning: true,
+                                        transaction: t
+                                    })
+                                    .then(() => {
+
+                                        console.log("req.body.problemtask 3", req.body.problemtask);
+                                        if (Array.isArray(req.body.problemtask) || req.body.problemtask) {
+                                      
+                                          return models.ItemTask.findById(req.params.id, { transaction: t })
+                                                .then(itemtask => {
+                                                  
+                                                        return itemtask.setProblems(req.body.problemtask, { transaction: t })
+                                                  
+                                                })
+
+                                        }
+
+                                    })
+
+                            })
+
+                    })
+
+          })
+
   })
   .then(function(){
     res.redirect('/')

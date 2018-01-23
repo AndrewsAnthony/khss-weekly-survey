@@ -1,7 +1,11 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var Depatment = sequelize.define('Depatment', {
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    enterprise: {
+      type: DataTypes.STRING,
+      defaultValue: `КП 'Харьковспецстрой'`
+    }
   });
 
   Depatment.associate = function(models) {

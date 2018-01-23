@@ -52,7 +52,7 @@ router.get('/', function(req, res) {
 
     res.render('work', {
       user,
-      title: 'Список работ на 2017г.',
+      title: 'Список работ на 2018г.',
       problems,
       schedules,
       authorities,
@@ -167,7 +167,7 @@ router.get('/authority/:id', function(req, res, next) {
 
   Promise.all([
     models.Authority.findById(id, { include: [{
-      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
+      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}], where: {status: { [Op.not]: 'deleted'}}}]
     }]
     }),
     models.User.findOne({

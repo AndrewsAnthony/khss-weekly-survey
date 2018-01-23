@@ -8,6 +8,7 @@ block scripts
 include ./mixins/header
 include ./mixins/history
 include ./mixins/tooltip-date
+include ./mixins/tooltipborder
 
 include ./mixins/inbox
 include ./mixins/task
@@ -115,7 +116,8 @@ block content
                         i Личные приемы городской власти
                       ul.list-group
                         each authority in house.Authorities
-                          li.list-group-item
+                          +tooltipborder("Статус - " + viewHelper.tooltipTitle(authority.status))
+                          li.list-group-item(id= viewHelper.addBorderStyle(authority.status))
                             a(href='/work/authority/' + authority.id)
                               | [ #
                               | #{' '}
@@ -128,8 +130,9 @@ block content
                         i Титульные списки
                       ul.list-group
                         each schedule in house.Schedules
-                          li.list-group-item
-                            a(href='../work/schedule/' + schedule.id) #{schedule.title} [ #{moment(schedule.year).format('YYYY')} ]
+                          +tooltipborder("Статус - " + viewHelper.tooltipTitle(schedule.status))
+                          li.list-group-item(id= viewHelper.addBorderStyle(schedule.status))
+                            a(href='/work/schedule/' + schedule.id) #{schedule.title} [ #{moment(schedule.year).format('YYYY')} ]
 
                   if (house.Protocols && house.Protocols.length && viewHelper.checkUserRule('showWork', user.Rules))
                     .col-md-6
@@ -137,8 +140,9 @@ block content
                         i Протокольные поручения
                       ul.list-group
                         each protocol in house.Protocols
-                          li.list-group-item
-                            a(href='../work/protocol/' + protocol.id)
+                          +tooltipborder("Статус - " + viewHelper.tooltipTitle(protocol.status))
+                          li.list-group-item(id= viewHelper.addBorderStyle(protocol.status))
+                            a(href='/work/protocol/' + protocol.id)
                               | [ #
                               | #{' '}
                               +tooltipdatenow(protocol.date)
@@ -150,8 +154,9 @@ block content
                         i Программы городской власти
                       ul.list-group
                         each program in house.Programs
-                          li.list-group-item
-                            a(href='../work/program/' + program.id) #{program.title} [ #{moment(program.year).format('YYYY')} ]
+                          +tooltipborder("Статус - " + viewHelper.tooltipTitle(program.status))
+                          li.list-group-item(id= viewHelper.addBorderStyle(program.status))
+                            a(href='/work/program/' + program.id) #{program.title} [ #{moment(program.year).format('YYYY')} ]
 
                 div Карта Google отключена
                 //- a.btn.btn-default(href=)
