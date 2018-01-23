@@ -51,6 +51,15 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // Program -> HistoryStatus
+    Program.hasMany(models.HistoryStatus, {
+      foreignKey: 'statusable_id',
+      scope: {
+        statusable: 'program'
+      },
+      constraints: false
+    });
+
   }
 
   return Program;

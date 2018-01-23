@@ -48,6 +48,15 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // File -> HistoryStatus
+    File.hasOne(models.HistoryStatus, {
+      foreignKey: 'dependence_id',
+      scope: {
+        dependence: 'file'
+      },
+      constraints: false
+    });
+
   }
 
   File.prototype.getItem = function(options) {

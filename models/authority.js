@@ -52,6 +52,15 @@ module.exports = function(sequelize, DataTypes) {
       constraints: false
     });
 
+    // Authority -> HistoryStatus
+    Authority.hasMany(models.HistoryStatus, {
+      foreignKey: 'statusable_id',
+      scope: {
+        statusable: 'authority'
+      },
+      constraints: false
+    });
+
   }
 
   return Authority;

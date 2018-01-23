@@ -12,6 +12,15 @@ module.exports = function(sequelize, DataTypes) {
     // NoteTask -> User
     NoteTask.belongsTo(models.User);
 
+    // NoteTask -> HistoryStatus
+    NoteTask.hasOne(models.HistoryStatus, {
+      foreignKey: 'dependence_id',
+      scope: {
+        dependence: 'notetask'
+      },
+      constraints: false
+    });
+
   }
 
   return NoteTask;

@@ -25,7 +25,6 @@ mixin history(itemtask, pathToFile)
 
             if (itemtask.TaskType.model == 'inbox')
               span.pull-left
-                | #{console.log(itemTaskState, itemtask.status, itemtask.TaskType.name)}
                 b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
                 br
                 i [ #{itemtask.TaskType.description} #{itemtask.Inbox.number} ]

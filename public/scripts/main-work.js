@@ -204,6 +204,16 @@ $('button.startLoadFile').click(function() {
     });
   });
 
+$('.inboxgallery').each(function() {
+  $(this).magnificPopup({
+    delegate: 'a',
+    type: 'image',
+    gallery: {
+      enabled:true
+    }
+  });
+});
+
 $('.photogallery').each(function() {
   $(this).magnificPopup({
     delegate: 'a',

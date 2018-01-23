@@ -863,8 +863,8 @@ router.post('/task/list', function(req, res, next) {
   .then(tasktype => {
     if(tasktype) {
       return models.sequelize.transaction(function (t) {
-    
-            return models.sequelize.Promise.map(req.body.houselist, function(house) {    
+
+            return models.sequelize.Promise.map(req.body.houselist, function(house) {
 
                     return  models.ItemTask.create({
                               taskable: req.body.modeltype,

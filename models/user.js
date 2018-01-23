@@ -31,6 +31,8 @@ module.exports = function(sequelize, DataTypes) {
 
     User.hasMany(models.HistoryTable);
 
+    User.hasMany(models.HistoryStatus);
+
     User.belongsToMany(models.Rule, {through: 'UserRule'});
   };
 

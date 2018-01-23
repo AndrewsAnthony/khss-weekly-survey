@@ -9,6 +9,7 @@ const Jimp       = require("jimp");
 const getSlug    = require('speakingurl');
 const moment     = require('moment');
 const slash      = require('slash');
+const diff       = require('deep-diff').diff;
 const router     = express.Router();
 
 
@@ -79,7 +80,7 @@ router.get('/check/inbox', function(req, res) {
     .then(function(inbox) {
       if (inbox) {
         res.json(`Данный номер уже содержится в базе данных по адресу
-          <a href='../house/${inbox.House.id}'>
+          <a href='/house/${inbox.House.id}'>
           ${inbox.House.street}, ${inbox.House.number}
           </a>`);
       } else {
@@ -181,35 +182,74 @@ router.get('/', function(req, res, next) {
 
 });
 
-router.post('/:id/inbox/', function(req, res) {
-
-  var newInbox = null;
+router.post('/:id/inbox/', function(req, res, next) {
+ 
   models.sequelize.transaction(function(t){
-    return models.Inbox.create({
-      number: req.body.numberInbox,
-      inboxdate: req.body.dateInbox,
-      term: req.body.termInbox,
-      binding: req.body.bindingInbox
-    }, { transaction: t })
-    .then((inbox) => {
-      newInbox = inbox
-      return inbox.setHouse(req.params.id, { transaction: t })
-      .then((house) => {
-        return inbox.setDepatments(req.body.depatment, { transaction: t })
-        .then((depatments) => {
-          if ( !req.body.problem ) {
-            return ;
-          }
-          return inbox.setProblems(req.body.problem, { transaction: t })
+    
+    return models.User.findOne({
+            where: {
+              AuthorizationId: req.user.id
+            },
+            attributes: ['id'],
+            transaction: t
+          })
+          .then(user => {
+
+                return models.Inbox.create({
+                        number: req.body.numberInbox,
+                        inboxdate: req.body.dateInbox,
+                        term: req.body.termInbox,
+                        binding: req.body.bindingInbox
+                      }, { transaction: t })
+                .then((inbox) => {
+
+                      return inbox.setHouse(req.params.id, { transaction: t })
+                            .then((house) => {
+
+                              return inbox.setDepatments(req.body.depatment, { transaction: t })
+                                    .then((depatments) => {
+                                      if ( !req.body.problem ) {
+                                        
+                                        return models.HistoryStatus.create({
+                                                statusable: 'inbox',
+                                                statusable_id: inbox.id,
+                                                description: 'Добавлено Входящие',
+                                                status: 'add',
+                                                jsondata: JSON.stringify(inbox),
+                                                dependence: null,
+                                                dependence_id: null,
+                                                UserId: user.id
+                                              });
+                                      }
+                                      
+                                      return inbox.setProblems(req.body.problem, { transaction: t })
+                                            .then(() => {
+
+                                                return models.HistoryStatus.create({
+                                                        statusable: 'inbox',
+                                                        statusable_id: inbox.id,
+                                                        description: 'Добавлено Входящие',
+                                                        status: 'add',
+                                                        jsondata: JSON.stringify(inbox),
+                                                        dependence: null,
+                                                        dependence_id: null,
+                                                        UserId: user.id
+                                                      });
+            })
+          })
         })
       })
     })
+
+
   })
-  .then((inbox) => {
+  .then(() => {
     res.redirect('/house/' + req.params.id)
   })
-  .catch(function(msg){
-    res.status(404).send("Проблемы при добавлении в базу данных")
+  .catch(err => {
+    err.message = 'Проблемы при добавлении в базу данных'
+    err.status(500)
+    next(err)
   })
 
 });
@@ -284,32 +324,73 @@ router.post('/file/upload', function(req, res) {
           })
           .then(() => {
 
-            return models.FileDescription.findOrCreate({
-              where: {
-                description: fields.filedescription,
-                note: fields.filenote,
-                name: fields.filename
-              }
-            })
-            .spread((filedescription, created) => {
-              filedescription.createFile({
-                path: slash(path.join(dbUploadDir, nameFile)),
-                thumbnail: slash(path.join(dbUploadDir,'thumbnails', nameFile)),
-                type: fields.file,
-                fileable: fields.object,
-                fileable_id: fields.objectid
+            return models.sequelize.transaction(t => {
+    
+              return models.User.findOne({
+                      where: {
+                        AuthorizationId: req.user.id
+                      },
+                      attributes: ['id'],
+                      transaction: t
+                    })
+                    .then(user => {
+
+                        return models.FileDescription.findOrCreate({
+                                where: {
+                                  description: fields.filedescription,
+                                  note: fields.filenote,
+                                  name: fields.filename
+                                },  transaction: t })
+                              .spread((filedescription, created) => {
+                                      
+                                  return filedescription.createFile({
+                                    path: slash(path.join(dbUploadDir, nameFile)),
+                                    thumbnail: slash(path.join(dbUploadDir,'thumbnails', nameFile)),
+                                    type: fields.file,
+                                    fileable: fields.object,
+                                    fileable_id: fields.objectid
+                                  }, { transaction: t })
+                                  .then((file) => {
+                                    if (fields.object == 'task'){
+                                      
+                                      return models.ItemTask
+                                            .update({status: 'add'}, {where: {id: fields.objectid} , transaction: t })
+                                            .then(() => {
+
+                                              return models.HistoryStatus.create({
+                                                        statusable: 'task',
+                                                        statusable_id: fields.objectid,
+                                                        description: 'Добавлена фотография до задачи',
+                                                        jsondata: JSON.stringify(file),
+                                                        status: 'extra',
+                                                        dependence: 'file',
+                                                        dependence_id: file.id,
+                                                        UserId: user.id
+                                                      },{ transaction: t })
+
+
+                                            })
+                                    }
+                                    else {
+                                      
+                                      return models.HistoryStatus.create({
+                                              statusable: 'inbox',
+                                              statusable_id: fields.objectid,
+                                              description: 'Добавлена фотография до вхоящего',
+                                              jsondata: JSON.stringify(file),
+                                              status: 'extra',
+                                              dependence: 'file',
+                                              dependence_id: file.id,
+                                              UserId: user.id
+                                            },{ transaction: t })
+                                    
+                                    }
+                  })
+                })
               })
-              .then(() => {
-                if (fields.object == 'task'){
-                  return models.ItemTask
-                        .update({status: 'add'}, {where: {id: fields.objectid}})
-                }
-                else {
-                  return Promise.resolve()
-                }
-              })
-              .catch
+ 
             })
+
           })
           .then(() => res.json({}))
           .catch(err => {
@@ -323,22 +404,75 @@ router.post('/file/upload', function(req, res) {
           .then(() => fse.move(filePath, newFilePath))
           .then(() => {
 
-            return models.FileDescription.findOrCreate({
-              where: {
-                description: fields.filedescription,
-                note: fields.filenote,
-                name: fields.filename
-              }
-            })
-            .spread((filedescription, created) => {
-              filedescription.createFile({
-                path: slash(path.join(dbUploadDir, nameFile)),
-                thumbnail: '',
-                type: fields.file,
-                fileable: fields.object,
-                fileable_id: fields.objectid
+            return models.sequelize.transaction(t => {
+
+              return models.User.findOne({
+                      where: {
+                        AuthorizationId: req.user.id
+                      },
+                      attributes: ['id'],
+                      transaction: t
+                    })
+                    .then(user => {
+
+                      return models.FileDescription.findOrCreate({
+                                where: {
+                                  description: fields.filedescription,
+                                  note: fields.filenote,
+                                  name: fields.filename
+                                }, transaction: t })
+                              .spread((filedescription, created) => {
+
+                                    return filedescription.createFile({
+                                              path: slash(path.join(dbUploadDir, nameFile)),
+                                              thumbnail: '',
+                                              type: fields.file,
+                                              fileable: fields.object,
+                                              fileable_id: fields.objectid
+                                            }, { transaction: t })
+                                            .then((file) => {
+                                                if (fields.object == 'task'){
+
+                                                  return models.ItemTask
+                                                        .update({status: 'add'}, {where: {id: fields.objectid} , transaction: t })
+                                                        .then(() => {
+
+                                                          return models.HistoryStatus.create({
+                                                                    statusable: 'task',
+                                                                    statusable_id: fields.objectid,
+                                                                    description: 'Добавлена документ до задачи',
+                                                                    jsondata: JSON.stringify(file),
+                                                                    status: 'extra',
+                                                                    dependence: 'file',
+                                                                    dependence_id: file.id,
+                                                                    UserId: user.id
+                                                                  },{ transaction: t })
+
+
+                                                        })
+                                                }
+                                                else {
+                                                  
+                                                  return models.HistoryStatus.create({
+                                                          statusable: 'inbox',
+                                                          statusable_id: fields.objectid,
+                                                          description: 'Добавлен документ до вхоящего',
+                                                          jsondata: JSON.stringify(file),
+                                                          status: 'extra',
+                                                          dependence: 'file',
+                                                          dependence_id: file.id,
+                                                          UserId: user.id
+                                                        },{ transaction: t })
+                                                
+                                                }
+                
+
+                  })
+                })
               })
+            
             })
+
           })
           .then(() => res.json({}))
           .catch(err => {
@@ -414,7 +548,9 @@ router.get('/inbox/:id/edit/', function(req, res, next) {
 
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
-    res.status(404).send('Неверный запрос на сервер')
+    var err = new Error('Неверный запрос на сервер')
+    err.status(404)
+    next(err)
     return;
   }
 
@@ -447,41 +583,115 @@ router.post('/inbox/:id/edit/', function(req, res, next) {
 
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
-    res.status(404).send('Неверный запрос на сервер')
+    var err = new Error('Неверный запрос на сервер')
+    err.status(404)
+    next(err)
     return;
   }
 
   models.sequelize.transaction(t => {
-    return models.Inbox.update({
-      number: req.body.numberinbox,
-      inboxdate: req.body.dateinbox,
-      term: req.body.term,
-      binding: req.body.binding,
-      status: req.body.status
-    }, {
-      where: {
-        id: req.params.id
-      },
-      limit: 1,
-      returning: true,
-      transaction: t
-    })
-    .then(([counts]) => {
-      return models.Inbox.findById(req.params.id, { transaction: t })
-        .then(inbox => {
-          return Promise.all([
-            inbox.setProblems(req.body.problems, { transaction: t }),
-            inbox.setDepatments(req.body.depatments, { transaction: t })
-          ])
+    
+    return models.User.findOne({
+            where: {
+              AuthorizationId: req.user.id
+            },
+            attributes: ['id'],
+            transaction: t
+          })
+          .then(user => {
+          
+              return models.Inbox.findById(req.params.id, { transaction: t, plain: true })
+                    .then(editableinbox => {
+                          
+                          return models.Inbox.update({
+                                number: req.body.numberinbox,
+                                inboxdate: req.body.dateinbox,
+                                term: req.body.term,
+                                binding: req.body.binding,
+                                status: req.body.status
+                              }, {
+                                where: {
+                                  id: req.params.id
+                                },
+                                limit: 1,
+                                transaction: t
+                              })
+                              .then(() => {
+                                
+                                    return models.Inbox.findById(req.params.id, { transaction: t, plain: true })
+                                      .then(inbox => {
+
+                                            return Promise.all([
+                                                    inbox.setProblems(req.body.problems, { transaction: t }),
+                                                    inbox.setDepatments(req.body.depatments, { transaction: t })
+                                                  ])
+                                                  .then(() => {
+
+                                                    const differences = diff(editableinbox, inbox);
+
+                                                    if (differences.length == 2) {
+                                                      return Promise.reject(new Error('Никакие параметры не изменялись'))
+                                                    }
+
+                                                    if (R.find(diff => {return (R.equals('E', diff.kind) && (R.equals(['dataValues', 'status'], diff.path)))} , differences))
+                                                    {
+
+                                                      return Promise.all([
+                                                        models.HistoryStatus.create({
+                                                              statusable: 'inbox',
+                                                              statusable_id: inbox.id,
+                                                              description: 'Входящие Отредактировано',
+                                                              jsondata: JSON.stringify(differences),
+                                                              status: 'change',
+                                                              dependence: null,
+                                                              dependence_id: null,
+                                                              UserId: user.id
+                                                            },{ transaction: t }),
+                                                        
+                                                        models.HistoryStatus.create({
+                                                              statusable: 'inbox',
+                                                              statusable_id: inbox.id,
+                                                              description: 'Входящие изменила статус',
+                                                              jsondata: JSON.stringify(differences),
+                                                              status: 'status',
+                                                              dependence: null,
+                                                              dependence_id: null,
+                                                              UserId: user.id
+                                                            },{ transaction: t })
+                                                      ])
+
+                                                    }
+
+                                                    return models.HistoryStatus.create({
+                                                              statusable: 'inbox',
+                                                              statusable_id: inbox.id,
+                                                              description: 'Входящие Отредактировано',
+                                                              jsondata: JSON.stringify(differences),
+                                                              status: 'change',
+                                                              dependence: null,
+                                                              dependence_id: null,
+                                                              UserId: user.id
+                                                            },{ transaction: t })
+
+
+
+
+
+                    
+            })
+          })
         })
+      })
     })
+  
   })
-  .then(function(){
+  .then(() => {
     res.redirect('/')
   })
-  .catch(function(err){
-    console.log(err)
-    res.status(500).send('Ошибки при записи')
+  .catch(err => {
+    err.status = 404
+    next(err)
+    return;
   })
 
 });
@@ -620,7 +830,6 @@ router.post('/task/:id/edit/', function(req, res, next) {
     console.log(err)
     res.status(500).send('Ошибки при записи')
   })
-
 
 })
 
