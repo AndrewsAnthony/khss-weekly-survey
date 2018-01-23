@@ -6,7 +6,7 @@ include ./tooltip-date
 mixin history(itemtask, pathToFile)
   - var uniquekey = Math.random().toString().slice(2)
 
-  - var itemTaskState = {active: { letter: "Написать письмо", photoreport: "Сделать фотоотчет", information: "Предоставить информацию"}, add: { letter: "Письмо добавлено", photoreport: "Фотоотчет загружен", information: "Информация добавлена"}, close: { letter: "Письмо закрыто", photoreport: "Фотоотчет", information: "Информация"}}
+  - var itemTaskState = {active: { letter: "Написать письмо", photoreport: "Сделать фотоотчет", information: "Предоставить информацию"}, add: { letter: "Письмо добавлено", photoreport: "Фотоотчет загружен", information: "Информация добавлена"}, close: { letter: "Письмо закрыто", photoreport: "Фотоотчет", information: "Информация"}, deleted: { letter: "Письмо в статусе - удалено", photoreport: "Фотоотчет не актуален", information: "Информация не актуальна"}}
 
   .panel-group
     +tooltipborder("Статус - " + viewHelper.tooltipTitle(itemtask.status))
@@ -25,6 +25,7 @@ mixin history(itemtask, pathToFile)
 
             if (itemtask.TaskType.model == 'inbox')
               span.pull-left
+                | #{console.log(itemTaskState, itemtask.status, itemtask.TaskType.name)}
                 b #{itemTaskState[itemtask.status][itemtask.TaskType.name.split('-')[0]]}
                 br
                 i [ #{itemtask.TaskType.description} #{itemtask.Inbox.number} ]
