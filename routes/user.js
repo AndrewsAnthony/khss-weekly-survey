@@ -12,7 +12,7 @@ const router     = express.Router();
 
 router.get('/:id', function(req, res, next) {
 
-  req.params.id = parseInt(req.params.id, '10')
+  req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
     res.status(404).send('Неверный запрос на сервер')
     return;
@@ -126,7 +126,7 @@ router.get('/:id', function(req, res, next) {
 
     promiseArr.push(
       models.User.findOne({
-          where: { AuthorizationId: user.id }
+          where: { AuthorizationId: req.user.id }
         , include:
             [ models.Rule,
               { model: models.ItemTask

@@ -25,8 +25,14 @@ module.exports = function(sequelize, DataTypes) {
   })
 
   HistoryStatus.associate = function(models) {
-    
+
     HistoryStatus.belongsTo(models.User);
+
+    HistoryStatus.belongsTo(models.ItemTask, {
+      foreignKey: 'dependence_id',
+      as: 'ItemTask',
+      constraints: false
+    });
 
     HistoryStatus.belongsTo(models.ItemTask, {
       foreignKey: 'statusable_id',

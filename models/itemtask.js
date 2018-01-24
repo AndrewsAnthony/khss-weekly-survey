@@ -92,6 +92,15 @@ module.exports = function(sequelize, DataTypes) {
 
     // ItemTask -> HistoryStatus
     ItemTask.hasMany(models.HistoryStatus, {
+      foreignKey: 'dependence_id',
+      scope: {
+        dependence: 'itemtask'
+      },
+      constraints: false
+    });
+
+    // ItemTask -> HistoryStatus
+    ItemTask.hasMany(models.HistoryStatus, {
       foreignKey: 'statusable_id',
       scope: {
         statusable: 'task'

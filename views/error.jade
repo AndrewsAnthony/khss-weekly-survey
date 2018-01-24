@@ -2,6 +2,12 @@ extends layout
 
 block content
   .well
-    h1= message
-    h2= error.status
+    h4 Произошла ошибка при выполнение запроса
+    hr
+    h2
+      b
+        i #{ message }
+    h3 Статус ошибки - #{ error.status }
+  hr
+  h4 Информция для програмиста
   pre #{error.stack}
