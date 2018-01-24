@@ -10,11 +10,45 @@ const moment     = require('moment');
 const router     = express.Router();
 
 
+router.get('/enterprise', function(req, res, next) {
+  
+  const promiseArr = [];
+
+  promiseArr.push( models.User.findAll({
+    include: [models.Depatment, models.Rule, { model: models.Authorization, attributes: ['email']}]
+  }) );
+
+
+  promiseArr.push( models.User.findOne({
+    where: {
+      AuthorizationId: req.user.id
+    },
+    include: [models.Rule]
+  }) );
+
+  promiseArr.push( models.Rule.findAll() );
+
+  Promise.all(promiseArr)
+  .then(([users, user, rules]) => {
+    res.render('enterprise', {
+      user, users, rules, title : 'Страница сотрудников предприятия'
+    })
+
+  })
+  .catch(function(err){
+    console.log(err)
+    res.status(500).send('Ошибки на сервере')
+  })
+
+})
+
 router.get('/:id', function(req, res, next) {
 
   req.params.id = parseInt(req.params.id, 10)
   if (isNaN(req.params.id)) {
-    res.status(404).send('Неверный запрос на сервер')
+    var err = new Error('Неверный запрос на сервер');
+    err.status = 404;
+    next(err);
     return;
   }
 
@@ -144,6 +178,7 @@ router.get('/:id', function(req, res, next) {
                 , { model: models.NoteTask , include: [models.User], separate: true }
                 ]
               , where: { status: { [Op.or]: ['active', 'add'] } }
+              , required: false
               , separate: true }
             , { model: models.Depatment
               , include:
@@ -155,7 +190,8 @@ router.get('/:id', function(req, res, next) {
                           , include: [models.FileDescription]
                           , separate: true }
                         ]
-                    , where: { status: { [Op.or]: ['active', 'add'] } } }
+                    , where: { status: { [Op.or]: ['active', 'add'] } }
+                    , required: false }
                   ] }
             ]
       })
@@ -230,6 +266,58 @@ router.get('/:id', function(req, res, next) {
   })
   .catch(err => {
     console.log(err)
+    next(err)
+  })
+
+})
+
+router.post('/rule', function(req, res, next) {
+  
+  if (!req.body.rulelist || !req.body.userid) {
+    var err = new Error('Неверные входные данные');
+    err.status = 404;
+    next(err)
+    return;
+  }
+  if (Array.isArray(req.body.rulelist)) {
+    req.body.rulelist = R.union([1, 15], req.body.rulelist)
+  } else {
+    req.body.rulelist = R.union([1, 15], [req.body.rulelist])
+  }
+  req.body.rulelist.map(Number)
+
+  models.sequelize.transaction(function (t) {
+      
+      return models.User.findOne({
+            where: {
+              AuthorizationId: req.user.id
+            },
+            transaction: t
+          })
+          .then(user => {
+
+              if (user.id !== user.ChiefId) {
+                throw Error('Вы не являетесь начальников')
+              }
+
+              return models.User.findById(req.body.userid, { transaction: t })
+                    .then(changeuser => {
+
+                        if (!changeuser) {
+                          throw Error('Отсутствует пользователь для которого устанавливаются права доступа')
+                        }
+
+                        return changeuser.setRules(req.body.rulelist, { transaction: t })
+
+                    })
+
+          })
+  })
+  .then(([users, user, rules]) => {    
+    res.redirect('/user/enterprise')
+  })
+  .catch(function(err){
+    err.status = 500
     next(err)
   })
 

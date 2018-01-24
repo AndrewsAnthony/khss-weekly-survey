@@ -158,6 +158,31 @@ $('document').ready(function(){
     });
   });
 
+// -- multyselect for rule ===========================
+
+  $('#userRuleListOptions').multiSelect({
+    selectableHeader: "<h5 class='text-center bg-info'>Список доступных прав доступа</h5>",
+    selectionHeader: "<h5 class='text-center bg-info'>Права доступа которые будут установлены</h5>"
+  })
+
+  $('#setRuleModal')
+  .on('show.bs.modal', function (e) {
+
+    var button = $(e.relatedTarget);
+    var username = button.data('username');
+    var userid = button.data('userid');
+    var rulelist = button.data('rulelist').map(String);
+    var $model = $(this);
+
+    $model.find('#idUser').val(userid)
+    $model.find('#modalHeader').text('Внесите изменения в права доступа для ' + username)
+   
+    $('#userRuleListOptions').multiSelect('select', rulelist)
+  })
+  .on('hide.bs.modal', function (e) {
+    $('#userRuleListOptions').multiSelect('deselect_all');
+  })
+
 // -- activate tooltip ===========================
 
 $(document).ready(function(){

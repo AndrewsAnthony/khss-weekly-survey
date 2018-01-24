@@ -38,7 +38,9 @@ block content
               .col-sm-6.col-md-9.text-center
                 h4 #{user.name}
                 small
-                  cite #{user.Depatment.name}
+                  cite #{(user.Depatment) ? user.Depatment.name : 'еще нету отдела - обратиться к администратору' }
+                  br
+                  a(href='/user/enterprise') Страница сотрудников предприятия
                 ul.list-group
                   li.list-group-item
                     i.fa.fa-envelope-o
@@ -46,68 +48,72 @@ block content
                   li.list-group-item
                     i.fa.fa-phone
                     | #{" " + user.phone}
+                hr
 
                 button(type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#changeProfileModal") Изменить профайл
 
-          .well.well-sm
-            h3.text-center.bg-danger
-              i Входящие на отдел
+          if (user && user.Depatment && user.Depatment.Inboxes && user.Depatment.Inboxes.length )
+            .well.well-sm
+              h3.text-center.bg-danger
+                i Входящие на отдел
 
-            - var prepareHouseForInbox = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(viewHelper.createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
-            - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
+              - var prepareHouseForInbox = R.compose(R.map(R.head()), R.reduceBy((acc, inbox) => acc.concat(viewHelper.createNameHouse(inbox.House)), [])(inbox => inbox.House.id))(user.Depatment.Inboxes);
+              - var groupInboxes = R.groupBy(inbox => inbox.House.id, user.Depatment.Inboxes)
 
-            .just-padding
-              .list-group.list-group-root.well
-                each house, key in prepareHouseForInbox
-                  a(href="#house-" + key class="list-group-item" data-toggle="collapse")
-                    i.glyphicon.glyphicon-chevron-right
-                    | #{house}
-                    span.badge #{groupInboxes[key].length}
-                  .list-group.collapse(id="house-" + key)
-                    each inbox, ind in groupInboxes[key]
-                      +tooltipborder("Статус - " + viewHelper.tooltipTitle(inbox.status))
-                      a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse" id= viewHelper.addBorderStyle(inbox.status))
-                        i.glyphicon.glyphicon-chevron-right
-                        span
-                          | #{' '}
-                          | Входящие #{"# " + inbox.number} от #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
-                         br
-                        span.label.label-primary
-                          +tooltipdatenow(inbox.term)
-                      .list-group.collapse(id="inbox-" + (key + '-' + ind))
-                        .list-group-item
-                          dl.dl-horizontal
-                            dt Ссылка для перехода
-                            dd
-                              a(href='/house/' + key) Перейти к адресу
-                            if (inbox.binding)
-                              dt Привязка
-                              dd #{inbox.binding}
-                            if (inbox.Problems.length)
-                              dt Проблемы
+              .just-padding
+                .list-group.list-group-root.well
+                  each house, key in prepareHouseForInbox
+                    a(href="#house-" + key class="list-group-item" data-toggle="collapse")
+                      i.glyphicon.glyphicon-chevron-right
+                      | #{house}
+                      span.badge #{groupInboxes[key].length}
+                    .list-group.collapse(id="house-" + key)
+                      each inbox, ind in groupInboxes[key]
+                        +tooltipborder("Статус - " + viewHelper.tooltipTitle(inbox.status))
+                        a(href="#inbox-" + (key + '-' + ind) class="list-group-item" data-toggle="collapse" id= viewHelper.addBorderStyle(inbox.status))
+                          i.glyphicon.glyphicon-chevron-right
+                          span
+                            | #{' '}
+                            | Входящие #{"# " + inbox.number} от #{moment(inbox.inboxdate).format('DD-MM-YYYY')}
+                           br
+                          span.label.label-primary
+                            +tooltipdatenow(inbox.term)
+                        .list-group.collapse(id="inbox-" + (key + '-' + ind))
+                          .list-group-item
+                            dl.dl-horizontal
+                              dt Ссылка для перехода
                               dd
-                                each problem, ins in inbox.Problems
-                                  i #{problem.name}
-                                  if (ins !== (inbox.Problems.length - 1))
-                                    | #{', '}
-                          hr
-                          +uploadfilesbutton(inbox.Files, '')
+                                a(href='/house/' + key) Перейти к адресу
+                              if (inbox.binding)
+                                dt Привязка
+                                dd #{inbox.binding}
+                              if (inbox.Problems.length)
+                                dt Проблемы
+                                dd
+                                  each problem, ins in inbox.Problems
+                                    i #{problem.name}
+                                    if (ins !== (inbox.Problems.length - 1))
+                                      | #{', '}
+                            hr
+                            +uploadfilesbutton(inbox.Files, '')
 
-          .well.well-sm
-            h3.text-center.bg-danger
-              i Ближайшие личные приемы городской власти
+          if (authorities && authorities.length)
+            .well.well-sm
+              h3.text-center.bg-danger
+                i Ближайшие личные приемы городской власти
 
-            ul.list-group.list
-              each authority in authorities
-                +authoritylist(authority, user.Rules)
+              ul.list-group.list
+                each authority in authorities
+                  +authoritylist(authority, user.Rules)
+          
+          if (protocols && protocols.length)
+            .well.well-sm
+              h3.text-center.bg-danger
+                i Ближайшие протокольные поручения
 
-          .well.well-sm
-            h3.text-center.bg-danger
-              i Ближайшие протокольные поручения
-
-            ul.list-group.list
-              each protocol in protocols
-                +protocollist(protocol, user.Rules)
+              ul.list-group.list
+                each protocol in protocols
+                  +protocollist(protocol, user.Rules)
 
           - var prepareHouseForTask = R.map(R.compose(R.map(R.head()), R.reduceBy((acc, task) => acc.concat(viewHelper.createNameHouse(task.House)), [])(task => task.House.id)))(R.pluck('ItemTasks', userTasks ? userTasks : [user]));
 

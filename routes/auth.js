@@ -31,7 +31,7 @@ router.post('/signup', function(req, res, next){
         models.sequelize.transaction(t => {
           return user.createUser({}, {transaction: t})
                   .then(authUser => {
-                    return authUser.setRules([1], {transaction: t})
+                    return authUser.setRules([1,15], {transaction: t})
                   })
         })
         .then(() => {
