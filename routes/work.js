@@ -166,10 +166,28 @@ router.get('/authority/:id', function(req, res, next) {
   const id = parseInt(req.params.id, 10)
 
   Promise.all([
-    models.Authority.findById(id, { include: [{
-      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}], where: {status: { [Op.not]: 'deleted'}}}]
-    }]
-    }),
+    models.Authority.findById(id,
+      { include: [ {
+          model: models.House
+        , include:
+          [ { model: models.ItemTask
+          , where: {status: { [Op.not]: 'deleted' }}
+          , include:
+            ['Inbox','Authority','Program'
+            ,'Protocol','Schedule','Repair'
+            ,'Information','Implementer','TaskType'
+            , models.Problem
+            , { model: models.File
+              , include:
+                [ models.FileDescription ] }
+            , { model: models.NoteTask
+              , order: [['createdAt','ASC']]
+              , include: [models.User] }
+            ]
+          , required: false
+          } ]
+      } ] }
+    ),
     models.User.findOne({
       where: {
         AuthorizationId: req.user.id
@@ -317,10 +335,28 @@ router.get('/schedule/:id', function(req, res, next) {
   const id = parseInt(req.params.id, 10)
 
   Promise.all([
-    models.Schedule.findById(id, { include: [{
-      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
-    }]
-    }),
+    models.Schedule.findById(id,
+      { include: [ {
+          model: models.House
+        , include:
+          [ { model: models.ItemTask
+          , where: {status: { [Op.not]: 'deleted' }}
+          , include:
+            ['Inbox','Authority','Program'
+            ,'Protocol','Schedule','Repair'
+            ,'Information','Implementer','TaskType'
+            , models.Problem
+            , { model: models.File
+              , include:
+                [ models.FileDescription ] }
+            , { model: models.NoteTask
+              , order: [['createdAt','ASC']]
+              , include: [models.User] }
+            ]
+          , required: false
+          } ]
+      } ] }
+    ),
     models.User.findOne({
       where: {
         AuthorizationId: req.user.id
@@ -466,10 +502,28 @@ router.get('/protocol/:id', function(req, res, next) {
   const id = parseInt(req.params.id, 10)
 
   Promise.all([
-    models.Protocol.findById(id, { include: [{
-      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
-    }]
-    }),
+    models.Protocol.findById(id,
+      { include: [ {
+          model: models.House
+        , include:
+          [ { model: models.ItemTask
+          , where: {status: { [Op.not]: 'deleted' }}
+          , include:
+            ['Inbox','Authority','Program'
+            ,'Protocol','Schedule','Repair'
+            ,'Information','Implementer','TaskType'
+            , models.Problem
+            , { model: models.File
+              , include:
+                [ models.FileDescription ] }
+            , { model: models.NoteTask
+              , order: [['createdAt','ASC']]
+              , include: [models.User] }
+            ]
+          , required: false
+          } ]
+      } ] }
+    ),
     models.User.findOne({
       where: {
         AuthorizationId: req.user.id
@@ -616,10 +670,28 @@ router.get('/program/:id', function(req, res, next) {
   const id = parseInt(req.params.id, 10)
 
   Promise.all([
-    models.Program.findById(id, { include: [{
-      model: models.House, include: [{ model: models.ItemTask, include:['Inbox','Authority','Program','Protocol','Schedule','Repair','Information','Implementer', models.Problem,'TaskType', {model: models.File, include: [models.FileDescription]},{model: models.NoteTask, order: [['createdAt','ASC']], include: [models.User]}]}]
-    }]
-    }),
+    models.Program.findById(id,
+      { include: [ {
+          model: models.House
+        , include:
+          [ { model: models.ItemTask
+          , where: {status: { [Op.not]: 'deleted' }}
+          , include:
+            ['Inbox','Authority','Program'
+            ,'Protocol','Schedule','Repair'
+            ,'Information','Implementer','TaskType'
+            , models.Problem
+            , { model: models.File
+              , include:
+                [ models.FileDescription ] }
+            , { model: models.NoteTask
+              , order: [['createdAt','ASC']]
+              , include: [models.User] }
+            ]
+          , required: false
+          } ]
+      } ] }
+    ),
     models.User.findOne({
       where: {
         AuthorizationId: req.user.id
